@@ -320,9 +320,12 @@ button.cell{transform:none!important;filter:none!important}
 .join-box{padding:22px 18px;text-align:center}
 .join-box h3{margin:6px 0 4px;font-size:1.35rem}
 /* Kartenauswahl beim Beitreten: kleine Vorschau nur mit Symbolen */
-.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:14px}
-.pick{flex-direction:column;gap:6px;padding:10px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:.85rem}
-.pick:hover,.pick:focus-visible{border-color:var(--accent)}
+/* Kartenwahl: eine Karte groß, „Andere Karte zeigen“ würfelt neu */
+.pick-box{margin-top:12px;text-align:center}
+.pick-box .bgrid{margin:10px 0 14px}
+.pick-box .bcell{cursor:default}
+.pick-box .bcell:active{transform:none}
+.pick-box .bgrid{animation:pop .3s ease}
 .bgrid.mini{gap:3px;margin:0;width:100%}
 .bgrid.mini .bcell{border-radius:6px;padding:1px;font-size:.7rem;cursor:inherit}
 .bgrid.mini .bcell span:not(.bi){display:none}
@@ -395,15 +398,20 @@ body.card-mode>header,body.card-mode>main{display:none}
   background:#fffdf3 repeating-linear-gradient(transparent 0 39px,#c9d6f2 39px 40px);background-position:0 6px;
   box-shadow:inset 0 2px 6px rgba(0,0,0,.12),0 6px 16px -8px rgba(0,0,0,.5)}
 .guess-input::placeholder{color:#9aa6c4}
+/* Tipp: Eingabe und „Groß zeigen“ nebeneinander */
+.guess-row{display:flex;gap:10px;align-items:stretch}
+.guess-row .guess-input{flex:1;min-width:0;margin:0;height:58px;font-size:1.75rem;line-height:40px;padding:8px 12px 0;overflow:hidden;background-position:0 9px}
+.guess-big{flex:none;width:74px;flex-direction:column;gap:3px;padding:6px 4px;border-radius:14px;font-size:.74rem;line-height:1.1;white-space:normal;
+  background:var(--accent2);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 20px -10px var(--accent2)}
+.guess-big .ic{width:22px;height:22px}
+.guess-state{font-weight:600;font-size:.78rem;margin-left:6px;color:var(--muted)}
+.guess-state.ok{color:var(--accent)}
 .guess-input:focus{outline:3px solid var(--accent2)}
 /* Lobby am Handy: kompakt, damit Karte und Tipp ohne Scrollen auf den Bildschirm passen.
    Die anderen sehen die Tipps ohnehin live – „Groß zeigen“ gibt es als kleinen Link. */
-.lobby-only{display:none}
-body.lobby-mode .lobby-only{display:inline}
 body.lobby-mode .guess-wrap{padding:10px 14px 12px;margin-bottom:10px}
 body.lobby-mode .guess-head{margin-bottom:6px}
-body.lobby-mode .guess-input{height:50px;font-size:1.75rem;line-height:40px;margin-bottom:0;padding-top:4px}
-body.lobby-mode #btnGuessShow,body.lobby-mode .card-help{display:none}
+body.lobby-mode .card-help{display:none}
 body.lobby-mode .round-live{padding:10px 14px;margin-bottom:10px}
 body.lobby-mode .round-live .rl-ic{font-size:1.5rem}
 body.lobby-mode .match-live{padding:8px 12px;margin-bottom:10px}
@@ -1028,10 +1036,17 @@ html.ios .volume,html.ios .hint{display:none}
         <button data-go="bingo">Zu den Bingo-Karten</button>
       </div>
       <div id="myCardOn">
-        <div class="guess-wrap glass-lite">
-          <div class="guess-head"><span>Dein Tipp</span><button class="link small" id="btnMyGuessClear">Löschen</button></div>
-          <textarea id="myGuessText" class="guess-input" rows="2" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
-          <button class="big full" id="btnMyGuessShow"><svg class="ic"><use href="#i-eye"/></svg> Tipp zeigen</button>
+        <div id="myCardPick" class="hidden">
+          <p class="group-f" style="text-align:center;margin-top:12px">Such dir deine Karte aus – du spielst in der Lobby wie alle anderen mit.</p>
+          <div class="pick-box" id="myPickBox"></div>
+        </div>
+        <div id="myCardPlay">
+        <div class="guess-wrap glass">
+          <div class="guess-head"><span>Dein Tipp <small class="guess-state" id="myGuessState"></small></span><button class="link small" id="btnMyGuessClear">Löschen</button></div>
+          <div class="guess-row">
+            <textarea id="myGuessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
+            <button class="guess-big" id="btnMyGuessShow" aria-label="Tipp groß zeigen"><svg class="ic"><use href="#i-eye"/></svg><span>Groß<br>zeigen</span></button>
+          </div>
         </div>
         <div class="card-top" style="margin-top:14px"><span class="pill">Karte Nr. <b id="myCardNo"></b></span><span class="pill" id="myCardHits"></span></div>
         <div id="myCardWin" class="check-res won hidden">🎉 BINGO! Ruf es laut – Karte Nr. <span id="myCardWinNo"></span></div>
@@ -1040,6 +1055,7 @@ html.ios .volume,html.ios .hint{display:none}
         <div class="group-f" style="text-align:center">Hast du die Frage einer Runde richtig beantwortet? Dann markiere ein Feld dieser Kategorie – genau wie die Mitspieler.</div>
         <div class="group" style="margin-top:16px">
           <button class="cell tap danger" id="btnMyCardClear"><span class="grow">Markierungen löschen</span></button>
+        </div>
         </div>
       </div>
     </section>
@@ -1060,20 +1076,19 @@ html.ios .volume,html.ios .hint{display:none}
     <input id="joinCodeInput" class="hidden" placeholder="Lobby-Code" maxlength="8" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.2em;font-weight:800">
     <input id="joinName" placeholder="Dein Name" maxlength="24" autocomplete="nickname" enterkeyhint="go">
     <button class="big full" id="btnJoin">Beitreten</button>
-    <div id="pickBox" class="hidden">
-      <div class="pick-grid" id="pickGrid"></div>
-      <button class="ghost" id="btnPickMore" style="margin-top:12px">Andere Karten zeigen</button>
-    </div>
+    <div id="pickBox" class="pick-box hidden"></div>
   </div>
   <div id="cardLive">
   <div id="matchLive" class="glass match-live hidden"></div>
   <div id="roundLive" class="glass round-live hidden"></div>
   <div id="guessLive" class="guess-live hidden"></div>
-  <div class="glass guess-wrap">
-    <div class="guess-head"><span>Dein Tipp</span><span><button class="link small lobby-only" id="btnGuessBig">Groß zeigen</button><span class="lobby-only muted"> · </span><button class="link small" id="btnGuessClear">Löschen</button></span></div>
-    <textarea id="guessText" class="guess-input" rows="2" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
-    <button class="big full" id="btnGuessShow"><svg class="ic"><use href="#i-eye"/></svg> Tipp zeigen</button>
-  </div>
+  <div class="guess-wrap glass">
+          <div class="guess-head"><span>Dein Tipp <small class="guess-state" id="plGuessState"></small></span><button class="link small" id="btnGuessClear">Löschen</button></div>
+          <div class="guess-row">
+            <textarea id="guessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
+            <button class="guess-big" id="btnGuessShow" aria-label="Tipp groß zeigen"><svg class="ic"><use href="#i-eye"/></svg><span>Groß<br>zeigen</span></button>
+          </div>
+        </div>
   <div class="glass card-wrap">
     <div class="card-top"><span class="pill" id="cardHits"></span><button class="link small" id="btnCardClear">Markierungen löschen</button></div>
     <div id="cardGrid" class="bgrid"></div>
@@ -1125,7 +1140,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '3.0.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.1.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -2208,6 +2223,7 @@ const Lobby = {
     try {
       const f = await firebase();
       if (this.code !== code) return;
+      this.uid = f.uid;   // spielt der Spielleiter mit, steht er unter dieser ID in players
       const snap = await f.get(f.at(`lobbies/${code}/host`));
       if (snap.exists() && snap.val() !== f.uid) throw new Error('Diese Lobby gehört zu einem anderen Gerät');
       if (!state.match) newMatch();
@@ -2218,11 +2234,12 @@ const Lobby = {
       this.unsub = f.onValue(f.at(`lobbies/${code}/players`), s => {
         const prev = this.players;
         this.players = s.val() || {};
-        if (!first) for (const [id, p] of Object.entries(this.players)) if (p.bingo && !prev[id]?.bingo) this.onBingo(id, p);
+        if (!first) for (const [id, p] of Object.entries(this.players)) if (p.bingo && !prev[id]?.bingo && id !== this.uid) this.onBingo(id, p);
         first = false;
         renderLobby();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'bingo') renderCheckWho();
         if (round && !spinning) round.phase === 'revealed' ? renderGuessList() : render();   // Tipps der Mitspieler
+        if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
       }, e => toast('Lobby: ' + e.message, 6000));
       this.syncRound();
     } catch (e) {
@@ -2243,10 +2260,14 @@ const Lobby = {
     for (const id of Object.keys(this.players)) Object.assign(upd, { [`${id}/marks`]: null, [`${id}/bingo`]: null, [`${id}/ok`]: null });
     if (Object.keys(upd).length) firebase().then(f => f.update(f.at(`lobbies/${code}/players`), upd)).catch(() => {});
   },
-  setBingo(b) { this.write('bingo', b); this.clearMarks(); },
+  setBingo(b) { this.write('bingo', b); this.clearMarks(); if (this.me()) this.write(`players/${this.uid}/g`, b.g); },
   // Aktuelle Runde an die Handys: Kategorie während des Songs, nach der Auflösung auch die Lösung
   syncRound() {
     if (!this.code) return;
+    if (round && this.me() && this.lastN !== round.n) {
+      if (this.lastN != null) { $('#myGuessText').value = ''; LS.set('guess', ''); }
+      this.lastN = round.n;
+    }
     if (!round) return this.write('round', null);
     const [e, c] = catStyle(round.cat), rev = round.phase === 'revealed', t = round.track;
     this.write('round', { n: round.n, q: round.cat.name, e, c, ph: rev ? 'r' : 'p',
@@ -2267,6 +2288,13 @@ const Lobby = {
     saveMatch();
   },
   kick(id) { this.write(`players/${id}`, null); },
+  // Spielleiter spielt mit: tritt mit eigener Karte der Lobby bei („⭐ Name“)
+  joinHost(num) {
+    const name = ('⭐ ' + (state.me?.name || 'Spielleiter')).slice(0, 24);
+    this.write(`players/${this.uid}`, { name, num, on: true, g: state.bingo.g });
+  },
+  leaveHost() { if (this.uid && this.players[this.uid]) this.kick(this.uid); },
+  me() { return this.code && this.uid ? this.players[this.uid] || null : null; },
   onBingo(id, p) {
     confetti(); beep(1046, .3);
     toast(`🎉 BINGO von ${p.name} – Karte Nr. ${p.num}`, 12000, { label: 'Prüfen', fn: () => checkLobbyPlayer(id) });
@@ -2473,6 +2501,7 @@ async function renderBingo() {
 // Eigene Karte des Spielleiters („Meine Karte“) – wird wie ein Mitspieler geprüft
 const HOST_ID = '__host';
 function hostCard() {
+  if (Lobby.code) return null;   // mit Lobby steht der Spielleiter als normaler Mitspieler in der Liste
   const b = state.bingo, st = state.settings.hostPlays !== false && b && LS.get('card_' + b.g, null);
   return st ? { name: 'Spielleiter', num: st.num, marks: st.marks, g: b.g, host: true, ok: !!state.match?.won?.includes(HOST_ID) } : null;
 }
@@ -2649,6 +2678,29 @@ function cardMode(param) {
 
 /* Lobby-Ansicht für Mitspieler (?l=CODE): Namen eingeben, Karte kommt vom Server, Markierungen und
    „Bingo!“ gehen live an den Spielleiter, die aktuelle Runde wird oben angezeigt. */
+// Kleine Anzeige neben „Dein Tipp“: wurde der Tipp schon abgegeben?
+function guessState(el, r, g) {
+  const has = r && g?.n === r.n && g.t;
+  el.className = 'guess-state' + (has ? ' ok' : '');
+  el.textContent = !r ? '' : r.ph === 'r' ? (has ? '· für alle sichtbar' : '· Runde aufgelöst') : has ? '✓ abgegeben' : '· wird beim Tippen abgegeben';
+}
+
+/* Kartenwahl: zeigt eine Karte; „Andere Karte zeigen“ würfelt eine neue Nummer, die in der Lobby noch frei ist */
+function cardPicker(box, b, used, onPick) {
+  let num;
+  box.innerHTML = `<span class="pill">Karte Nr. <b class="pick-no"></b></span><div class="pick-card"></div>
+    <button class="big full pick-take">${ic('check')} Diese Karte nehmen</button>
+    <button class="ghost full pick-more" style="margin-top:10px;width:100%">${ic('refresh')} Andere Karte zeigen</button>`;
+  const roll = () => {
+    do num = 1000 + Math.floor(Math.random() * 9000); while (used.has(num));
+    box.querySelector('.pick-no').textContent = num;
+    box.querySelector('.pick-card').innerHTML = `<div class="bgrid n${b.s}" style="--n:${b.s}">${cardFields(b, num).map(fl => bcell(b, fl)).join('')}</div>`;
+  };
+  box.querySelector('.pick-more').onclick = roll;
+  box.querySelector('.pick-take').onclick = e => { e.currentTarget.disabled = true; onPick(num); };
+  roll();
+}
+
 /* Beitreten ohne QR-Code (…/join/ bzw. ?join): Lobby-Code und Name eingeben */
 async function codeMode() {
   document.body.classList.add('card-mode');
@@ -2687,7 +2739,6 @@ async function codeMode() {
 async function lobbyMode(code, autoName = null) {
   code = code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
   document.body.classList.add('card-mode', 'lobby-mode');
-  $('#btnGuessBig').onclick = () => $('#btnGuessShow').click();
   $('#cardApp').classList.remove('hidden');
   $('#cardLive').classList.add('hidden');
   $('#joinBox').classList.remove('hidden');
@@ -2764,6 +2815,7 @@ async function lobbyMode(code, autoName = null) {
     $('#btnGuessShow').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
     const renderGuesses = () => {
       const box = $('#guessLive'), r = curRound;
+      guessState($('#plGuessState'), r, allPlayers[f.uid]?.guess);
       const list = Object.entries(allPlayers).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
       box.classList.toggle('hidden', !r || list.length < 2);
       if (!r || list.length < 2) return;
@@ -2803,29 +2855,24 @@ async function lobbyMode(code, autoName = null) {
   $('#joinName').value = LS.get('name', '');
   btn.disabled = false; msg('Gib deinen Namen ein, dann bekommst du deine Bingo-Karte.');
   // Nach dem Namen: 5 Karten zur Auswahl (Nummern, die in der Lobby noch frei sind)
+  // Nach dem Namen: Karte aussuchen (eine Karte, „Andere Karte zeigen“ würfelt eine neue freie Nummer)
   const showPicker = async name => {
     btn.disabled = true;
     try {
       const [b, players] = await Promise.all([f.get(f.at(`${base}/bingo`)), f.get(f.at(`${base}/players`))]).then(r => r.map(x => x.val()));
       const used = new Set(Object.values(players || {}).map(p => +p?.num));
-      const nums = [];
-      while (nums.length < 5) { const n = 1000 + Math.floor(Math.random() * 9000); if (!used.has(n) && !nums.includes(n)) nums.push(n); }
       $('#joinName').classList.add('hidden'); $('#joinCodeInput').classList.add('hidden'); btn.classList.add('hidden');
       $('#pickBox').classList.remove('hidden');
-      msg(`Hallo ${name}! Such dir eine von 5 Karten aus:`);
-      $('#pickGrid').innerHTML = nums.map(n => `<button class="pick" data-pick="${n}">
-        <div class="bgrid mini n${b.s}" style="--n:${b.s}">${cardFields(b, n).map(fl => bcell(b, fl)).join('')}</div>Karte ${n}</button>`).join('');
-      $('#pickGrid').onclick = async e => {
-        const p = e.target.closest('[data-pick]'); if (!p) return;
-        $('#pickGrid').onclick = null; msg('Einen Moment …');
+      msg(`Hallo ${name}! Such dir deine Karte aus:`);
+      cardPicker($('#pickBox'), b, used, async num => {
+        msg('Einen Moment …');
         try {
-          me = { name, num: +p.dataset.pick, on: true, joined: f.serverTimestamp() };
+          me = { name, num, on: true, joined: f.serverTimestamp() };
           await f.set(meRef, me);
           LS.set('name', name);
           start();
         } catch (err) { msg('Beitreten fehlgeschlagen: ' + err.message); showPicker(name); }
-      };
-      $('#btnPickMore').onclick = () => showPicker(name);
+      });
     } catch (e) { btn.disabled = false; msg('Fehler: ' + e.message); }
   };
   const join = () => {
@@ -2840,17 +2887,56 @@ async function lobbyMode(code, autoName = null) {
 }
 
 /* Eigene Karte des Spielleiters (im Menü „Bingo“) */
+// Mit Lobby ist die Spielleiter-Karte ein normaler Lobby-Eintrag: erst aussuchen, dann live synchronisiert
+let myMount = null;   // { g, num, ctl } der gerade angezeigten Karte
 function renderMyCard() {
   const b = state.bingo;
   $('#myCardOff').classList.toggle('hidden', !!b);
   $('#myCardOn').classList.toggle('hidden', !b);
+  myMount = null;
   if (!b) return;
+  const me = Lobby.me();
+  const pick = !!Lobby.code && !me?.name;
+  $('#myCardPick').classList.toggle('hidden', !pick);
+  $('#myCardPlay').classList.toggle('hidden', pick);
+  if (pick) {
+    if (!Lobby.uid) { $('#myPickBox').innerHTML = '<span class="loader"></span>'; return; }
+    return cardPicker($('#myPickBox'), b, new Set(lobbyList().map(p => +p.num)), num => Lobby.joinHost(num));
+  }
   mountGuess($('#myGuessText'), $('#btnMyGuessShow'), $('#btnMyGuessClear'));
-  mountCard(b, { grid: $('#myCardGrid'), no: $('#myCardNo'), hits: $('#myCardHits'), legend: $('#myCardLegend'), clear: $('#btnMyCardClear') }, (num, initial) => {
+  let wonSent = null;
+  const ctl = mountCard(b, { grid: $('#myCardGrid'), no: $('#myCardNo'), hits: $('#myCardHits'), legend: $('#myCardLegend'), clear: $('#btnMyCardClear') }, (num, initial) => {
     $('#myCardWin').classList.toggle('hidden', num == null);
     if (num != null) { $('#myCardWinNo').textContent = num; if (!initial) { confetti(); beep(1046, .3); } }
-  });
+    // Bingo auch in der Lobby anzeigen (wie bei den Mitspielern)
+    const won = num != null;
+    if (me && wonSent !== won) { wonSent = won; Lobby.write(`players/${Lobby.uid}/bingo`, won ? Date.now() : null); }
+  }, me ? {
+    num: me.num,
+    marks: me.g === b.g ? me.marks || [] : [],
+    onChange: marks => { Lobby.write(`players/${Lobby.uid}/marks`, marks); Lobby.write(`players/${Lobby.uid}/g`, b.g); },
+  } : null);
+  myMount = { g: b.g, num: me?.num, ctl };
+  guessState($('#myGuessState'), Lobby.code && round ? { n: round.n, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me?.guess);
 }
+// Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
+function syncMyCard() {
+  const me = Lobby.me(), b = state.bingo;
+  if (!b || !myMount || !me || myMount.g !== b.g || myMount.num !== me.num) return renderMyCard();
+  myMount.ctl.setMarks(me.g === b.g ? me.marks || [] : []);
+  guessState($('#myGuessState'), round ? { n: round.n, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me.guess);
+}
+// Tipp des Spielleiters in die Lobby (nur solange die Runde läuft)
+let myGuessT;
+$('#btnMyGuessClear').addEventListener('click', () => $('#myGuessText').dispatchEvent(new Event('input')));
+$('#myGuessText').addEventListener('input', () => {
+  clearTimeout(myGuessT);
+  myGuessT = setTimeout(() => {
+    if (!Lobby.me() || !round || round.phase === 'revealed') return;
+    const t = $('#myGuessText').value.trim().slice(0, 80);
+    Lobby.write(`players/${Lobby.uid}/guess`, t ? { t, n: round.n } : null);
+  }, 600);
+});
 const renderMyCardBtn = () => $('#myCardBtn').classList.toggle('hidden', !state.bingo || state.settings.hostPlays === false);
 
 /* ---------------- Rendering ---------------- */
@@ -3239,6 +3325,7 @@ $('#bingoGamesSeg').onclick = e => {
 };
 document.querySelectorAll('.set-host-plays').forEach(x => x.onchange = () => {
   state.settings.hostPlays = x.checked; LS.set('settings', state.settings);
+  if (!x.checked) Lobby.leaveHost();
   renderBingo(); renderMyCardBtn(); renderCheckWho();
 });
 $('#bingoLobbySeg').onclick = e => {

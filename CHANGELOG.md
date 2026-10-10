@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.1.0 – 10.10.2026
+- Spielleiter erscheint in der Lobby, wenn er mitspielt („⭐ Name“): Markierungen, Bingo, Tipps und Siege laufen wie bei allen anderen
+- „Meine Karte“ des Spielleiters im neuen Stil: eigene Kartenwahl, kompaktes Tipp-Feld, live synchronisiert
+- Kartenwahl: eine Karte groß, „Diese Karte nehmen“ oder „Andere Karte zeigen“ (statt 5 kleiner Karten)
+- Tipp-Feld neu: „Groß zeigen“-Knopf direkt neben der Eingabe, Anzeige „✓ abgegeben“
+
 ## 3.0.0 – 10.10.2026
 - Mehrere Partien pro Lobby: nach einem bestätigten Bingo startet der Spielleiter die nächste Partie (neue Karten für alle), die Siege werden gezählt. Einstellbar: 1, 3, 5, 10 Partien oder endlos; am Ende Siegerehrung
 - Kartenwahl beim Beitreten: jeder Mitspieler sucht sich eine von 5 Karten aus (oder lässt sich andere zeigen)
