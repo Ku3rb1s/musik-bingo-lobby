@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "lobbies": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && (!data.exists() || data.child('host').val() === auth.uid)",
+        ".validate": "$code.matches(/^[A-Z0-9]{4,8}$/) && (!newData.exists() || newData.child('host').val() === auth.uid || newData.child('host').val() === data.child('host').val())",
+        "players": {
+          "$uid": {
+            ".write": "auth != null && $uid === auth.uid && data.parent().parent().child('bingo').exists()",
+            ".validate": "newData.hasChildren(['name', 'num'])",
+            "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 24" },
+            "num": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9999" },
+            "g": { ".validate": "newData.isString()" },
+            "marks": { ".validate": "newData.hasChildren()" },
+            "on": { ".validate": "newData.isBoolean()" },
+            "bingo": { ".validate": "newData.isNumber()" },
+            "joined": { ".validate": "newData.isNumber()" },
+            "ok": { ".validate": "newData.isBoolean() && (data.parent().parent().parent().child('host').val() === auth.uid || newData.val() === data.val())" },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}
