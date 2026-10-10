@@ -445,6 +445,7 @@ body.card-mode>header,body.card-mode>main{display:none}
 .guess-big .ic{width:22px;height:22px}
 .guess-state{font-weight:600;font-size:.78rem;margin-left:6px;color:var(--muted)}
 .guess-state.ok{color:var(--accent)}
+.guess-state.wait{color:var(--warn)}
 .guess-input:focus{outline:3px solid var(--accent2)}
 /* Lobby am Handy: kompakt, damit Karte und Tipp ohne Scrollen auf den Bildschirm passen.
    Die anderen sehen die Tipps ohnehin live – „Groß zeigen“ gibt es als kleinen Link. */
@@ -1228,7 +1229,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '3.3.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.3.1', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -2298,6 +2299,7 @@ function firebase() {
   fbP.catch(() => { fbP = null; });
   return fbP;
 }
+const nameList = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + ' und ' + names.at(-1);
 const LOBBY_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const plainText = html => { const d = document.createElement('div'); d.innerHTML = html; return d.textContent; };
 
@@ -2409,7 +2411,7 @@ const Lobby = {
     confetti(); beep(1046, .3);
     const callers = pendingCallers();
     if (!callers.length) return;
-    toast(`🎉 BINGO von ${callers.map(c => c.name).join(' und ')}`, 12000, { label: 'Prüfen', fn: checkCallers });
+    toast(`🎉 BINGO von ${nameList(callers.map(c => c.name))}`, 12000, { label: 'Prüfen', fn: checkCallers });
   },
 };
 /* ---------------- Partien & Siege (nur mit Lobby) ---------------- */
@@ -2848,9 +2850,10 @@ function cardMode(param) {
 function guessState(el, r, g, text = null) {
   const has = r && g?.n === r.n && g.t;
   const synced = has && (text == null || text.trim() === g.t);   // Feld noch geändert, aber nicht abgegeben?
-  el.className = 'guess-state' + (synced ? ' ok' : '');
+  const pending = r && r.ph !== 'r' && !synced && !!text?.trim();   // getippt, aber noch nicht abgegeben
+  el.className = 'guess-state' + (synced ? ' ok' : pending ? ' wait' : '');
   el.textContent = !r ? '' : r.ph === 'r' ? (has ? '· für alle sichtbar' : '· Runde aufgelöst')
-    : synced ? '✓ abgegeben' : text?.trim() ? '· mit „Fertig“ abgeben' : '· Tipp eingeben, dann „Fertig“';
+    : synced ? '✓ abgegeben' : pending ? 'noch nicht abgegeben' : '';
 }
 
 /* Kartenwahl: zeigt eine Karte; „Andere Karte zeigen“ würfelt eine neue Nummer, die in der Lobby noch frei ist.

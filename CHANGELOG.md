@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.3.1 – 10.10.2026
+- Tipp-Status klarer: leer = nichts, getippt = „noch nicht abgegeben“ (orange), abgegeben = „✓ abgegeben“ (grün)
+- Bingo-Meldung bei mehreren Rufen: „Lena, Max und Tom“ statt „Lena und Max und Tom“
+
 ## 3.3.0 – 10.10.2026
 - Spielfläche: keine Tipp-Zählung mehr neben „Tipp/Überspringen“; die Leiste unten zeigt nur noch Namen, 🏆 Siege und ✓ für „fertig getippt“ (keine Feldanzahl)
 - Tipp gilt erst als abgegeben, wenn man „Fertig“ auf der Tastatur drückt oder das Feld verlässt (Anzeige „mit ‚Fertig‘ abgeben“ → „✓ abgegeben“)
