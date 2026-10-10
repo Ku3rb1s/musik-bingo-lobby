@@ -91,8 +91,11 @@ async function renderBingo() {
     $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
     document.querySelectorAll('#bingoGamesSeg button').forEach(x => x.classList.toggle('on', +x.dataset.games === (state.settings.games ?? 0)));
     document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
-    const cats = state.cats.filter(c => c.enabled);
-    $('#bingoCats').innerHTML = cats.map(catChip).join('') || '<span class="muted small">Keine Kategorie aktiv</span>';
+    // Alle Kategorien als Schalter: antippen = an/aus (gleiche Einstellung wie unter Einstellungen → Kategorien)
+    const on = state.cats.filter(c => c.enabled).length;
+    $('#bingoCats').innerHTML = state.cats.map((c, i) => `<button class="cat-chip pick ${c.enabled ? '' : 'off'}" style="--c:${catStyle(c)[1]}" data-bcat="${i}" aria-pressed="${c.enabled}">${catStyle(c)[0]} ${esc(shortCat(c))}</button>`).join('');
+    $('#bingoCatsNote').textContent = on < 2 ? `Nur ${on} aktiv – für Bingo braucht es mindestens 2 Kategorien.` : `${on} von ${state.cats.length} aktiv – antippen schaltet eine Kategorie an oder aus.`;
+    $('#bingoCatsNote').style.color = on < 2 ? 'var(--warn)' : '';
     return;
   }
   $('#bingoInfo').innerHTML = `${b.s} × ${b.s} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('')}`;

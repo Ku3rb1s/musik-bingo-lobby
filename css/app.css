@@ -411,6 +411,13 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .check-res.won{color:var(--accent)}
 .check-res.no{color:var(--muted);font-weight:600;font-size:.98rem}
 .chip-scroll{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+/* Kategorien beim Bingo-Einrichten: antippbar, ausgeschaltete blass und durchgestrichen */
+button.cat-chip{color:var(--text)}
+button.cat-chip.off{background:transparent;border-color:var(--line);color:var(--muted);opacity:.6;text-decoration:line-through}
+details>summary.cell{list-style:none}
+details>summary.cell::-webkit-details-marker{display:none}
+details[open]>summary .chev{transform:rotate(90deg)}
+details>summary .chev{transition:transform .2s}
 
 /* Karten-Ansicht für Mitspieler */
 body.card-mode>header,body.card-mode>main{display:none}

@@ -225,7 +225,14 @@ async function lobbyMode(code, autoName = null) {
     };
     $('#guessText').addEventListener('blur', sendGuess);
     $('#guessText').addEventListener('keydown', e => { if (e.key === 'Enter') sendGuess(); });   // „Fertig“ auf der Tastatur
-    $('#guessText').addEventListener('input', () => renderGuesses());
+    $('#guessText').addEventListener('input', () => {
+      // Abgegebenen Tipp ändern → wieder „nicht abgegeben“ (der ✓ bei den anderen verschwindet), bis erneut „Fertig“
+      const g = me?.guess;
+      if (curRound && curRound.ph !== 'r' && g?.t && g.n === keyOf(curRound) && $('#guessText').value.trim() !== g.t) {
+        me.guess = null; f.update(meRef, { guess: null }).catch(() => {});
+      }
+      renderGuesses();
+    });
     $('#btnGuessClear').addEventListener('click', () => { sendGuess(); renderGuesses(); });
     $('#btnGuessShow').addEventListener('click', sendGuess);
     function renderGuesses() {
@@ -467,7 +474,14 @@ function sendMyGuess() {
 }
 $('#myGuessText').addEventListener('blur', sendMyGuess);
 $('#myGuessText').addEventListener('keydown', e => { if (e.key === 'Enter') sendMyGuess(); });
-$('#myGuessText').addEventListener('input', renderMyGuessState);
+$('#myGuessText').addEventListener('input', () => {
+  // wie bei den Mitspielern: Ändern nimmt die Abgabe zurück
+  const me = Lobby.me(), g = me?.guess;
+  if (round && round.phase !== 'revealed' && g?.t && g.n === round.id && $('#myGuessText').value.trim() !== g.t) {
+    me.guess = null; Lobby.write(`players/${Lobby.uid}/guess`, null);
+  }
+  renderMyGuessState();
+});
 $('#btnMyGuessClear').addEventListener('click', () => { sendMyGuess(); renderMyGuessState(); });
 $('#btnMyGuessShow').addEventListener('click', sendMyGuess);
 const renderMyCardBtn = () => $('#myCardBtn').classList.toggle('hidden', !state.bingo || state.settings.hostPlays === false);

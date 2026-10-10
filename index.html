@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.0.5">
+<link rel="stylesheet" href="css/app.css?v=4.1.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -402,7 +402,14 @@
         </div>
         <div class="group-h">Felder</div>
         <div class="chip-scroll" id="bingoCats"></div>
-        <div class="group-f" style="text-align:center;margin-top:2px">Die aktiven Kategorien – ändern unter Einstellungen → Kategorien.</div>
+        <div class="group-f" style="text-align:center;margin-top:2px" id="bingoCatsNote"></div>
+        <details class="group" id="bingoCatAdd" style="margin-top:10px">
+          <summary class="cell tap accent"><svg class="ic"><use href="#i-plus"/></svg><span class="grow">Eigene Kategorie hinzufügen</span><svg class="ic chev"><use href="#i-chev"/></svg></summary>
+          <div class="cell"><input id="bcName" class="bare" placeholder="Frage, z. B. „Aus welchem Album?“" enterkeyhint="done"></div>
+          <label class="cell"><span class="grow">Auflösung zeigt</span><select id="bcType"></select></label>
+          <label class="cell hidden" id="bcTolRow"><span class="grow">Toleranz (± Jahre)</span><input type="number" id="bcTol" class="bare num" value="5" min="1" max="30" inputmode="numeric"></label>
+          <button class="cell tap accent" id="btnBcAdd"><svg class="ic"><use href="#i-plus"/></svg><span class="grow">Hinzufügen</span></button>
+        </details>
         <button id="btnBingoCreate" class="big full" style="margin-top:20px">Karten erstellen</button>
         <div class="group-f" style="text-align:center;margin-top:12px">Wer die Frage einer Runde richtig beantwortet, markiert auf seiner Karte ein Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = „Bingo!“.</div>
       </div>
@@ -574,12 +581,12 @@
 <div id="toast" role="status" popover="manual"><span id="toastMsg"></span><button id="toastBtn" class="mini hidden"></button></div>
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
-<script src="js/core.js?v=4.0.5"></script>
-<script src="js/spotify.js?v=4.0.5"></script>
-<script src="js/game.js?v=4.0.5"></script>
-<script src="js/lobby.js?v=4.0.5"></script>
-<script src="js/bingo.js?v=4.0.5"></script>
-<script src="js/views.js?v=4.0.5"></script>
-<script src="js/ui.js?v=4.0.5"></script>
+<script src="js/core.js?v=4.1.0"></script>
+<script src="js/spotify.js?v=4.1.0"></script>
+<script src="js/game.js?v=4.1.0"></script>
+<script src="js/lobby.js?v=4.1.0"></script>
+<script src="js/bingo.js?v=4.1.0"></script>
+<script src="js/views.js?v=4.1.0"></script>
+<script src="js/ui.js?v=4.1.0"></script>
 </body>
 </html>

@@ -276,6 +276,8 @@ document.addEventListener('click', async e => {
   const open = t.closest('[data-open]');
   if (open) { const [id, page] = open.dataset.open.split(':'); openSheet(id, page); }
 
+  const bc = t.closest('[data-bcat]');
+  if (bc) { const c = state.cats[+bc.dataset.bcat]; if (c) { c.enabled = !c.enabled; saveCats(); renderBingo(); } }
   const cw = t.closest('[data-check-who]');
   if (cw) {
     checkPlayer = cw.dataset.checkWho === checkPlayer ? null : cw.dataset.checkWho || null;
@@ -471,18 +473,25 @@ $('#setBeep').onchange = e => { state.settings.beep = e.target.checked; saveSett
 $('#setAuto').onchange = e => { state.settings.autoReveal = e.target.checked; saveSettings(); };
 $('#setPause').onchange = e => { state.settings.pauseOnReveal = e.target.checked; saveSettings(); };
 
-$('#newCatType').innerHTML = Object.entries(ANSWER_TYPES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
-$('#newCatType').value = 'none';
-$('#newCatType').onchange = e => $('#tolRow').classList.toggle('hidden', e.target.value !== 'range');
-$('#btnAddCat').onclick = () => {
-  const name = $('#newCatName').value.trim();
-  if (!name) { $('#newCatName').focus(); return toast('Bitte eine Frage eingeben'); }
-  const answer = $('#newCatType').value;
+// Eigene Kategorie anlegen – aus den Einstellungen und beim Bingo-Einrichten (gleiche Felder, andere IDs)
+function addCategory(nameEl, typeEl, tolEl) {
+  const name = nameEl.value.trim();
+  if (!name) { nameEl.focus(); toast('Bitte eine Frage eingeben'); return false; }
+  const answer = typeEl.value;
   const cat = assignStyle({ id: 'c' + Date.now(), name, answer, enabled: true, builtin: false }, state.cats);
-  if (answer === 'range') cat.tol = Math.max(1, parseInt($('#newCatTol').value) || 5);
-  state.cats.push(cat); $('#newCatName').value = ''; $('#newCatName').blur(); saveCats();
+  if (answer === 'range') cat.tol = Math.max(1, parseInt(tolEl.value) || 5);
+  state.cats.push(cat); nameEl.value = ''; nameEl.blur(); saveCats();
   toast('Kategorie hinzugefügt');
-};
+  return true;
+}
+for (const [type, tolRow] of [['#newCatType', '#tolRow'], ['#bcType', '#bcTolRow']]) {
+  $(type).innerHTML = Object.entries(ANSWER_TYPES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  $(type).value = 'none';
+  $(type).onchange = e => $(tolRow).classList.toggle('hidden', e.target.value !== 'range');
+}
+$('#btnBcAdd').onclick = () => { if (addCategory($('#bcName'), $('#bcType'), $('#bcTol'))) renderBingo(); };
+$('#bcName').onkeydown = e => { if (e.key === 'Enter') $('#btnBcAdd').click(); };
+$('#btnAddCat').onclick = () => addCategory($('#newCatName'), $('#newCatType'), $('#newCatTol'));
 $('#btnResetCats').onclick = async () => {
   if (!await ask('Kategorien auf Standard zurücksetzen?\nEigene Kategorien werden gelöscht.', { ok: 'Zurücksetzen', danger: true })) return;
   state.cats = structuredClone(DEFAULT_CATS); saveCats();
