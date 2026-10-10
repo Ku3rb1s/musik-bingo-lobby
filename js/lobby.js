@@ -120,7 +120,9 @@ const Lobby = {
     const [e, c] = catStyle(round.cat), rev = round.phase === 'revealed', t = round.track;
     // ph: p = läuft, c = Countdown (end = Zeitpunkt in ms), r = aufgelöst
     const cd = round.phase === 'countdown' && round.end;
-    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end } : {}),
+    const pv = !rev && lastRevFor(round);   // vorige Runde – solange die laufende nicht aufgelöst ist, darf man sie nachtragen
+    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end } : {}), ...(pv ? { pv } : {}),
+      ...(round.n <= (state.partieFrom || 0) ? { old: 1 } : {}),   // Runde gehört zur vorigen Partie → nicht markierbar
       ...(rev ? { a: plainText(answerFor(round.cat, t)), s: `${t.artists} – ${t.title}`, ...(yearOf(t) ? { y: yearOf(t) } : {}), ...(t.cover ? { cv: t.cover } : {}) } : {}) });
     this.touch();
   },
@@ -182,6 +184,7 @@ function nextGame() {
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   Lobby.clearMarks();
   myRepick = !!Lobby.me();   // auch der Spielleiter darf seine Karte behalten oder neu wählen
+  Lobby.syncRound();
   saveMatch(); renderBingo(); renderMyCardBtn();
   $('#checkBox').innerHTML = '';
   toast(`Partie ${m.game}${m.total ? ' von ' + m.total : ''} – alle können ihre Karte behalten oder neu wählen 🎲`, 6000);

@@ -54,7 +54,7 @@ function render() {
   if (ph === 'revealed') acts.push(`<button class="pill-btn" data-act="fixYear">${ic('pen')}Jahr korrigieren</button>`);
   $('#actionRow').innerHTML = acts.join('');
   renderPlayState(); renderScorebar();
-  myMount?.ctl.setHot(round ? round.cat.id : null);   // eigene Karte: aktuelle Kategorie hervorheben
+  updHostMark();   // eigene Karte: Felder hervorheben, die man gerade markieren darf
 }
 function renderPlayState() {
   const dw = $('#discWrap');
@@ -382,7 +382,7 @@ $('#btnMyPlRefresh').onclick = () => loadMyPlaylists(true);
 $('#csvFile').onchange = async e => { const f = e.target.files[0]; if (f) importCSV(await f.text(), f.name); e.target.value = ''; };
 function resetGame() {
   $('#endScreen').classList.add('hidden');
-  state.played = []; state.history = []; LS.set('played', []); LS.set('history', []);
+  state.played = []; state.history = []; LS.set('played', []); LS.set('history', []); state.lastRev = null; LS.del('lastRev');
   round = null; stopTimer(); clearTimeout(snippetT); renderAll();
   Lobby.syncRound(); Lobby.clearMarks();
   if (state.match) { newMatch(state.match.total); saveMatch(); }

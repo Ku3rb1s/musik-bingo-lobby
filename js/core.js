@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.4.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.5.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -105,6 +105,7 @@ const state = {
   mbArtist: LS.get('mbArtist', {}),   // Künstler laut MusicBrainz: { c: Land (ISO), t: Art (Person/Group/…), g: Geschlecht } – {} = nicht gefunden
   yearFix: LS.get('yearFix', {}),
   history: LS.get('history', []),
+  lastRev: LS.get('lastRev', null),   // zuletzt aufgelöste Runde { id, i, q, n } – darf noch nachgetragen werden
 };
 // Ältere eigene Kategorien (noch ohne eigene Farbe) nachträglich einfärben
 LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)

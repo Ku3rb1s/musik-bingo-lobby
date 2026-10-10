@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.5.0 – 10.10.2026
+- Markieren (Lobby) erst nach der Auflösung – vorher wackelt das Feld mit „Erst nach der Auflösung markieren“, und es leuchtet noch nichts
+- Vergessen zu markieren? Läuft schon der nächste Song, kann man für die zuletzt aufgelöste Runde noch ein Feld nachtragen – bis die neue Runde aufgelöst wird. Die Felder leuchten dann, ein Hinweis unter der Karte sagt es dazu. Gilt auch für den Spielleiter, wenn er mitspielt; nicht über eine neue Partie hinweg
+- Nach „Nächste Partie starten“ lässt sich die noch angezeigte letzte Runde der alten Partie nicht mehr markieren („Neue Partie – markieren geht ab der nächsten Runde“) – vorher zählte so ein Feld fälschlich in der neuen Partie
+
 ## 4.4.0 – 10.10.2026
 - Zwei neue Kategorien mit Antwort von MusicBrainz, von Haus aus ausgeschaltet:
   - „Band oder Solo?“ 👥 – Antwort Band, Solo, Orchester oder Chor (mit „· mit Gast“, wenn Spotify weitere Interpreten nennt)

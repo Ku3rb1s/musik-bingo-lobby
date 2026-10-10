@@ -39,14 +39,36 @@ async function lobbyAlive(f, code) {
   return true;
 }
 
-/* Markier-Regel in der Lobby: pro Runde genau ein Feld, und nur eines der aktuellen Kategorie.
-   Wieder abwählen geht immer – so lässt sich ein Versehen korrigieren. */
-function markGuard(r, lm, cat, adding) {
+/* Markier-Regel in der Lobby: erst nach der Auflösung (dann weiß man, ob der Tipp richtig war), pro Runde genau ein Feld,
+   und nur eines der Kategorie dieser Runde. Läuft schon der nächste Song, darf man die zuletzt aufgelöste Runde noch
+   nachtragen – bis die neue Runde aufgelöst wird. Wieder abwählen geht immer – so lässt sich ein Versehen korrigieren. */
+// r = { key, ph, i, q, pv } (pv = zuletzt aufgelöste Runde { id, i, q, n }), name(i, q) = Kurzname der Kategorie auf der Karte
+// → { key, cat, name, late } | { wait: true } | null
+function markable(r, name) {
+  if (!r) return null;
+  if (r.old) return { wait: true, old: true };   // Runde gehört noch zur vorigen Partie
+  if (r.ph === 'r') return { key: r.key, cat: r.i, name: name(r.i, r.q) };
+  if (r.pv) return { key: r.pv.id, cat: r.pv.i, name: name(r.pv.i, r.pv.q), late: true, n: r.pv.n };
+  return { wait: true };
+}
+function markGuard(m, lm, cat, adding) {
   if (!adding) return null;
-  if (!r) return 'Gerade läuft keine Runde – markieren geht, sobald eine Runde läuft.';
-  if (cat !== r.cat) return `In dieser Runde zählt nur „${r.name}“ – tippe ein leuchtendes Feld an.`;
-  if (lm && lm.n === r.key) return 'Du hast in dieser Runde schon ein Feld markiert. Tippe es nochmal an, um es zu ändern.';
+  if (!m) return 'Gerade läuft keine Runde – markieren geht nach der Auflösung.';
+  if (m.old) return 'Neue Partie – markieren geht ab der nächsten Runde.';
+  if (m.wait) return 'Erst nach der Auflösung markieren – dann weißt du, ob dein Tipp richtig war.';
+  if (cat !== m.cat) return m.late ? `Nachtragen geht nur für die letzte Runde: „${m.name}“ – tippe ein leuchtendes Feld an.`
+    : `In dieser Runde zählt nur „${m.name}“ – tippe ein leuchtendes Feld an.`;
+  if (lm && lm.n === m.key) return 'Du hast für diese Runde schon ein Feld markiert. Tippe es nochmal an, um es zu ändern.';
   return null;
+}
+// Welche Felder leuchten: nach der Auflösung die Kategorie der Runde; beim Nachtragen nur, solange noch nichts markiert ist
+const markHot = (m, lm) => m && !m.wait && !(m.late && lm?.n === m.key) ? m.cat : null;
+// Hinweis unter der Karte
+function markHelp(m, lm) {
+  if (m?.late && lm?.n !== m.key) return `Runde ${m.n} vergessen? „${m.name}“ kannst du noch nachtragen, bis die nächste Runde aufgelöst ist.`;
+  if (m && !m.wait && !m.late) return 'Lag dein Tipp richtig? Tippe ein leuchtendes Feld an – 1 Feld pro Runde.';
+  if (m?.old) return 'Neue Partie – markieren geht ab der nächsten Runde.';
+  return 'Nach der Auflösung: Lag dein Tipp richtig? Dann ein leuchtendes Feld antippen – 1 Feld pro Runde.';
 }
 // Neue „letzte Markierung“ nach einer Änderung: gesetzt → merken, eigenes Feld dieser Runde abgewählt → freigeben
 function nextLm(lm, key, added, removed) {
@@ -166,6 +188,9 @@ async function lobbyMode(code, autoName = null) {
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
+    const curMark = () => curRound && markable({ key: keyOf(curRound), ph: curRound.ph, i: curRound.i, q: curRound.q, pv: curRound.pv, old: curRound.old }, (i, q) => curB?.k.find(k => k.i === i)?.n || q);
+    // Leuchtende Felder und Hinweis an den aktuellen Stand anpassen (neue Runde, Auflösung, eigene Markierung)
+    const updMark = () => { const m = curMark(); hot = markHot(m, me?.lm); card?.setHot(hot); $('#markHelp').textContent = markHelp(m, me?.lm); };
     const mountMine = () => {
       const b = curB; wonSent = null;
       card = mountCard(b, { grid: $('#cardGrid'), no: $('#cardNo'), hits: $('#cardHits'), legend: $('#cardLegend'), clear: $('#btnCardClear') }, (num, initial) => {
@@ -177,15 +202,16 @@ async function lobbyMode(code, autoName = null) {
       }, {
         num: me.num,
         marks: me.g === b.g ? me.marks || [] : [],
-        guard: (i, cat, adding) => markGuard(curRound && { key: keyOf(curRound), cat: curRound.i, name: b.k.find(k => k.i === curRound.i)?.n || curRound.q }, me?.lm, cat, adding),
+        guard: (i, cat, adding) => markGuard(curMark(), me?.lm, cat, adding),
         onChange: (marks, added, removed) => {
-          const lm = nextLm(me?.lm, keyOf(curRound), added, removed);
+          const m = curMark(), lm = nextLm(me?.lm, m && !m.wait ? m.key : null, added, removed);
           if (me) me.lm = lm;   // sofort merken – ein zweiter schneller Tipp wird so auch ohne Server-Antwort abgelehnt
           f.update(meRef, { marks, g: b.g, lm }).catch(e => toast('Sync-Fehler: ' + e.message));
+          updMark();
         },
       });
       mounted = { g: b.g, num: me.num };
-      card.setHot(hot);
+      updMark();
     };
     f.onValue(f.at(`${base}/bingo`), s => {
       const b = s.val();
@@ -212,6 +238,7 @@ async function lobbyMode(code, autoName = null) {
       else if (card && p.g === curB?.g) card.setMarks(p.marks || []);
       if (p.ok && !wasOk) { toast('✅ Der Spielleiter hat dein Bingo bestätigt!', 8000); confetti(); $('#winLobby').textContent = '✅ Der Spielleiter hat dein Bingo bestätigt!'; }
       wasOk = !!p.ok;
+      updMark();
       renderGuesses();
     });
     // Tipps: werden mit „Fertig“ auf der Tastatur (oder beim Verlassen des Felds) abgegeben – nur solange die Runde läuft.
@@ -308,8 +335,8 @@ async function lobbyMode(code, autoName = null) {
         else if (mine?.t && mine.n === keyOf(r) && $('#guessText').value.trim() !== mine.t) { $('#guessText').value = mine.t; LS.set('guess', mine.t); }
         lastKey = keyOf(r);
       }
-      // Karte: Felder der aktuellen Kategorie hervorheben
-      hot = r?.i ?? null; card?.setHot(hot);
+      // Karte: Felder hervorheben, die man gerade markieren darf
+      updMark();
       renderGuesses();
       clearInterval(cdIv); cdIv = null;
       box.classList.toggle('hidden', !r);
@@ -447,15 +474,16 @@ function renderMyCard() {
   }, me ? {
     num: me.num,
     marks: me.g === b.g ? me.marks || [] : [],
-    guard: (i, cat, adding) => markGuard(round && { key: round.id, cat: round.cat.id, name: b.k.find(k => k.i === round.cat.id)?.n || round.cat.name }, Lobby.me()?.lm, cat, adding),
+    guard: (i, cat, adding) => markGuard(hostMark(), Lobby.me()?.lm, cat, adding),
     onChange: (marks, added, removed) => {
-      const cur = Lobby.me(), lm = nextLm(cur?.lm, round?.id, added, removed);
+      const m = hostMark(), cur = Lobby.me(), lm = nextLm(cur?.lm, m && !m.wait ? m.key : null, added, removed);
       if (cur) cur.lm = lm;
       Lobby.write(`players/${Lobby.uid}/marks`, marks); Lobby.write(`players/${Lobby.uid}/g`, b.g); Lobby.write(`players/${Lobby.uid}/lm`, lm);
+      updHostMark();
     },
   } : null);
   myMount = { g: b.g, num: me?.num, ctl };
-  ctl.setHot(round ? round.cat.id : null);
+  updHostMark();
   renderMyGuessState();
 }
 // Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
@@ -464,7 +492,21 @@ function syncMyCard() {
   if (myRepick && me) return;   // Kartenwahl der neuen Partie ist offen – nicht neu würfeln
   if (!b || !myMount || !me || myMount.g !== b.g || myMount.num !== me.num) return renderMyCard();
   myMount.ctl.setMarks(me.g === b.g ? me.marks || [] : []);
+  updHostMark();
   renderMyGuessState();
+}
+// Spielleiter: wie bei den Mitspielern – die zuletzt aufgelöste Runde (state.lastRev) darf nachgetragen werden
+function hostMark() {
+  if (!round) return null;
+  return markable({ key: round.id, ph: round.phase === 'revealed' ? 'r' : 'p', i: round.cat.id, q: round.cat.name, pv: lastRevFor(round), old: round.n <= (state.partieFrom || 0) },
+    (i, q) => state.bingo?.k.find(k => k.i === i)?.n || q);
+}
+// Ohne Lobby gelten keine Regeln: dort leuchtet einfach die Kategorie der Runde
+function updHostMark() {
+  if (!myMount) return;
+  const lobby = !!Lobby.me(), m = lobby ? hostMark() : null;
+  myMount.ctl.setHot(lobby ? markHot(m, Lobby.me()?.lm) : round ? round.cat.id : null);
+  $('#myMarkHelp').textContent = lobby ? markHelp(m, Lobby.me()?.lm) : 'Hast du die Frage einer Runde richtig beantwortet? Dann markiere ein Feld dieser Kategorie – genau wie die Mitspieler.';
 }
 const renderMyGuessState = () => guessState($('#myGuessState'), Lobby.code && round ? { n: round.id, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, Lobby.me()?.guess, $('#myGuessText').value);
 // Tipp des Spielleiters in die Lobby – mit „Fertig“ bzw. beim Verlassen des Felds, nur solange die Runde läuft

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.4.0">
+<link rel="stylesheet" href="css/app.css?v=4.5.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -485,7 +485,7 @@
         <div id="myCardWin" class="check-res won hidden">🎉 BINGO! Ruf es laut – Karte Nr. <span id="myCardWinNo"></span></div>
         <div id="myCardGrid" class="bgrid"></div>
         <div class="chip-scroll" id="myCardLegend"></div>
-        <div class="group-f" style="text-align:center">Hast du die Frage einer Runde richtig beantwortet? Dann markiere ein Feld dieser Kategorie – genau wie die Mitspieler.</div>
+        <div class="group-f" style="text-align:center" id="myMarkHelp">Hast du die Frage einer Runde richtig beantwortet? Dann markiere ein Feld dieser Kategorie – genau wie die Mitspieler.</div>
         </div>
       </div>
     </section>
@@ -525,7 +525,7 @@
     <div id="cardGrid" class="bgrid"></div>
     <p class="small muted card-help" style="margin:6px 2px 10px">Hast du die Frage einer Runde <b>richtig</b> beantwortet? Dann markiere <b>ein</b> Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = <b>BINGO!</b> Ruf es laut und nenn deine Kartennummer.</p>
     <div class="chip-scroll" id="cardLegend"></div>
-    <div class="small muted mark-help">Lag dein Tipp richtig? Tippe ein <b>leuchtendes</b> Feld an – 1 Feld pro Runde.</div>
+    <div class="small muted mark-help" id="markHelp">Nach der Auflösung: Lag dein Tipp richtig? Dann ein leuchtendes Feld antippen – 1 Feld pro Runde.</div>
     <div class="small muted" id="cardLobbyInfo" style="text-align:center;margin-top:8px"></div>
   </div>
   </div>
@@ -585,12 +585,12 @@
 <div id="toast" role="status" popover="manual"><span id="toastMsg"></span><button id="toastBtn" class="mini hidden"></button></div>
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
-<script src="js/core.js?v=4.4.0"></script>
-<script src="js/spotify.js?v=4.4.0"></script>
-<script src="js/game.js?v=4.4.0"></script>
-<script src="js/lobby.js?v=4.4.0"></script>
-<script src="js/bingo.js?v=4.4.0"></script>
-<script src="js/views.js?v=4.4.0"></script>
-<script src="js/ui.js?v=4.4.0"></script>
+<script src="js/core.js?v=4.5.0"></script>
+<script src="js/spotify.js?v=4.5.0"></script>
+<script src="js/game.js?v=4.5.0"></script>
+<script src="js/lobby.js?v=4.5.0"></script>
+<script src="js/bingo.js?v=4.5.0"></script>
+<script src="js/views.js?v=4.5.0"></script>
+<script src="js/ui.js?v=4.5.0"></script>
 </body>
 </html>

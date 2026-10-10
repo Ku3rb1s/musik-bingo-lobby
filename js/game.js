@@ -2,6 +2,8 @@
 'use strict';
 
 /* ---------------- Spielablauf ---------------- */
+// Vorige aufgelöste Runde, die man noch nachtragen darf – nicht die laufende selbst und nicht aus einer früheren Partie
+const lastRevFor = r => { const l = state.lastRev; return l && r && l.id !== r.id && l.n > (state.partieFrom || 0) ? l : null; };
 let timerIv = null;
 function stopTimer() { clearInterval(timerIv); timerIv = null; }
 
@@ -132,6 +134,7 @@ function reveal() {
   const t = round.track;
   state.history.unshift({ n: round.n, cat: round.cat.name, catId: round.cat.id, title: t.title, artists: t.artists, year: yearOf(t), id: t.id });
   state.history = state.history.slice(0, 300); LS.set('history', state.history);
+  state.lastRev = { id: round.id, i: round.cat.id, q: round.cat.name, n: round.n }; LS.set('lastRev', state.lastRev);
   if (state.settings.pauseOnReveal) Player.pause();
   beep(1046, .25);
   render(); renderHist(); Lobby.syncRound();
