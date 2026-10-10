@@ -204,6 +204,7 @@ function renderSettings() {
   renderStatus();
 }
 function renderCats() {
+  $('#catBingoNote').classList.toggle('hidden', !state.bingo);
   $('#catList').innerHTML = state.cats.map((c, i) => `
     <label class="cell">
       <span class="cell-ic" style="background:${catStyle(c)[1]}">${catStyle(c)[0]}</span>
@@ -408,6 +409,7 @@ $('#bingoLobbySeg').onclick = e => {
   const b = e.target.closest('[data-lobby]'); if (!b) return;
   state.settings.lobby = b.dataset.lobby === '1'; LS.set('settings', state.settings); renderBingo();
 };
+$('#setJoker').onchange = e => { state.settings.joker = e.target.checked; LS.set('settings', state.settings); };
 $('#bingoSizeSeg').onclick = e => {
   const b = e.target.closest('[data-size]'); if (!b) return;
   bingoSize = +b.dataset.size; renderBingo();

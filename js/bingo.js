@@ -18,17 +18,17 @@ const shortCat = c => c.builtin && c.answer === 'range' ? `Jahr ± ${c.tol}`
 // Der Karten-Link zeigt immer auf die Online-Adresse – auch wenn die Karten am PC (start.bat) erstellt werden.
 const cardBase = () => location.protocol === 'https:' && !/^(localhost|127\.|\[::1\])/.test(location.hostname) ? REDIRECT : PUBLIC_URL;
 // Kompaktes Format (Zeilen statt JSON), damit der QR-Code nicht zu dicht wird
-const bingoUrl = b => cardBase() + '?b=' + b64u.enc([b.g, b.s, ...b.k.map(k => [k.i, k.c, k.e, k.n].join('|'))].join('\n'));
+const bingoUrl = b => cardBase() + '?b=' + b64u.enc([b.g, b.s + (hasJoker(b) ? 'f' : ''), ...b.k.map(k => [k.i, k.c, k.e, k.n].join('|'))].join('\n'));
 // Mit Lobby genügt der kurze Code – die Karten-Daten kommen live vom Server
 const lobbyUrl = code => cardBase() + '?l=' + code;
 const joinUrl = b => Lobby.code ? lobbyUrl(Lobby.code) : bingoUrl(b);
 const parseBingo = p => {
   const [g, s, ...rest] = b64u.dec(p).split('\n');
-  return { g, s: +s, k: rest.map(x => { const [i, c, e, ...n] = x.split('|'); return { i, c, e, n: n.join('|') }; }) };
+  return { g, s: parseInt(s), ...(/f$/.test(s) ? { f: 1 } : {}), k: rest.map(x => { const [i, c, e, ...n] = x.split('|'); return { i, c, e, n: n.join('|') }; }) };
 };
 function cardFields(b, num) {
   const r = rng(hashStr(b.g + ':' + num));
-  const n = b.s * b.s, free = false, slots = n;   // kein Gratisfeld in der Mitte
+  const n = b.s * b.s, free = hasJoker(b), slots = free ? n - 1 : n;   // Joker: Mitte ist schon frei
   // Kategorien gleichmäßig verteilen, Anordnung je Karte zufällig
   const start = Math.floor(r() * b.k.length);
   const arr = [...Array(slots)].map((_, i) => b.k[(start + i) % b.k.length].i);
@@ -36,6 +36,9 @@ function cardFields(b, num) {
   if (free) arr.splice(Math.floor(n / 2), 0, '*');
   return arr;
 }
+// Joker in der Mitte – nur bei ungerader Größe (3×3, 5×5), 4×4 hat keine Mitte
+const hasJoker = b => !!b?.f && b.s % 2 === 1;
+const fieldCount = b => b.s * b.s - (hasJoker(b) ? 1 : 0);   // Felder zum Markieren
 function bingoLines(s) {
   const L = [];
   for (let i = 0; i < s; i++) { L.push([...Array(s)].map((_, j) => i * s + j)); L.push([...Array(s)].map((_, j) => j * s + i)); }
@@ -43,7 +46,7 @@ function bingoLines(s) {
   return L;
 }
 function bcell(b, f, cls = '', attrs = '') {
-  if (f === '*') return `<div class="bcell free ${cls}" ${attrs}><span class="bi">★</span><span>Frei</span></div>`;
+  if (f === '*') return `<div class="bcell free ${cls}" ${attrs}><span class="bi">★</span><span>Joker</span></div>`;
   const k = b.k.find(x => x.i === f) || { a: 'none', n: '?' };
   const [icon, color] = kStyle(k);
   return `<div class="bcell ${cls}" style="--c:${color}" ${attrs}><span class="bi">${icon}</span><span>${esc(k.n)}</span></div>`;
@@ -54,7 +57,7 @@ let bingoSize = 4;
 function createBingo() {
   const cats = state.cats.filter(c => c.enabled);
   if (cats.length < 2) return toast('Für Bingo braucht es mindestens 2 aktive Kategorien (Einstellungen → Kategorien).', 6000);
-  state.bingo = { g: randStr(6), s: bingoSize, k: cats.map(c => { const [e, col] = catStyle(c); return { i: c.id, c: col.slice(1), e, n: shortCat(c) }; }) };
+  state.bingo = { g: randStr(6), s: bingoSize, ...(state.settings.joker && bingoSize % 2 ? { f: 1 } : {}), k: cats.map(c => { const [e, col] = catStyle(c); return { i: c.id, c: col.slice(1), e, n: shortCat(c) }; }) };
   LS.set('bingo', state.bingo);
   renderLobby(); renderMyCardBtn();
   // Lobby: bestehende bekommt die neuen Karten (alle Handys wechseln automatisch), sonst eine neue öffnen
@@ -86,6 +89,8 @@ async function renderBingo() {
   $('#bingoEndBox').classList.toggle('hidden', !b);
   if (!b) {
     document.querySelectorAll('#bingoSizeSeg button').forEach(x => x.classList.toggle('on', +x.dataset.size === bingoSize));
+    $('#bingoJokerBox').classList.toggle('hidden', bingoSize % 2 === 0);
+    $('#setJoker').checked = !!state.settings.joker;
     $('#bingoLobbyBox').classList.toggle('hidden', !hasFirebase());
     document.querySelectorAll('#bingoLobbySeg button').forEach(x => x.classList.toggle('on', (x.dataset.lobby === '1') === (state.settings.lobby !== false)));
     $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
@@ -98,7 +103,7 @@ async function renderBingo() {
     $('#bingoCatsNote').style.color = on < 2 ? 'var(--warn)' : '';
     return;
   }
-  $('#bingoInfo').innerHTML = `${b.s} × ${b.s} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('')}`;
+  $('#bingoInfo').innerHTML = `${b.s} × ${b.s}${hasJoker(b) ? ' mit Joker' : ''} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('')}`;
   renderCheckWho(); renderMatch();
   document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
   $('#myCardCell').classList.toggle('hidden', state.settings.hostPlays === false);

@@ -79,6 +79,15 @@ const Lobby = {
     }
     renderLobby();
   },
+  async revive() {
+    const code = this.code; if (!code) return;
+    try {
+      const f = await firebase();
+      const alive = (await f.get(f.at(`lobbies/${code}/host`))).exists();
+      if (this.code !== code) return;
+      if (alive) this.touch(); else this.watch();
+    } catch {}
+  },
   stop() { this.unsub?.(); this.unsub = null; this.players = {}; this.code = null; },
   // Lebenszeichen: Lobbys ohne Aktivität seit 24 h darf jeder löschen (siehe database.rules.json)
   touch() {
@@ -223,7 +232,7 @@ function renderLobby() {
     <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false && p.id !== Lobby.uid ? 'opacity:.5' : ''}">
       <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : '·'}</span>
       <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">Karte Nr. ${esc(p.num)}${p.bingo ? (p.ok ? ' · Bingo bestätigt' : ' · ruft BINGO!') : ''}</span></span>
-      <span class="marks">${marksOf(p)} / ${b ? b.s * b.s : '–'}</span>
+      <span class="marks">${marksOf(p)} / ${b ? fieldCount(b) : '–'}</span>
       <span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="Entfernen">${ic('trash')}</span>
     </button>`).join('')
     || `<div class="cell muted">${code ? 'Noch niemand beigetreten.' : 'Noch keine Lobby.'}</div>`;
@@ -232,7 +241,7 @@ function renderLobby() {
     : code ? 'Antippen, um die Karte eines Mitspielers zu prüfen. Markierungen und „Bingo!“ kommen hier live an.'
     : b ? 'Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.'
     : 'Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.';
-  $('#bingoSub').textContent = b ? `${b.s} × ${b.s} Karten · ${b.k.length} Kategorien${code ? ' · antippen zum Einladen' : ''}` : '';
+  $('#bingoSub').textContent = b ? `${b.s} × ${b.s} Karten${hasJoker(b) ? ' mit Joker' : ''} · ${b.k.length} Kategorien${code ? ' · antippen zum Einladen' : ''}` : '';
   renderScorebar(); renderMatch();
 }
 // Leiste auf dem Hauptbildschirm: Mitspieler mit Siegen und ✓, wer für diese Runde fertig getippt hat

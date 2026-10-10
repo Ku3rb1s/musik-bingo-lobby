@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.1.1">
+<link rel="stylesheet" href="css/app.css?v=4.2.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -289,6 +289,7 @@
 
     <section class="page" data-page="cats" data-title="Kategorien">
       <div class="group-f" style="margin-top:12px">Pro Runde wird zufällig eine aktive Kategorie gezogen.</div>
+      <div class="warn hidden" id="catBingoNote">Bingo läuft: Gezogen werden nur Kategorien, die auf den Karten stehen. Neue oder wieder eingeschaltete Kategorien kommen erst mit „Neue Karten erstellen“ (Bingo → Bingo-Einstellungen) aufs Spiel.</div>
       <div class="group icons" id="catList"></div>
       <div class="group-h">Neue Kategorie</div>
       <div class="group">
@@ -378,6 +379,9 @@
           <button data-size="3">3 × 3<small>schnell</small></button>
           <button data-size="4">4 × 4<small>normal</small></button>
           <button data-size="5">5 × 5<small>lang</small></button>
+        </div>
+        <div class="group" id="bingoJokerBox" style="margin-top:10px">
+          <label class="cell"><span class="grow">★ Joker in der Mitte<span class="sub">Das mittlere Feld ist schon frei – Bingo geht schneller</span></span><span class="switch"><input type="checkbox" id="setJoker"><span></span></span></label>
         </div>
         <div id="bingoLobbyBox">
           <div class="group-h">Lobby</div>
@@ -581,12 +585,12 @@
 <div id="toast" role="status" popover="manual"><span id="toastMsg"></span><button id="toastBtn" class="mini hidden"></button></div>
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
-<script src="js/core.js?v=4.1.1"></script>
-<script src="js/spotify.js?v=4.1.1"></script>
-<script src="js/game.js?v=4.1.1"></script>
-<script src="js/lobby.js?v=4.1.1"></script>
-<script src="js/bingo.js?v=4.1.1"></script>
-<script src="js/views.js?v=4.1.1"></script>
-<script src="js/ui.js?v=4.1.1"></script>
+<script src="js/core.js?v=4.2.0"></script>
+<script src="js/spotify.js?v=4.2.0"></script>
+<script src="js/game.js?v=4.2.0"></script>
+<script src="js/lobby.js?v=4.2.0"></script>
+<script src="js/bingo.js?v=4.2.0"></script>
+<script src="js/views.js?v=4.2.0"></script>
+<script src="js/ui.js?v=4.2.0"></script>
 </body>
 </html>

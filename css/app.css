@@ -397,7 +397,8 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .bcell.on::after{content:'✓';position:absolute;top:4px;right:7px;font-size:.95em;font-weight:900}
 .bcell.free{background:linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;border-color:transparent}
 /* Felder der aktuellen Kategorie leuchten, die anderen treten zurück – so sieht man sofort, was man abhaken darf */
-.bgrid.has-hot .bcell:not(.hot):not(.on){opacity:.38;filter:saturate(.55)}
+.bgrid.has-hot .bcell:not(.hot):not(.on):not(.free){opacity:.38;filter:saturate(.55)}
+.bcell.free{cursor:default}
 .bcell.hot:not(.on){box-shadow:0 0 0 3px var(--c),0 0 22px -2px var(--c);animation:hotPulse 1.6s ease-in-out infinite}
 @keyframes hotPulse{50%{box-shadow:0 0 0 3px var(--c),0 0 6px -2px var(--c)}}
 .bcell.line{box-shadow:0 0 0 2.5px #fff inset}
@@ -707,3 +708,7 @@ html.ios .volume,html.ios .hint{display:none}
   .stage.revealed .disc-wrap{width:min(50vw,clamp(96px,calc(100dvh - 760px),200px))}
   .stage.revealed .reveal{margin:12px auto 8px}
 }
+/* Joker-Feld in den Logo-Farben (muss nach dem Glas-Look stehen, der background-image der Felder setzt) */
+.bcell.free{background-color:#ff6a50;background-image:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 60%),linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;border-color:transparent;box-shadow:0 6px 18px -8px #ff3878}
+.bcell.free .bi{font-size:1.6em}
+.bcell.free.line{box-shadow:0 0 0 2.5px #fff inset,0 6px 18px -8px #ff3878}

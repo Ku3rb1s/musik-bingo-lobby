@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.2.0 – 10.10.2026
+- Neu: ★ Joker in der Mitte (Bingo einrichten, bei 3 × 3 und 5 × 5) – das mittlere Feld ist schon frei, Bingo geht schneller. Funktioniert mit und ohne Lobby
+- Behoben: Wurde während eines laufenden Bingos eine Kategorie hinzugefügt oder eingeschaltet, konnte eine Runde eine Kategorie ziehen, die auf keiner Karte steht – niemand konnte markieren. Jetzt werden nur Kategorien gezogen, die auf den Karten stehen; ein Hinweis unter Einstellungen → Kategorien erklärt das
+- Behoben: Lobby am Vortag vorbereitet und App offen gelassen → das nächtliche Aufräumen konnte sie löschen. Beim Zurückkehren in die App wird sie jetzt mit demselben Code neu angelegt (und sonst als aktiv markiert)
+
 ## 4.1.1 – 10.10.2026
 - Eigene Kategorien bekommen ein passendes Symbol zur Frage (z. B. „Aus welchem Album?“ → 💿, „Aus welchem Film?“ → 🎬, „Aus welchem Land?“ → 🌍), sonst passend zur Art der Auflösung; nur wenn nichts passt, ein freies Symbol
 - Auflösung: die Chips „Jahr … · Original“, „1970er“ und „± 3: …“ sind weg – das Jahr steht schon neben dem Interpreten

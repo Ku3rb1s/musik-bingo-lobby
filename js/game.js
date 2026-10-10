@@ -10,9 +10,18 @@ function needSongs() {
   openSheet(state.tok ? 'sheetLib' : 'sheetSettings', state.tok ? 'add' : 'account');
   return true;
 }
+// Welche Kategorien können gezogen werden? Läuft Bingo, nur die auf den Karten (und davon die aktiven) –
+// eine Kategorie, die auf keiner Karte steht, könnte niemand markieren
+function roundCats() {
+  const en = state.cats.filter(c => c.enabled);
+  if (!state.bingo) return en;
+  const onCard = new Set(state.bingo.k.map(k => k.i)), fromCard = state.cats.filter(c => onCard.has(c.id));
+  const both = fromCard.filter(c => c.enabled);
+  return both.length ? both : fromCard.length ? fromCard : en;
+}
 async function nextRound() {
   if (needSongs()) return;
-  const cats = state.cats.filter(c => c.enabled);
+  const cats = roundCats();
   if (!cats.length) return toast('Keine Kategorie aktiv – siehe Einstellungen');
   Player.unlock(); keepScreenOn();
   stopTimer(); clearTimeout(snippetT);
@@ -75,7 +84,7 @@ function cancelSpin() {
 }
 function spinCategory(final) {
   cancelSpin();
-  const cats = state.cats.filter(c => c.enabled);
+  const cats = roundCats();
   const box = $('#cat');
   spinning = true; box.classList.remove('idle'); box.classList.add('spin');
   let i = Math.floor(Math.random() * cats.length);
