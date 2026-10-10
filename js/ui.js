@@ -298,14 +298,14 @@ document.addEventListener('click', async e => {
     const m = state.match;
     const open = pendingCallers(conf.dataset.confirm).length;
     conf.outerHTML = '<span class="chip-btn on">✓ Bingo bestätigt</span>' +
-      (!m || !Lobby.code ? '' : open ? `<div class="small" style="width:100%;text-align:center;margin-top:8px">Noch ${open} weitere${open === 1 ? 'r' : ''} Bingo-Ruf${open === 1 ? '' : 'e'} offen – siehe unten</div>`
+      (!m || !Lobby.code ? '' : open ? `<div class="small" style="width:100%;text-align:center;margin-top:8px">Noch ${open} weitere${open === 1 ? 'r' : ''} Bingo-Ruf${open === 1 ? '' : 'e'} offen</div>`
         : m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : '<button class="big" data-next-game style="width:100%;margin-top:8px">Nächste Partie starten</button>');
   }
   if (t.closest('[data-next-game]')) { nextGame(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
   if (t.closest('[data-end-close]')) $('#endScreen').classList.add('hidden');
   if (t.closest('[data-end-stop]')) { $('#endScreen').classList.add('hidden'); $('#btnBingoOff').click(); }
   if (t.closest('[data-end-leave]')) { if (leaveLobby) leaveLobby(); else location.replace(location.pathname + '?join'); }
-  if (t.closest('[data-new-match]') && await ask('Neues Spiel?\nAlle Siege werden zurückgesetzt, alle bekommen neue Karten.', { ok: 'Neues Spiel' })) {
+  if (t.closest('[data-new-match]') && await ask('Nochmal spielen?\nAlle Siege werden auf 0 gesetzt, es geht mit Partie 1 los. Jeder kann seine Karte behalten oder eine neue wählen.', { ok: 'Nochmal spielen' })) {
     newMatch(); state.match.game = 0; state.match.over = false; nextGame();
     $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());
   }
@@ -338,7 +338,7 @@ document.addEventListener('change', e => {
   if (tg) { state.cats[+tg.dataset.catToggle].enabled = tg.checked; saveCats(); }
 });
 document.addEventListener('keydown', e => {
-  if (document.querySelector('dialog[open]') || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if (document.querySelector('dialog[open]') || !$('#endScreen').classList.contains('hidden') || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
     e.preventDefault(); setVolume(state.settings.volume + (e.code === 'ArrowUp' ? 5 : -5)); return;
   }
@@ -389,7 +389,7 @@ function resetGame() {
   if (state.match) { newMatch(); saveMatch(); }
 }
 async function askNewGame() {
-  if (state.history.length && !await ask(`Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.${state.bingo ? Lobby.code ? '\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht.' : '\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.' : ''}`, { ok: 'Neues Spiel' })) return;
+  if (state.history.length && !await ask(`Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.${state.bingo ? Lobby.code ? '\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.' : '\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.' : ''}`, { ok: 'Neues Spiel' })) return;
   resetGame(); Player.pause();
   document.querySelectorAll('dialog[open]').forEach(d => d.close());
   toast('Neues Spiel – tipp auf „Spiel starten“ 🎉');
@@ -423,7 +423,7 @@ $('#btnBingoNew').onclick = async () => {
   bingoSize = state.bingo?.s || bingoSize; createBingo();
 };
 $('#btnBingoOff').onclick = async () => {
-  if (!await ask(Lobby.code ? 'Bingo beenden?\nDie Lobby wird geschlossen.' : 'Bingo beenden?', { ok: 'Beenden', danger: true })) return;
+  if (!await ask(Lobby.code ? 'Bingo beenden?\nDie Lobby wird geschlossen – alle Mitspieler kommen zurück zur Code-Eingabe.' : 'Bingo beenden?', { ok: 'Beenden', danger: true })) return;
   Lobby.close();
   state.bingo = null; LS.del('bingo'); renderBingo(); renderLobby(); renderMyCardBtn();
   goPage($('#sheetGame'), 'main', true);

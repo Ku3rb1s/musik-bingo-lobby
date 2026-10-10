@@ -164,14 +164,14 @@ async function lobbyMode(code, autoName = null) {
     });
     // Alle Zustände zuerst anlegen: Firebase kann Rückmeldungen aus dem Zwischenspeicher sofort liefern
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
-    let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false;
+    let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const mountMine = () => {
       const b = curB; wonSent = null;
       card = mountCard(b, { grid: $('#cardGrid'), no: $('#cardNo'), hits: $('#cardHits'), legend: $('#cardLegend'), clear: $('#btnCardClear') }, (num, initial) => {
         const won = num != null;
         if (won) $('#winNo').textContent = num;
-        if (won && !initial) { confetti(); $('#winLobby').textContent = 'Der Spielleiter hat dein Bingo gesehen und prüft es gleich.'; $('#bingoWin').classList.remove('hidden'); }
+        if (won && !initial) { confetti(); $('#winLobby').textContent = 'Der Spielleiter hat dein Bingo bekommen und prüft gleich deine Karte.'; $('#bingoWin').classList.remove('hidden'); }
         if (!won) $('#bingoWin').classList.add('hidden');   // Markierungen weg (neue Partie) → Bingo-Bildschirm zu
         if (wonSent !== won) { wonSent = won; f.update(meRef, { bingo: won ? f.serverTimestamp() : null, ...(won ? {} : { ok: null }) }).catch(() => {}); }
       }, {
@@ -259,7 +259,7 @@ async function lobbyMode(code, autoName = null) {
       m.wins ??= {}; m.names ??= {}; m.won ??= []; m.tips ??= {};
       box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
       if (lastGame !== null && !m.over && (m.game !== lastGame || lastOver)) showRepick(m);
-      if (m.over) showEnd(m, '<button class="big" data-end-leave>Zurück zur Lobby-Auswahl</button><button class="ghost" data-end-close>Hier bleiben</button>');
+      if (m.over) showEnd(m, '<button class="big" data-end-leave>Lobby verlassen</button><button class="ghost" data-end-close>Hier bleiben</button>');
       else $('#endScreen').classList.add('hidden');
       lastGame = m.game; lastOver = !!m.over;
     });
@@ -289,11 +289,17 @@ async function lobbyMode(code, autoName = null) {
       // Karte: Felder der aktuellen Kategorie hervorheben
       hot = r?.i ?? null; card?.setHot(hot);
       renderGuesses();
+      clearInterval(cdIv); cdIv = null;
       box.classList.toggle('hidden', !r);
       if (!r) return;
       box.style.borderColor = r.c;
-      box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div><div class="rl-k">Runde ${esc(r.n)}${r.ph === 'r' ? ' · aufgelöst' : ' · läuft'}</div>
+      const cd = r.ph === 'c' && r.end;
+      box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div><div class="rl-k">Runde ${esc(r.n)}${r.ph === 'r' ? ' · aufgelöst' : cd ? ' · noch <b class="rl-cd"></b> s' : ' · läuft'}</div>
         <div class="rl-n">${esc(r.q)}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(r.a)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>`;
+      if (cd) {
+        const tick = () => { const sec = Math.max(0, Math.ceil((r.end - Date.now()) / 1000)), el = box.querySelector('.rl-cd'); if (el) el.textContent = sec; if (!sec) { clearInterval(cdIv); cdIv = null; } };
+        tick(); cdIv = setInterval(tick, 250);
+      }
     });
   };
 
@@ -415,7 +421,7 @@ function renderMyCard() {
     if (num != null) { $('#myCardWinNo').textContent = num; if (!initial) { confetti(); beep(1046, .3); } }
     // Bingo auch in der Lobby anzeigen (wie bei den Mitspielern)
     const won = num != null;
-    if (me && wonSent !== won) { wonSent = won; Lobby.write(`players/${Lobby.uid}/bingo`, won ? Date.now() : null); }
+    if (me && wonSent !== won) { wonSent = won; Lobby.write(`players/${Lobby.uid}/bingo`, won ? Date.now() : null); if (!won) Lobby.write(`players/${Lobby.uid}/ok`, null); }
   }, me ? {
     num: me.num,
     marks: me.g === b.g ? me.marks || [] : [],

@@ -2,6 +2,19 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.0.3 – 10.10.2026
+- Behoben: Findet die App das Originaljahr (MusicBrainz) erst nach der Auflösung, bekamen Handys und Fernseher noch das falsche Jahr als Lösung – jetzt wird es nachgereicht (ebenso ein nachgeladenes Cover für den Fernseher)
+- Countdown läuft jetzt auch auf den Handys der Mitspieler mit („Runde 3 · noch 12 s“)
+- Leertaste & Co. starten keine neue Runde mehr hinter dem Spielende-Bildschirm
+- Spielleiter-Karte: wird ein Bingo wieder abgewählt, verschwindet auch die Bestätigung (wie bei den Mitspielern)
+- Texte klarer:
+  - „Neues Spiel (Siege zurücksetzen)“ heißt jetzt „Nochmal spielen (Siege auf 0)“ – die Rückfrage behauptete fälschlich neue Karten
+  - „Neues Spiel“ sagt dazu, dass mit Lobby auch Siege und Partien zurückgesetzt werden
+  - Erklärung der Partien: Karten bleiben, Markierungen werden gelöscht, Karte behalten oder neu wählen
+  - „Bingo beenden“ sagt, dass die Mitspieler zur Code-Eingabe zurückkommen
+  - Mitspieler: „Lobby verlassen“ statt „Zurück zur Lobby-Auswahl“
+- Leere „Karte Nr.“ oben wird beim Beitreten nicht mehr angezeigt
+
 ## 4.0.2 – 10.10.2026
 - Alte Lobbys werden jetzt täglich automatisch gelöscht (GitHub Action „Alte Lobbys aufräumen“, 24 h ohne Aktivität) – über ein eigenes Firebase-Konto, das nur die Datenbank verwalten darf
 - Fehlerbehebungen nach Durchsicht:

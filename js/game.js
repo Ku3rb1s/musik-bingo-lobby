@@ -164,7 +164,7 @@ async function loadCover(t) {
   try {
     const r = await fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent('https://open.spotify.com/track/' + t.id));
     const j = await r.json();
-    if (j.thumbnail_url) { t.cover = j.thumbnail_url; LS.set('tracks', state.tracks); if (round?.track === t && round.phase === 'revealed') renderReveal(); }
+    if (j.thumbnail_url) { t.cover = j.thumbnail_url; LS.set('tracks', state.tracks); if (round?.track === t && round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } }
   } catch {}
 }
 
@@ -209,7 +209,7 @@ function mbLookup(t) {
         if (round.phase === 'revealed') {
           const h = state.history.find(x => x.id === t.id && x.n === round.n);
           if (h && state.yearFix[t.id] == null) { h.year = yearOf(t); LS.set('history', state.history); renderHist(); }
-          renderReveal();
+          renderReveal(); Lobby.syncRound();   // Handys und Fernseher bekommen das richtige Jahr
         }
       }
     } catch { /* offline o. ä. – beim nächsten Mal erneut versuchen */ }

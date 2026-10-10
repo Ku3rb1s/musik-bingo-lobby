@@ -239,7 +239,7 @@ function showEndHost() {
   if (!state.match?.over) return;
   // Beim ersten Mal: Song ausblenden, Menüs schließen. Danach (weiterer Sieger) nur die Anzeige aktualisieren.
   if (!endShown) { endShown = true; Player.fadeOut(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
-  showEnd(state.match, '<button class="big" data-new-match>Neues Spiel (Siege zurücksetzen)</button>' +
+  showEnd(state.match, '<button class="big" data-new-match>Nochmal spielen (Siege auf 0)</button>' +
     '<button class="ghost" data-end-stop>Bingo beenden</button><button class="ghost" data-end-close>Schließen</button>');
 }
 function confetti() {

@@ -165,7 +165,7 @@ function saveMatch() {
   if (Lobby.code) Lobby.write('match', state.match);
   renderMatch(); renderLobby();
 }
-// Nächste Partie: neue Karten für alle (gleiche Größe/Felder), Markierungen weg, Prüfung zählt nur neue Runden
+// Nächste Partie: gleiche Karten, Markierungen weg (jeder darf seine Karte behalten oder neu wählen), Prüfung zählt nur neue Runden
 function nextGame() {
   const m = state.match; if (!m || m.over || !state.bingo) return;
   m.game++; m.won = [];
@@ -195,7 +195,7 @@ function renderMatch() {
   $('#matchMain').classList.toggle('hidden', !on);
   if (!on) return;
   const action = m.over
-    ? `<div class="mc-h" style="margin-top:6px">${esc(matchWinner(m))}</div><button class="ghost" data-new-match style="margin-top:10px">Neues Spiel (Siege zurücksetzen)</button>`
+    ? `<div class="mc-h" style="margin-top:6px">${esc(matchWinner(m))}</div><button class="ghost" data-new-match style="margin-top:10px">Nochmal spielen (Siege auf 0)</button>`
     : m.won.length
       ? `<div class="small" style="margin:4px 0 8px">Gewonnen: ${m.won.map(id => esc(m.names[id] || '?')).join(', ')}</div><button class="big" data-next-game>Nächste Partie starten</button>`
       : '<div class="group-f" style="margin:4px 0 0;text-align:center">Ruft jemand Bingo, prüfst du es unter „Bingo prüfen“ – nach dem Bestätigen geht es mit der nächsten Partie weiter.</div>';
