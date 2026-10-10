@@ -2,6 +2,19 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.2.2 – 10.10.2026
+Fehlerbehebungen nach kompletter Code-Durchsicht:
+- Übersprungene Runden: Tipps werden jetzt über eine eindeutige Runden-ID zugeordnet – ein Tipp aus einer übersprungenen Runde gilt nicht mehr für die nächste, das Tipp-Feld wird geleert; bei „Rückgängig“ kommt der Tipp zurück
+- Rundennummer zählt auch nach 300 Runden korrekt weiter (wichtig für die Partie-Prüfung)
+- Platte antippen ohne laufende Runde (z. B. nach dem Neuladen) spielt weiter, statt Verlauf, Siege und Markierungen zu löschen
+- Mehrere Gewinner in der letzten Partie bekommen alle ihren Sieg
+- Bestätigen eines inzwischen entfernten Spielers gibt einen Hinweis statt eines Sync-Fehlers
+- Pause/Play: schlägt der Befehl fehl, zeigt die Platte nicht mehr den falschen Zustand
+- Mitspieler: „Bingo bestätigt“-Meldung kommt nach dem Neuladen nicht erneut; gespeicherter Tipp steht nach dem Neuladen wieder im Feld
+- Live-Updates der Mitspieler bauen beim Spielleiter nicht mehr die ganze Knopfleiste neu auf (keine verschluckten Klicks)
+- „Alle Songs entfernen“ nimmt die Runde auch bei den Mitspielern weg
+- Kleinigkeiten: zwei Rückfragen gleichzeitig, Browser-Player nach dem Abmelden
+
 ## 3.2.1 – 10.10.2026
 - „Bingo prüfen“: Hat die App Bedenken (z. B. nicht genug passende Runden gespielt), gibt es den Knopf „Trotzdem bestätigen“ – mit Rückfrage, ob man wirklich bestätigen möchte
 

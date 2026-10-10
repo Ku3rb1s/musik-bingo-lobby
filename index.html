@@ -1199,7 +1199,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '3.2.1', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.2.2', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -1337,6 +1337,7 @@ document.addEventListener('visibilitychange', () => {
 // Eigener Ersatz für confirm()/prompt() – manche Browser blockieren die nativen Dialoge.
 function ask(msg, { input = null, ok = 'OK', danger = false } = {}) {
   const d = $('#dlgAsk'), inp = $('#askInput');
+  if (d.open) d.close();   // eine noch offene Frage gilt als „Abbrechen“
   $('#askMsg').textContent = msg; $('#askOk').textContent = ok;
   $('#askOk').classList.toggle('danger', danger);
   inp.classList.toggle('hidden', input == null); inp.value = input ?? '';
@@ -1500,7 +1501,7 @@ async function logout() {
   if (!await ask('Von Spotify abmelden?\nDeine Songs bleiben gespeichert.', { ok: 'Abmelden', danger: true })) return;
   await Player.reset();
   try { Player.sdk?.disconnect(); } catch {}
-  Player.sdk = null; Player.sdkReady = null;
+  Player.sdk = null; Player.sdkReady = null; Player.deviceId = null;
   state.tok = null; state.me = null; LS.del('tok'); LS.del('me');
   myPlaylists = null;
   renderAll(); renderAccount();
@@ -1964,8 +1965,8 @@ const Player = {
         this.playing = play;
       } else { this.embed?.togglePlay(); this.playing = !this.playing; }
     } catch (e) {
-      if (this.mode === 'connect') { if (e.status === 404) return offerSpotifyWake('Spotify ist gerade nicht erreichbar.'); toast(e.message); }
-      else this.playing = !this.playing;
+      if (this.mode === 'connect' && e.status === 404) return offerSpotifyWake('Spotify ist gerade nicht erreichbar.');
+      toast('Wiedergabe-Fehler: ' + e.message);
     }
     renderPlayState();
   },
@@ -2016,7 +2017,8 @@ async function nextRound() {
   const track = pool[Math.floor(Math.random() * pool.length)];
   const cat = cats[Math.floor(Math.random() * cats.length)];
   state.played.push(track.id); LS.set('played', state.played);
-  round = { n: state.history.length + 1, track, cat, phase: 'playing', hints: 0, pos: Player.startMs(track) };
+  // n = Anzeige (übersprungene Runden behalten die Nummer), id = eindeutig – daran hängen die Tipps in der Lobby
+  round = { n: (state.history[0]?.n || 0) + 1, id: Date.now(), track, cat, phase: 'playing', hints: 0, pos: Player.startMs(track) };
   mbLookup(track);
   spinCategory(cat);
   render(); Lobby.syncRound();
@@ -2298,7 +2300,7 @@ const Lobby = {
         first = false;
         renderLobby();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'check') renderCheckWho();
-        if (round && !spinning) round.phase === 'revealed' ? renderGuessList() : render();   // Tipps der Mitspieler
+        if (round) round.phase === 'revealed' ? renderGuessList() : renderGuessPill();   // Tipps der Mitspieler
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
       }, e => toast('Lobby: ' + e.message, 6000));
       this.syncRound();
@@ -2326,13 +2328,16 @@ const Lobby = {
   // Aktuelle Runde an die Handys: Kategorie während des Songs, nach der Auflösung auch die Lösung
   syncRound() {
     if (!this.code) return;
-    if (round && this.me() && this.lastN !== round.n) {
-      if (this.lastN != null) { $('#myGuessText').value = ''; LS.set('guess', ''); }
-      this.lastN = round.n;
+    // Neue Runde → Tipp des Spielleiters leeren; bei „Rückgängig“ den Tipp dieser Runde zurückholen
+    if (round && this.me() && round.id !== this.lastId) {
+      const mine = this.me().guess;
+      if (this.lastId && round.id > this.lastId) { $('#myGuessText').value = ''; LS.set('guess', ''); }
+      else if (mine?.t && mine.n === round.id) { $('#myGuessText').value = mine.t; LS.set('guess', mine.t); }
+      this.lastId = round.id;
     }
     if (!round) return this.write('round', null);
     const [e, c] = catStyle(round.cat), rev = round.phase === 'revealed', t = round.track;
-    this.write('round', { n: round.n, q: round.cat.name, e, c, ph: rev ? 'r' : 'p',
+    this.write('round', { n: round.n, id: round.id, q: round.cat.name, e, c, ph: rev ? 'r' : 'p',
       ...(rev ? { a: plainText(answerFor(round.cat, t)), s: `${t.artists} – ${t.title}` } : {}) });
   },
   close() {
@@ -2343,8 +2348,10 @@ const Lobby = {
   // Bingo bestätigen: Spieler bekommt die Bestätigung aufs Handy, der Sieg wird für die Lobby gezählt
   confirm(id) {
     const p = whoById(id);
+    if (!p) return toast('Dieser Spieler ist nicht mehr in der Lobby');
     if (id !== HOST_ID) this.write(`players/${id}/ok`, true);
-    const m = state.match; if (!m || m.over || !p) return;
+    // Auch nach dem Ende zählen: haben mehrere gleichzeitig in der letzten Partie Bingo, bekommt jeder seinen Sieg
+    const m = state.match; if (!m) return;
     if (!m.won.includes(id)) { m.won.push(id); m.wins[id] = (m.wins[id] || 0) + 1; m.names[id] = p.name; }
     if (m.total && m.game >= m.total) m.over = true;
     saveMatch();
@@ -2857,7 +2864,7 @@ async function lobbyMode(code, autoName = null) {
       if (fresh) toast('Neue Karten – deine Karte wurde neu gemischt', 6000);
     });
     // Eigener Eintrag: Spielleiter setzt Markierungen zurück, bestätigt das Bingo oder entfernt einen
-    let wasOk = false;
+    let wasOk = !!me?.ok;   // schon bestätigt → nach dem Neuladen nicht nochmal melden
     f.onValue(meRef, s => {
       const p = s.val();
       if (!p) {      // entfernt → wieder zum Beitreten
@@ -2871,22 +2878,23 @@ async function lobbyMode(code, autoName = null) {
     });
     // Tipps: werden beim Tippen automatisch abgegeben (nur solange die Runde läuft).
     // Die anderen sehen erst nach dem Auflösen, was getippt wurde – vorher nur, wer schon getippt hat.
-    let curRound = null, lastN = null, allPlayers = {}, guessT;
+    let curRound = null, lastKey = null, allPlayers = {}, guessT;
+    const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const sendGuess = () => {
       if (!curRound || curRound.ph !== 'p') return;
       const t = $('#guessText').value.trim().slice(0, 80);
-      f.update(meRef, { guess: t ? { t, n: curRound.n } : null }).catch(() => {});
+      f.update(meRef, { guess: t ? { t, n: keyOf(curRound) } : null }).catch(() => {});
     };
     $('#guessText').addEventListener('input', () => { clearTimeout(guessT); guessT = setTimeout(sendGuess, 600); });
     $('#btnGuessClear').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
     $('#btnGuessShow').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
     const renderGuesses = () => {
       const box = $('#guessLive'), r = curRound;
-      guessState($('#plGuessState'), r, allPlayers[f.uid]?.guess);
+      guessState($('#plGuessState'), r && { n: keyOf(r), ph: r.ph }, allPlayers[f.uid]?.guess);
       const list = Object.entries(allPlayers).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
       box.classList.toggle('hidden', !r || list.length < 2);
       if (!r || list.length < 2) return;
-      const has = p => p.guess?.n === r.n && p.guess.t;
+      const has = p => p.guess?.n === keyOf(r) && p.guess.t;
       box.innerHTML = r.ph === 'r'
         ? list.map(p => `<span class="${has(p) ? 'ok' : ''}"><b>${esc(p.name)}${p.id === f.uid ? ' (du)' : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
         : `<span>💬 Tipps: ${list.filter(has).length} / ${list.length}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
@@ -2904,10 +2912,13 @@ async function lobbyMode(code, autoName = null) {
     f.onValue(f.at(`${base}/round`), s => {
       const r = s.val(), box = $('#roundLive');
       curRound = r;
-      // Neue Runde → alter Tipp weg
-      if (r && r.n !== lastN) {
-        if (lastN !== null) { $('#guessText').value = ''; LS.set('guess', ''); }
-        lastN = r.n;
+      // Neue Runde → alter Tipp weg. Macht der Spielleiter ein Überspringen rückgängig, kommt der Tipp dieser Runde zurück.
+      if (r && keyOf(r) !== lastKey) {
+        const mine = me?.guess;
+        if (lastKey !== null && keyOf(r) > lastKey) { $('#guessText').value = ''; LS.set('guess', ''); }
+        // Gespeicherter Tipp dieser Runde (nach „Rückgängig“ oder Neuladen) gehört ins Feld
+        else if (mine?.t && mine.n === keyOf(r) && $('#guessText').value.trim() !== mine.t) { $('#guessText').value = mine.t; LS.set('guess', mine.t); }
+        lastKey = keyOf(r);
       }
       renderGuesses();
       box.classList.toggle('hidden', !r);
@@ -2921,7 +2932,6 @@ async function lobbyMode(code, autoName = null) {
   if (me?.name) return start();
   $('#joinName').value = LS.get('name', '');
   btn.disabled = false; msg('Gib deinen Namen ein, dann bekommst du deine Bingo-Karte.');
-  // Nach dem Namen: 5 Karten zur Auswahl (Nummern, die in der Lobby noch frei sind)
   // Nach dem Namen: Karte aussuchen (eine Karte, „Andere Karte zeigen“ würfelt eine neue freie Nummer)
   const showPicker = async name => {
     btn.disabled = true;
@@ -2984,14 +2994,14 @@ function renderMyCard() {
     onChange: marks => { Lobby.write(`players/${Lobby.uid}/marks`, marks); Lobby.write(`players/${Lobby.uid}/g`, b.g); },
   } : null);
   myMount = { g: b.g, num: me?.num, ctl };
-  guessState($('#myGuessState'), Lobby.code && round ? { n: round.n, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me?.guess);
+  guessState($('#myGuessState'), Lobby.code && round ? { n: round.id, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me?.guess);
 }
 // Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
 function syncMyCard() {
   const me = Lobby.me(), b = state.bingo;
   if (!b || !myMount || !me || myMount.g !== b.g || myMount.num !== me.num) return renderMyCard();
   myMount.ctl.setMarks(me.g === b.g ? me.marks || [] : []);
-  guessState($('#myGuessState'), round ? { n: round.n, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me.guess);
+  guessState($('#myGuessState'), round ? { n: round.id, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me.guess);
 }
 // Tipp des Spielleiters in die Lobby (nur solange die Runde läuft)
 let myGuessT;
@@ -3001,7 +3011,7 @@ $('#myGuessText').addEventListener('input', () => {
   myGuessT = setTimeout(() => {
     if (!Lobby.me() || !round || round.phase === 'revealed') return;
     const t = $('#myGuessText').value.trim().slice(0, 80);
-    Lobby.write(`players/${Lobby.uid}/guess`, t ? { t, n: round.n } : null);
+    Lobby.write(`players/${Lobby.uid}/guess`, t ? { t, n: round.id } : null);
   }, 600);
 });
 const renderMyCardBtn = () => $('#myCardBtn').classList.toggle('hidden', !state.bingo || state.settings.hostPlays === false);
@@ -3057,7 +3067,7 @@ function render() {
     acts.push(`<button class="pill-btn" data-act="next">${ic('skip')}Überspringen</button>`);
     // Lobby: wie viele Mitspieler schon einen Tipp abgegeben haben (Inhalt erst nach dem Auflösen)
     const pl = Lobby.code ? lobbyList().length : 0;
-    if (pl) acts.push(`<span class="pill">💬 ${guessesFor(round.n).length} / ${pl} Tipps</span>`);
+    if (pl) acts.push(`<span class="pill" id="guessPill">💬 ${guessesFor(round.id).length} / ${pl} Tipps</span>`);
   }
   if (ph === 'revealed') acts.push(`<button class="pill-btn" data-act="fixYear">${ic('pen')}Jahr korrigieren</button>`);
   $('#actionRow').innerHTML = acts.join('');
@@ -3080,7 +3090,8 @@ function renderPlayState() {
 let peekT;
 // Platte antippen: Musik pausieren/fortsetzen bzw. Ausschnitt nochmal spielen
 function discTap() {
-  if (!round) { if (state.tracks.length) { resetGame(); nextRound(); } return; }
+  // Keine Runde aktiv (z. B. nach dem Neuladen): weiterspielen – nur ganz am Anfang ein frisches Spiel
+  if (!round) { if (state.tracks.length) { if (!state.history.length) resetGame(); nextRound(); } return; }
   // Ausschnitt vorbei oder noch nie erfolgreich gestartet (z. B. Spotify schlief) → neu abspielen
   if ((round.snippetDone && round.phase !== 'revealed') || !Player.mode) playSnippet();
   else Player.toggle();
@@ -3088,11 +3099,16 @@ function discTap() {
   dw.classList.remove('tapped'); void dw.offsetWidth; dw.classList.add('tapped');
   try { navigator.vibrate?.(10); } catch {}
 }
-// Tipps, die Mitspieler in der Lobby für diese Runde abgegeben haben
-const guessesFor = n => lobbyList().filter(p => p.guess?.n === n && p.guess.t);
+// Tipps, die Mitspieler in der Lobby für diese Runde (round.id) abgegeben haben
+const guessesFor = id => lobbyList().filter(p => p.guess?.n === id && p.guess.t);
+// Nur die Tipp-Anzeige aktualisieren (nicht die ganze Knopfleiste – sonst gehen Klicks verloren)
+function renderGuessPill() {
+  const el = $('#guessPill'); if (!el || !round) return;
+  el.textContent = `💬 ${guessesFor(round.id).length} / ${lobbyList().length} Tipps`;
+}
 function renderGuessList() {
   const el = $('#guessHost'); if (!el || !round) return;
-  const list = Lobby.code ? lobbyList() : [], got = guessesFor(round.n);
+  const list = Lobby.code ? lobbyList() : [], got = guessesFor(round.id);
   el.classList.toggle('hidden', !list.length);
   el.innerHTML = `<div class="gl-h">Tipps der Mitspieler · ${got.length} / ${list.length}</div>` +
     (got.map(p => `<div><b>${esc(p.name)}:</b> ${esc(p.guess.t)}</div>`).join('') || '<div class="muted">Niemand hat getippt</div>');
@@ -3447,7 +3463,7 @@ applyTheme();
 $('#btnClearLib').onclick = async () => {
   if (!await ask('Alle Songs und Playlists aus dem Spiel entfernen?', { ok: 'Entfernen', danger: true })) return;
   state.tracks = []; state.sources = []; state.played = []; saveLib();
-  round = null; stopTimer(); Player.pause(); renderAll(); renderMyPlaylists();
+  round = null; stopTimer(); Player.pause(); renderAll(); renderMyPlaylists(); Lobby.syncRound();
 };
 
 $('#setSec').oninput = e => { state.settings.seconds = +e.target.value; fillRange(e.target); $('#secVal').textContent = e.target.value + ' s'; saveSettings(); };
