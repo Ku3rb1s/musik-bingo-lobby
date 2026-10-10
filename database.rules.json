@@ -3,7 +3,7 @@
     "lobbies": {
       "$code": {
         ".read": "auth != null",
-        ".write": "auth != null && (!data.exists() || data.child('host').val() === auth.uid)",
+        ".write": "auth != null && (!data.exists() || data.child('host').val() === auth.uid || (!newData.exists() && (data.child('act').exists() ? data.child('act').val() : data.child('created').val()) < now - 86400000))",
         ".validate": "$code.matches(/^[A-Z0-9]{4,8}$/) && (!newData.exists() || newData.child('host').val() === auth.uid || newData.child('host').val() === data.child('host').val())",
         "players": {
           "$uid": {
@@ -38,6 +38,9 @@
             },
             "guess": {
               ".validate": "newData.hasChildren(['t', 'n']) && newData.child('t').isString() && newData.child('t').val().length <= 80 && newData.child('n').isNumber()"
+            },
+            "lm": {
+              ".validate": "newData.hasChildren(['n', 'i']) && newData.child('n').isNumber() && newData.child('i').isNumber()"
             }
           }
         }

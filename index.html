@@ -320,6 +320,44 @@ button.cell{transform:none!important;filter:none!important}
 .join-box{padding:22px 18px;text-align:center}
 .join-box h3{margin:6px 0 4px;font-size:1.35rem}
 /* Kartenauswahl beim Beitreten: kleine Vorschau nur mit Symbolen */
+/* Markieren nach Regeln: falsches Feld wackelt kurz */
+.bcell.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.mark-help{display:none;text-align:center;margin-top:8px}
+body.lobby-mode .mark-help{display:block}
+.tv-hint{text-align:center;margin-top:26px;opacity:.7}
+.tv-hint a{color:var(--muted)}
+/* Statistik am Spielende */
+.end-stats{display:flex;flex-direction:column;gap:6px;margin-top:14px;font-size:1rem}
+.end-stats div{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:.5em .9em}
+/* Fernseher-Ansicht: großer Bildschirm, alles live, nichts zum Bedienen */
+body.tv-mode>header,body.tv-mode>main{display:none}
+#tvApp{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:3vw;padding:3vw;min-height:100dvh;align-items:start}
+#tvApp.hidden{display:none}
+.tv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2vw}
+.tv-top .logo{font-size:2vw}
+.tv-top .logo img{width:3vw;height:3vw;min-width:32px;min-height:32px}
+.tv-top .pill{font-size:1.3vw;padding:.4em 1em}
+.tv-round{padding:3vw;text-align:center;min-height:60vh;display:flex;flex-direction:column;justify-content:center;gap:1.4vw}
+.tv-k{font-size:1.4vw;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+.tv-cat{font-size:4.6vw;font-weight:900;line-height:1.1;font-family:Outfit,system-ui,sans-serif}
+.tv-cat .tv-ic{display:block;font-size:6vw;margin-bottom:.6vw}
+.tv-count{font-size:9vw;font-weight:900;font-variant-numeric:tabular-nums;line-height:1;color:var(--warn)}
+.tv-answer{font-size:4vw;font-weight:900;color:var(--accent);font-family:Outfit,system-ui,sans-serif}
+.tv-song{font-size:2vw;font-weight:700}
+.tv-song .rv-year{font-size:.9em}
+.tv-cover{width:16vw;height:16vw;border-radius:1.5vw;object-fit:cover;margin:0 auto;box-shadow:0 2vw 4vw -1vw #000}
+.tv-idle{font-size:3vw;font-weight:800;color:var(--muted)}
+.tv-side{display:flex;flex-direction:column;gap:1.4vw;align-items:stretch}
+.tv-qr{width:auto;margin:0}
+.tv-qr .small{font-size:1.1vw}
+#tvCode{font-size:4vw;margin:0;text-align:center}
+.tv-players{padding:1.4vw;font-size:1.4vw;display:flex;flex-direction:column;gap:.5vw}
+.tv-players .tvp{display:flex;justify-content:space-between;gap:1vw;padding:.4vw .2vw;border-bottom:1px solid var(--line)}
+.tv-players .tvp:last-child{border-bottom:0}
+.tv-players .tvp b{color:var(--accent)}
+.tv-players .tvp .g{color:var(--muted);font-weight:600;text-align:right}
+.tv-players .tv-h{font-size:1.1vw;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 /* Spielende-Bildschirm */
 .win.end{z-index:160}
 .end-box{max-width:460px;width:100%}
@@ -1111,6 +1149,7 @@ html.ios .volume,html.ios .hint{display:none}
       <div class="group" style="margin-top:22px">
         <button class="cell tap danger" id="btnBingoOff"><span class="grow">Bingo beenden</span></button>
       </div>
+      <div class="group-f tv-hint hidden" id="tvHint">Großer Bildschirm? <a id="tvLink" href="#" target="_blank" rel="noopener">Fernseher-Ansicht öffnen</a></div>
     </section>
 
     <section class="page" data-page="mycard" data-title="Meine Karte">
@@ -1175,8 +1214,21 @@ html.ios .volume,html.ios .hint{display:none}
     <div id="cardGrid" class="bgrid"></div>
     <p class="small muted card-help" style="margin:6px 2px 10px">Hast du die Frage einer Runde <b>richtig</b> beantwortet? Dann markiere <b>ein</b> Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = <b>BINGO!</b> Ruf es laut und nenn deine Kartennummer.</p>
     <div class="chip-scroll" id="cardLegend"></div>
+    <div class="small muted mark-help">Lag dein Tipp richtig? Tippe ein <b>leuchtendes</b> Feld an – 1 Feld pro Runde.</div>
     <div class="small muted" id="cardLobbyInfo" style="text-align:center;margin-top:8px"></div>
   </div>
+  </div>
+</div>
+<!-- Fernseher-Ansicht (?tv=CODE): nur anzeigen, nichts steuern -->
+<div id="tvApp" class="hidden">
+  <div class="tv-main">
+    <div class="tv-top"><div class="logo"><img src="icon-192.png?v=5" alt=""><span>Musik-Bingo</span></div><span class="pill" id="tvMatch"></span></div>
+    <div class="tv-round glass" id="tvRound"></div>
+  </div>
+  <div class="tv-side">
+    <div class="qr-box tv-qr"><div id="tvQr"></div><div class="small" id="tvJoin"></div></div>
+    <div class="lobby-code" id="tvCode"></div>
+    <div class="tv-players glass" id="tvPlayers"></div>
   </div>
 </div>
 <div id="endScreen" class="win end hidden">
@@ -1184,6 +1236,7 @@ html.ios .volume,html.ios .hint{display:none}
     <div class="big-word end-word">Spielende!</div>
     <div class="end-winner" id="endWinner"></div>
     <div id="endTable"></div>
+    <div class="end-stats" id="endStats"></div>
     <div class="end-btns" id="endBtns"></div>
   </div>
 </div>
@@ -1313,7 +1366,7 @@ if (state.cats.some(c => !c.builtin && !c.color)) {
 const kStyle = k => { const base = CAT_STYLE[k.a] || CAT_STYLE.none; return [k.e || base[0], k.c ? '#' + k.c : base[1]]; };
 if (state.bingo) state.bingo.k = state.bingo.k.map(k => { const [e, c] = kStyle(k); return { i: k.i, c: c.slice(1), e, n: k.n }; });
 // Firebase lässt leere Listen/Objekte weg → beim Laden ergänzen
-if (state.match) { state.match.wins ??= {}; state.match.names ??= {}; state.match.won ??= []; }
+if (state.match) { state.match.wins ??= {}; state.match.names ??= {}; state.match.won ??= []; state.match.tips ??= {}; }
 let round = null;      // { n, track, cat, phase: 'playing'|'countdown'|'revealed', timeUp }
 let spinning = false;
 
@@ -2129,6 +2182,7 @@ function startCountdown() {
   Player.unlock();
   round.phase = 'countdown'; round.timeUp = false;
   const total = state.settings.seconds * 1000, end = Date.now() + total;
+  round.end = end; Lobby.syncRound();   // Fernseher-Ansicht zeigt den Countdown mit
   const ring = $('#ring'), C = 2 * Math.PI * 56;
   ring.style.strokeDasharray = C;
   let lastSec = null;
@@ -2158,6 +2212,13 @@ function reveal() {
   if (state.settings.pauseOnReveal) Player.pause();
   beep(1046, .25);
   render(); renderHist(); Lobby.syncRound();
+  // Statistik fürs Spielende: gespielte Songs und wer wie oft getippt hat
+  const m = state.match;
+  if (Lobby.code && m && !m.over) {
+    m.rounds = (m.rounds || 0) + 1; m.tips ??= {};
+    for (const p of guessesFor(round.id)) { m.tips[p.id] = (m.tips[p.id] || 0) + 1; m.names[p.id] = p.name; }
+    saveMatch();
+  }
 }
 
 function answerFor(cat, t) {
@@ -2312,7 +2373,10 @@ const Lobby = {
       const code = Array.from(crypto.getRandomValues(new Uint8Array(4)), x => LOBBY_CHARS[x % LOBBY_CHARS.length]).join('');
       if ((await f.get(f.at('lobbies/' + code))).exists()) continue;
       newMatch();
-      await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), bingo: b, match: state.match });
+      await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), act: f.serverTimestamp(), bingo: b, match: state.match });
+      // Frühere, nicht beendete Lobbys dieses Geräts aufräumen
+      for (const old of LS.get('myLobbies', [])) if (old !== code) f.remove(f.at('lobbies/' + old)).catch(() => {});
+      LS.set('myLobbies', [code]);
       state.lobby = code; LS.set('lobby', code);
       this.watch();
       return code;
@@ -2332,7 +2396,7 @@ const Lobby = {
       if (snap.exists() && snap.val() !== f.uid) throw new Error('Diese Lobby gehört zu einem anderen Gerät');
       if (!state.match) newMatch();
       // Lobby wurde gelöscht (z. B. aufgeräumt) → mit demselben Code neu anlegen
-      if (!snap.exists()) await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), bingo: state.bingo, match: state.match });
+      if (!snap.exists()) await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), act: f.serverTimestamp(), bingo: state.bingo, match: state.match });
       else if (state.match) await f.set(f.at(`lobbies/${code}/match`), state.match);
       let first = true;
       this.unsub = f.onValue(f.at(`lobbies/${code}/players`), s => {
@@ -2355,6 +2419,11 @@ const Lobby = {
     renderLobby();
   },
   stop() { this.unsub?.(); this.unsub = null; this.players = {}; this.code = null; },
+  // Lebenszeichen: Lobbys ohne Aktivität seit 24 h darf jeder löschen (siehe database.rules.json)
+  touch() {
+    const code = this.code; if (!code) return;
+    firebase().then(f => f.set(f.at(`lobbies/${code}/act`), f.serverTimestamp())).catch(() => {});
+  },
   write(path, val) {
     const code = this.code; if (!code) return;
     firebase().then(f => f.set(f.at(`lobbies/${code}/${path}`), val)).catch(e => toast('Sync-Fehler: ' + e.message));
@@ -2363,7 +2432,7 @@ const Lobby = {
   clearMarks() {
     const code = this.code; if (!code) return;
     const upd = {};
-    for (const id of Object.keys(this.players)) Object.assign(upd, { [`${id}/marks`]: null, [`${id}/bingo`]: null, [`${id}/ok`]: null });
+    for (const id of Object.keys(this.players)) Object.assign(upd, { [`${id}/marks`]: null, [`${id}/bingo`]: null, [`${id}/ok`]: null, [`${id}/lm`]: null });
     if (Object.keys(upd).length) firebase().then(f => f.update(f.at(`lobbies/${code}/players`), upd)).catch(() => {});
   },
   setBingo(b) { this.write('bingo', b); this.clearMarks(); if (this.me()) this.write(`players/${this.uid}/g`, b.g); },
@@ -2379,8 +2448,11 @@ const Lobby = {
     }
     if (!round) return this.write('round', null);
     const [e, c] = catStyle(round.cat), rev = round.phase === 'revealed', t = round.track;
-    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : 'p',
-      ...(rev ? { a: plainText(answerFor(round.cat, t)), s: `${t.artists} – ${t.title}`, ...(yearOf(t) ? { y: yearOf(t) } : {}) } : {}) });
+    // ph: p = läuft, c = Countdown (end = Zeitpunkt in ms), r = aufgelöst
+    const cd = round.phase === 'countdown' && round.end;
+    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end } : {}),
+      ...(rev ? { a: plainText(answerFor(round.cat, t)), s: `${t.artists} – ${t.title}`, ...(yearOf(t) ? { y: yearOf(t) } : {}), ...(t.cover ? { cv: t.cover } : {}) } : {}) });
+    this.touch();
   },
   close() {
     const code = this.code; this.stop();
@@ -2394,7 +2466,11 @@ const Lobby = {
     if (id !== HOST_ID) this.write(`players/${id}/ok`, true);
     // Auch nach dem Ende zählen: haben mehrere gleichzeitig in der letzten Partie Bingo, bekommt jeder seinen Sieg
     const m = state.match; if (!m) return;
-    if (!m.won.includes(id)) { m.won.push(id); m.wins[id] = (m.wins[id] || 0) + 1; m.names[id] = p.name; }
+    if (!m.won.includes(id)) {
+      m.won.push(id); m.wins[id] = (m.wins[id] || 0) + 1; m.names[id] = p.name;
+      const r = state.history.filter(h => h.n > (state.partieFrom || 0)).length;   // Runden bis zu diesem Bingo
+      if (r && (!m.fast || r < m.fast.r)) m.fast = { id, name: p.name, r };
+    }
     if (m.total && m.game >= m.total) m.over = true;
     saveMatch();
     if (m.over && !pendingCallers(id).length) showEndHost();
@@ -2419,7 +2495,7 @@ const Lobby = {
 //                 won: [ids, die die aktuelle Partie gewonnen haben], over: Spiel vorbei }
 function newMatch() {
   endShown = false;
-  state.match = { total: state.settings.games ?? 0, game: 1, wins: {}, names: {}, won: [], over: false };
+  state.match = { total: state.settings.games ?? 0, game: 1, wins: {}, names: {}, won: [], over: false, rounds: 0, tips: {} };
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   LS.set('match', state.match);
 }
@@ -2612,6 +2688,8 @@ async function renderBingo() {
   $('#joinCodeBox').classList.toggle('hidden', !Lobby.code);
   $('#joinUrlShort').textContent = (cardBase() + 'join').replace(/^https?:\/\//, '');
   $('#joinCodeBig').textContent = Lobby.code || '';
+  $('#tvHint').classList.toggle('hidden', !Lobby.code);
+  if (Lobby.code) $('#tvLink').href = cardBase() + '?tv=' + Lobby.code;
   $('#bingoNewSub').textContent = Lobby.code ? 'Alle in der Lobby bekommen automatisch eine neue Karte' : 'Alle müssen den neuen QR-Code scannen';
   if (Lobby.opening) { $('#qr').innerHTML = '<span class="loader"></span>'; return; }
   try {
@@ -2723,9 +2801,19 @@ function checkCallers() {
   if (rs.some(r => r.good)) { confetti(); beep(1046, .3); }
 }
 // Spielende-Bildschirm (Spielleiter und Mitspieler): Sieger, Siege, Knöpfe
+// Kleine Statistik fürs Spielende
+function statsHtml(m) {
+  const out = [];
+  if (m.rounds) out.push(`🎵 ${m.rounds} ${m.rounds === 1 ? 'Song' : 'Songs'} in ${m.game} ${m.game === 1 ? 'Partie' : 'Partien'}`);
+  if (m.fast) out.push(`⚡ Schnellstes Bingo: ${esc(m.fast.name)} nach ${m.fast.r} ${m.fast.r === 1 ? 'Runde' : 'Runden'}`);
+  const tips = Object.entries(m.tips || {}).sort((a, b) => b[1] - a[1]);
+  if (tips.length) out.push(`💬 Meiste Tipps: ${esc(m.names?.[tips[0][0]] || '?')} (${tips[0][1]})`);
+  return out.map(x => `<div>${x}</div>`).join('');
+}
 function showEnd(m, buttons) {
   $('#endWinner').textContent = matchWinner(m) || 'Niemand hat gewonnen';
   $('#endTable').innerHTML = winsHtml(m);
+  $('#endStats').innerHTML = statsHtml(m);
   $('#endBtns').innerHTML = buttons;
   const el = $('#endScreen');
   if (el.classList.contains('hidden')) { el.classList.remove('hidden'); confetti(); beep(1046, .4); }
@@ -2781,15 +2869,19 @@ function mountCard(b, el, onWin, sync = null) {
   el.grid.onclick = e => {
     const c = e.target.closest('[data-i]'); if (!c) return;
     const i = +c.dataset.i; if (fields[i] === '*') return;
-    st.marks = st.marks.includes(i) ? st.marks.filter(x => x !== i) : [...st.marks, i];
+    const adding = !st.marks.includes(i);
+    // Lobby: nur ein Feld der aktuellen Kategorie pro Runde – sonst kurz wackeln und erklären
+    const no = sync?.guard?.(i, fields[i], adding);
+    if (no) { toast(no, 4000); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); try { navigator.vibrate?.([20, 40, 20]); } catch {} return; }
+    st.marks = adding ? [...st.marks, i] : st.marks.filter(x => x !== i);
     LS.set(key, st); try { navigator.vibrate?.(10); } catch {}
     // Erst die Markierung speichern, dann zeichnen: draw() kann „Bingo!“ an den Server melden, und dessen
     // Echo darf die neue Markierung nicht mit dem alten Stand überschreiben
-    sync?.onChange(st.marks); draw();
+    sync?.onChange(st.marks, adding ? i : null, adding ? null : i); draw();
   };
   el.clear.onclick = async () => {
     if (!await ask('Alle Markierungen löschen?', { ok: 'Löschen', danger: true })) return;
-    st.marks = []; LS.set(key, st); sync?.onChange(st.marks); draw();
+    st.marks = []; LS.set(key, st); sync?.onChange(st.marks, null, 'all'); draw();
   };
   draw();
   // Markierungen von außen setzen (z. B. der Spielleiter startet ein neues Spiel)
@@ -2856,6 +2948,32 @@ function guessState(el, r, g, text = null) {
     : synced ? '✓ abgegeben' : pending ? 'noch nicht abgegeben' : '';
 }
 
+// Gibt es die Lobby und ist sie noch aktiv? Verwaiste Lobbys (24 h ohne Lebenszeichen) werden dabei gelöscht.
+const STALE_MS = 24 * 3600 * 1000;
+async function lobbyAlive(f, code) {
+  const s = await f.get(f.at(`lobbies/${code}`));
+  if (!s.exists() || !s.child('bingo').exists()) return false;
+  const act = s.child('act').val() || s.child('created').val() || 0;
+  if (Date.now() - act > STALE_MS) { f.remove(f.at(`lobbies/${code}`)).catch(() => {}); return false; }
+  return true;
+}
+
+/* Markier-Regel in der Lobby: pro Runde genau ein Feld, und nur eines der aktuellen Kategorie.
+   Wieder abwählen geht immer – so lässt sich ein Versehen korrigieren. */
+function markGuard(r, lm, cat, adding) {
+  if (!adding) return null;
+  if (!r) return 'Gerade läuft keine Runde – markieren geht, sobald eine Runde läuft.';
+  if (cat !== r.cat) return `In dieser Runde zählt nur „${r.name}“ – tippe ein leuchtendes Feld an.`;
+  if (lm && lm.n === r.key) return 'Du hast in dieser Runde schon ein Feld markiert. Tippe es nochmal an, um es zu ändern.';
+  return null;
+}
+// Neue „letzte Markierung“ nach einer Änderung: gesetzt → merken, eigenes Feld dieser Runde abgewählt → freigeben
+function nextLm(lm, key, added, removed) {
+  if (added != null) return { n: key, i: added };
+  if (removed === 'all' || (lm && lm.n === key && lm.i === removed)) return null;
+  return lm || null;
+}
+
 /* Kartenwahl: zeigt eine Karte; „Andere Karte zeigen“ würfelt eine neue Nummer, die in der Lobby noch frei ist.
    keep = { num, onKeep }: zusätzlich „Meine Karte behalten“ (neue Partie) */
 function cardPicker(box, b, used, onPick, keep = null) {
@@ -2898,7 +3016,7 @@ async function codeMode(note = null) {
     btn.disabled = true; $('#joinMsg').textContent = 'Suche Lobby …';
     try {
       const f = await firebase();
-      if (!(await f.get(f.at(`lobbies/${code}/bingo`))).exists()) {
+      if (!await lobbyAlive(f, code)) {
         btn.disabled = false; $('#joinMsg').textContent = `Lobby „${code}“ gibt es nicht – bitte den Code prüfen.`;
         return inp.select();
       }
@@ -2931,7 +3049,7 @@ async function lobbyMode(code, autoName = null) {
   const base = `lobbies/${code}`, meRef = f.at(`${base}/players/${f.uid}`);
   let me;
   try {
-    if (!(await f.get(f.at(`${base}/bingo`))).exists()) {
+    if (!await lobbyAlive(f, code)) {
       history.replaceState(null, '', location.pathname + '?join');
       return codeMode(`Die Lobby „${code}“ gibt es nicht mehr – gib den neuen Lobby-Code ein.`);
     }
@@ -2968,7 +3086,12 @@ async function lobbyMode(code, autoName = null) {
       }, {
         num: me.num,
         marks: me.g === b.g ? me.marks || [] : [],
-        onChange: marks => f.update(meRef, { marks, g: b.g }).catch(e => toast('Sync-Fehler: ' + e.message)),
+        guard: (i, cat, adding) => markGuard(curRound && { key: keyOf(curRound), cat: curRound.i, name: b.k.find(k => k.i === curRound.i)?.n || curRound.q }, me?.lm, cat, adding),
+        onChange: (marks, added, removed) => {
+          const lm = nextLm(me?.lm, keyOf(curRound), added, removed);
+          if (me) me.lm = lm;   // sofort merken – ein zweiter schneller Tipp wird so auch ohne Server-Antwort abgelehnt
+          f.update(meRef, { marks, g: b.g, lm }).catch(e => toast('Sync-Fehler: ' + e.message));
+        },
       });
       mounted = { g: b.g, num: me.num };
       card.setHot(hot);
@@ -3004,7 +3127,7 @@ async function lobbyMode(code, autoName = null) {
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true;
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const sendGuess = () => {
-      if (!curRound || curRound.ph !== 'p') return;
+      if (!curRound || curRound.ph === 'r') return;
       const t = $('#guessText').value.trim().slice(0, 80);
       const cur = me?.guess;
       if ((cur?.n === keyOf(curRound) ? cur.t : '') === t) return;   // nichts geändert
@@ -3044,7 +3167,7 @@ async function lobbyMode(code, autoName = null) {
       const m = s.val(), box = $('#matchLive');
       box.classList.toggle('hidden', !m);
       if (!m) return;
-      m.wins ??= {}; m.names ??= {}; m.won ??= [];
+      m.wins ??= {}; m.names ??= {}; m.won ??= []; m.tips ??= {};
       box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
       if (lastGame !== null && !m.over && (m.game !== lastGame || lastOver)) showRepick(m);
       if (m.over) showEnd(m, '<button class="big" data-end-leave>Zurück zur Lobby-Auswahl</button><button class="ghost" data-end-close>Hier bleiben</button>');
@@ -3119,6 +3242,54 @@ async function lobbyMode(code, autoName = null) {
   if (autoName) { $('#joinName').value = autoName; join(); }
 }
 
+/* Fernseher-Ansicht (?tv=CODE): zeigt Runde, Countdown, Auflösung, Tipps, Siege und den QR-Code zum Beitreten.
+   Liest nur – schreibt nichts in die Lobby. */
+async function tvMode(code) {
+  code = code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  document.body.classList.add('tv-mode');
+  $('#tvApp').classList.remove('hidden');
+  $('#tvCode').textContent = code;
+  $('#tvJoin').textContent = 'Scannen oder ' + (cardBase() + 'join').replace(/^https?:\/\//, '') + ' öffnen';
+  const show = html => { $('#tvRound').innerHTML = html; };
+  show('<div class="tv-idle">Verbinde …</div>');
+  let f;
+  try { f = await firebase(); } catch (e) { return show(`<div class="tv-idle">Keine Verbindung: ${esc(e.message)}</div>`); }
+  if (!await lobbyAlive(f, code).catch(() => false)) return show(`<div class="tv-idle">Die Lobby „${esc(code)}“ gibt es nicht.</div>`);
+  loadQrLib().then(qrcode => { const q = qrcode(0, 'L'); q.addData(lobbyUrl(code)); q.make(); $('#tvQr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }).catch(() => {});
+  const base = `lobbies/${code}`;
+  let r = null, players = {}, match = null, cdIv = null;
+  const key = x => x ? x.id ?? x.n : null;
+  const draw = () => {
+    clearInterval(cdIv); cdIv = null;
+    if (!r) return show('<div class="tv-idle">Gleich geht’s los …</div><div class="tv-k">Jetzt beitreten – QR-Code scannen</div>');
+    const head = `<div class="tv-k">Runde ${esc(r.n)}</div><div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span>${esc(r.q)}</div>`;
+    if (r.ph === 'r') return show(head + (r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '') +
+      `<div class="tv-answer">${esc(r.a)}</div><div class="tv-song">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>`);
+    if (r.ph === 'c' && r.end) {
+      const tick = () => { const sec = Math.max(0, Math.ceil((r.end - Date.now()) / 1000)); const el = $('#tvCount'); if (el) el.textContent = sec; if (!sec) { clearInterval(cdIv); cdIv = null; } };
+      show(head + '<div class="tv-count" id="tvCount"></div>'); tick(); cdIv = setInterval(tick, 250); return;
+    }
+    show(head + '<div class="tv-k">♪ Hört genau hin …</div>');
+  };
+  const drawSide = () => {
+    const list = Object.entries(players).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
+    const done = p => r && p.guess?.n === key(r) && p.guess.t;
+    const wins = id => match?.wins?.[id] || 0;
+    list.sort((a, b) => wins(b.id) - wins(a.id) || String(a.name).localeCompare(b.name));
+    $('#tvPlayers').innerHTML = `<div class="tv-h">${r?.ph === 'r' ? 'Tipps' : 'Mitspieler'} · ${list.length}</div>` + (list.map(p => `<div class="tvp"><span>${p.bingo ? '🎉 ' : ''}${esc(p.name)}${wins(p.id) ? ` <b>🏆${wins(p.id)}</b>` : ''}</span>` +
+      (r?.ph === 'r' ? `<span class="g">${done(p) ? esc(p.guess.t) : '–'}</span>` : `<span class="g">${done(p) ? '<b>✓</b>' : ''}</span>`) + '</div>').join('') || '<div class="g">Noch niemand da – QR-Code scannen!</div>');
+    $('#tvMatch').textContent = match ? matchTitle(match) : '';
+  };
+  f.onValue(f.at(`${base}/round`), s => { r = s.val(); draw(); drawSide(); });
+  f.onValue(f.at(`${base}/players`), s => { players = s.val() || {}; drawSide(); });
+  f.onValue(f.at(`${base}/match`), s => {
+    match = s.val(); if (match) { match.wins ??= {}; match.names ??= {}; match.won ??= []; match.tips ??= {}; }
+    drawSide();
+    if (match?.over) showEnd(match, ''); else $('#endScreen').classList.add('hidden');
+  });
+  f.onValue(f.at(`${base}/bingo`), s => { if (!s.exists()) show('<div class="tv-idle">Das Bingo wurde beendet.</div>'); });
+}
+
 /* Eigene Karte des Spielleiters (im Menü „Bingo“)
    Mit Lobby ist die Spielleiter-Karte ein normaler Lobby-Eintrag: erst aussuchen, dann live synchronisiert */
 let myMount = null;    // { g, num, ctl } der gerade angezeigten Karte
@@ -3158,7 +3329,12 @@ function renderMyCard() {
   }, me ? {
     num: me.num,
     marks: me.g === b.g ? me.marks || [] : [],
-    onChange: marks => { Lobby.write(`players/${Lobby.uid}/marks`, marks); Lobby.write(`players/${Lobby.uid}/g`, b.g); },
+    guard: (i, cat, adding) => markGuard(round && { key: round.id, cat: round.cat.id, name: b.k.find(k => k.i === round.cat.id)?.n || round.cat.name }, Lobby.me()?.lm, cat, adding),
+    onChange: (marks, added, removed) => {
+      const cur = Lobby.me(), lm = nextLm(cur?.lm, round?.id, added, removed);
+      if (cur) cur.lm = lm;
+      Lobby.write(`players/${Lobby.uid}/marks`, marks); Lobby.write(`players/${Lobby.uid}/g`, b.g); Lobby.write(`players/${Lobby.uid}/lm`, lm);
+    },
   } : null);
   myMount = { g: b.g, num: me?.num, ctl };
   ctl.setHot(round ? round.cat.id : null);
@@ -3678,6 +3854,7 @@ $('#btnResetCats').onclick = async () => {
 /* ---------------- Start ---------------- */
 (async () => {
   const q = new URLSearchParams(location.search);
+  if (q.get('tv')) return tvMode(q.get('tv'));
   if (q.get('l')) return lobbyMode(q.get('l'));
   if (q.has('join')) return codeMode();
   const cardParam = q.get('b');
