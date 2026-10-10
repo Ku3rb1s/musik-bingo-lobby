@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.7.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.7.1', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -234,6 +234,7 @@ function goPage(d, page, back) {
   const p = d.querySelector(`.page[data-page="${page}"]`);
   d.querySelector('.nav-title').textContent = p.dataset.title;
   d.querySelector('.nav-back').classList.toggle('invisible', page === 'main');
+  d.querySelector('.nav-lang')?.classList.toggle('hidden', page !== 'main');   // Sprache nur auf der Hauptseite der Einstellungen
   d.dataset.page = page;
   d.querySelector('.sheet-body').scrollTop = 0;
   onPage(d.id, page);

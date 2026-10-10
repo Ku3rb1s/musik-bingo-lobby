@@ -497,7 +497,7 @@ $('#btnResetCats').onclick = async () => {
 };
 
 // Sprache: Auswahl in den Einstellungen (Seite wird neu geladen, damit alle Texte passen)
-function renderLang() { $('#langSel').innerHTML = langOptions(); $('#langSub').textContent = Object.values(LANGS).map(l => l.name).join(' · '); }
+function renderLang() { $('#langSel').innerHTML = langOptions(); $('#langCodeS').textContent = LANG.toUpperCase(); }
 $('#langSel').onchange = e => setLang(e.target.value);
 
 /* ---------------- Start ---------------- */

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.7.0">
+<link rel="stylesheet" href="css/app.css?v=4.7.1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -165,6 +165,8 @@
   <div class="sheet-head">
     <span class="grab"></span>
     <button class="nav-back invisible" data-back><svg class="ic"><use href="#i-back"/></svg>Einstellungen</button>
+    <!-- Sprache: nur auf der Hauptseite (dort ist links frei), die Auswahlliste liegt unsichtbar über dem Knopf -->
+    <label class="lang-pill nav-lang" title="Sprache · Language">🌐 <span id="langCodeS"></span><select id="langSel" aria-label="Sprache"></select></label>
     <div class="nav-title">Einstellungen</div>
     <button class="nav-done" data-close>Fertig</button>
   </div>
@@ -176,11 +178,7 @@
           <span class="grow">Spotify-Konto<span class="sub" id="accSub"></span></span>
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
-        <label class="cell">
-          <span class="cell-ic" style="background:#0ea5e9">🌐</span>
-          <span class="grow">Sprache<span class="sub" id="langSub"></span></span>
-          <select id="langSel" aria-label="Sprache"></select>
-        </label>
+
       </div>
 
       <div class="group-h">Design</div>
@@ -595,14 +593,14 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.7.0"></script>
-<script src="js/i18n.js?v=4.7.0"></script>
-<script src="js/core.js?v=4.7.0"></script>
-<script src="js/spotify.js?v=4.7.0"></script>
-<script src="js/game.js?v=4.7.0"></script>
-<script src="js/lobby.js?v=4.7.0"></script>
-<script src="js/bingo.js?v=4.7.0"></script>
-<script src="js/views.js?v=4.7.0"></script>
-<script src="js/ui.js?v=4.7.0"></script>
+<script src="js/lang/en.js?v=4.7.1"></script>
+<script src="js/i18n.js?v=4.7.1"></script>
+<script src="js/core.js?v=4.7.1"></script>
+<script src="js/spotify.js?v=4.7.1"></script>
+<script src="js/game.js?v=4.7.1"></script>
+<script src="js/lobby.js?v=4.7.1"></script>
+<script src="js/bingo.js?v=4.7.1"></script>
+<script src="js/views.js?v=4.7.1"></script>
+<script src="js/ui.js?v=4.7.1"></script>
 </body>
 </html>

@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.7.1 – 11.10.2026
+- Sprache in den Einstellungen jetzt als Globus-Knopf „🌐 DE“ links oben in der Kopfzeile (statt eigener Zeile); auf Unterseiten steht dort wie gewohnt „‹ Zurück“
+
 ## 4.7.0 – 10.10.2026
 - Sprachauswahl besser eingebunden: in den Einstellungen als Zeile „🌐 Sprache“ ganz oben (Auswahlliste), bei Mitspielern als Knopf „🌐 DE“ oben, der die Sprachliste öffnet
 - Weitere Sprachen lassen sich einfach hinzufügen: jede Sprache ist eine Datei in js/lang/ (Vorlage en.js) und erscheint automatisch in beiden Auswahllisten; scripts/check-lang.js zeigt fehlende Texte und falsche Platzhalter. Anleitung im README
