@@ -1,6 +1,13 @@
 # Änderungen
 
-Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
+Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
+
+## 4.0.0 – 10.10.2026
+- Markieren nach Regeln (Lobby): pro Runde genau ein Feld, und nur eines der aktuellen Kategorie; falsches Feld wackelt mit Hinweis, eigenes Feld lässt sich durch nochmal Antippen korrigieren
+- Fernseher-Ansicht (…/?tv=CODE) für einen großen Bildschirm: Runde, Countdown, Auflösung mit Cover, Tipps, Siege, QR-Code zum Beitreten, Spielende – nur anzeigen, nichts steuern. Dezenter Link unten in den Bingo-Einstellungen
+- Statistik auf dem Spielende-Bildschirm: gespielte Songs, schnellstes Bingo, meiste Tipps
+- Verwaiste Lobbys (24 h ohne Aktivität) werden gelöscht; beim Öffnen einer neuen Lobby werden eigene alte Lobbys aufgeräumt
+- Code in Dateien aufgeteilt (css/app.css, js/core.js, spotify.js, game.js, lobby.js, bingo.js, views.js, ui.js) – Logik unverändert
 
 ## 3.3.1 – 10.10.2026
 - Tipp-Status klarer: leer = nichts, getippt = „noch nicht abgegeben“ (orange), abgegeben = „✓ abgegeben“ (grün)

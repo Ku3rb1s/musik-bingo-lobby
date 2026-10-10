@@ -11,3 +11,19 @@ Musik-Quiz mit deinen Spotify-Playlists – mit Bingo-Karten fürs Handy, Lobbys
 - Lokal starten: `start.bat` (öffnet http://127.0.0.1:8888/).
 
 Einrichtung von Firebase: siehe [FIREBASE.md](FIREBASE.md). Ohne Firebase laufen die Karten wie früher über den Link im QR-Code.
+
+## Aufbau
+
+| Datei | Inhalt |
+|---|---|
+| `index.html` | Seitenaufbau (Markup) |
+| `css/app.css` | Aussehen |
+| `js/core.js` | Hilfsfunktionen, Konstanten, Spielzustand, Menüs |
+| `js/spotify.js` | Spotify-Anmeldung, Playlists/CSV, Wiedergabe |
+| `js/game.js` | Runden, Countdown, Auflösung, Originaljahr, Tipps |
+| `js/lobby.js` | Lobby (Firebase), Partien & Siege |
+| `js/bingo.js` | Karten, Einladen, Prüfen, Spielende |
+| `js/views.js` | Mitspieler-Ansicht, Fernseher-Ansicht (`?tv=CODE`), Karte des Spielleiters |
+| `js/ui.js` | Anzeige, Klicks, Einstellungen, Start |
+
+Die Skripte werden in dieser Reihenfolge geladen. Bei jedem Update `APP_VERSION` in `js/core.js` und `?v=` in `index.html` erhöhen.
