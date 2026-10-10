@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.1.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.1.1', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -58,11 +58,28 @@ const catStyle = c => {
 // Eigene Kategorien bekommen eine Farbe und ein Symbol, die noch keine andere Kategorie hat
 const CUSTOM_COLORS = ['#f43f5e', '#14b8a6', '#6366f1', '#eab308', '#d946ef', '#0ea5e9', '#f97316', '#84cc16', '#ef4444', '#10b981', '#a855f7', '#fb7185'];
 const CUSTOM_ICONS = ['⭐', '🔥', '💎', '🎸', '🎹', '🥁', '🎺', '🌍', '💃', '🎬', '❤️', '🚀'];
+// Passendes Symbol zur Frage: Stichwörter im Text (Reihenfolge zählt – „Jahrzehnt“ vor „Jahr“)
+const ICON_WORDS = [
+  [/jahrzehnt|dekade/, '🕰️'], [/album|platte|\blp\b/, '💿'], [/film|movie|serie|soundtrack|kino/, '🎬'],
+  [/musikvideo|video|\btv\b|fernseh/, '📺'], [/konzert|festival|\blive\b|tour/, '🎪'], [/eurovision|\besc\b|casting|show/, '🎙️'],
+  [/chart|platz|nummer|\bhits?\b|erfolg|grammy|preis|award/, '🏆'], [/stadt|city/, '🏙️'], [/land|herkunft|nation|welt|kontinent/, '🌍'],
+  [/rap|hip.?hop|\bdj\b|techno|elektro|\bedm\b|house/, '🎧'], [/genre|stil|rock|metal|gitarre|punk/, '🎸'],
+  [/klavier|piano|keyboard|instrument/, '🎹'], [/schlagzeug|drum/, '🥁'], [/trompete|saxophon|bläser/, '🎺'],
+  [/tanz|dance|disco|choreo/, '💃'], [/liebe|love|herz/, '❤️'], [/weihnacht|xmas|christmas/, '🎄'], [/sommer|summer|sonne|urlaub/, '☀️'],
+  [/party|feier/, '🎉'], [/cover|bild|foto/, '🖼️'], [/label|plattenfirma/, '🏷️'], [/sprache|language/, '🗣️'],
+  [/songtext|text|lyrics|zeile|refrain|strophe/, '📝'], [/länge|dauer|minute|sekunde|tempo|bpm/, '⏱️'],
+  [/duett|feat|zusammen|mitglied|besetzung/, '👥'], [/remix|neuauflage|coverversion|original/, '🔁'],
+  [/sänger|saenger|stimme|singt|band|interpret|künstler|kuenstler|gruppe|rapper/, '🎤'],
+  [/jahr|wann|erschien/, '📅'], [/titel|song|lied|name/, '🎵'],
+];
+const iconFor = (name, answer) => [ICON_WORDS.find(([re]) => re.test(String(name).toLowerCase()))?.[1], answer !== 'none' && CAT_STYLE[answer]?.[0]].filter(Boolean);
 function assignStyle(cat, cats) {
   const usedC = new Set(cats.map(c => catStyle(c)[1].toLowerCase()));
   const usedI = new Set(cats.map(c => catStyle(c)[0]));
   cat.color = CUSTOM_COLORS.find(c => !usedC.has(c)) || CUSTOM_COLORS[cats.length % CUSTOM_COLORS.length];
-  cat.icon = CUSTOM_ICONS.find(i => !usedI.has(i)) || CUSTOM_ICONS[cats.length % CUSTOM_ICONS.length];
+  // Passendes Symbol (lieber eines, das noch frei ist), sonst ein freies aus der Liste
+  const fit = iconFor(cat.name, cat.answer);
+  cat.icon = fit.find(i => !usedI.has(i)) || fit[0] || CUSTOM_ICONS.find(i => !usedI.has(i)) || CUSTOM_ICONS[cats.length % CUSTOM_ICONS.length];
   return cat;
 }
 

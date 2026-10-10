@@ -107,11 +107,7 @@ function renderReveal() {
       <div class="rv-title">${esc(t.title)}</div>
       <div class="rv-artist">${esc(t.artists)} <span class="rv-year">· ${y ?? '?'}</span></div>
       <div class="rv-meta">${[t.album, t.date].filter(Boolean).map(esc).join(' · ')}</div>
-      <div class="tags">
-        <span>Jahr ${y ?? '?'}${fixed ? ' (korrigiert)' : fromMb ? ' · Original' : ''}</span>
-        <span>${decadeOf(y)}</span>
-        ${y ? `<span>± 3: ${y - 3}–${y + 3}</span>` : ''}
-      </div>
+      ${fixed ? '<div class="rv-meta">Jahr von dir korrigiert.</div>' : ''}
       ${fromMb ? `<div class="rv-meta">Spotify nennt ${t.year} (Album/Remaster) – Originaljahr laut MusicBrainz.</div>` : ''}
     </div>
     <div id="guessHost" class="guess-list hidden"></div>`;
@@ -481,7 +477,7 @@ function addCategory(nameEl, typeEl, tolEl) {
   const cat = assignStyle({ id: 'c' + Date.now(), name, answer, enabled: true, builtin: false }, state.cats);
   if (answer === 'range') cat.tol = Math.max(1, parseInt(tolEl.value) || 5);
   state.cats.push(cat); nameEl.value = ''; nameEl.blur(); saveCats();
-  toast('Kategorie hinzugefügt');
+  toast(`Kategorie „${cat.icon} ${cat.name}“ hinzugefügt`);
   return true;
 }
 for (const [type, tolRow] of [['#newCatType', '#tolRow'], ['#bcType', '#bcTolRow']]) {

@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.1.1 – 10.10.2026
+- Eigene Kategorien bekommen ein passendes Symbol zur Frage (z. B. „Aus welchem Album?“ → 💿, „Aus welchem Film?“ → 🎬, „Aus welchem Land?“ → 🌍), sonst passend zur Art der Auflösung; nur wenn nichts passt, ein freies Symbol
+- Auflösung: die Chips „Jahr … · Original“, „1970er“ und „± 3: …“ sind weg – das Jahr steht schon neben dem Interpreten
+
 ## 4.1.0 – 10.10.2026
 - Bingo einrichten: Kategorien direkt dort an- und ausschalten (antippen) und eigene Kategorien hinzufügen – ohne Umweg über die Einstellungen
 - Tipp: Wer einen abgegebenen Tipp nochmal ändert, gilt wieder als „nicht abgegeben“ – der ✓ verschwindet auch bei den anderen und beim Spielleiter, bis man erneut „Fertig“ drückt bzw. das Feld verlässt
