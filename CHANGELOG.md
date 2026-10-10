@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.2.1 – 10.10.2026
+- „Bingo prüfen“: Hat die App Bedenken (z. B. nicht genug passende Runden gespielt), gibt es den Knopf „Trotzdem bestätigen“ – mit Rückfrage, ob man wirklich bestätigen möchte
+
 ## 3.2.0 – 10.10.2026
 - Bingo-Menü neu aufgeteilt: Übersicht (Lobby-Code, Partie-Stand, Mitspieler) mit Unterseiten „Mitspieler einladen“, „Bingo prüfen“, „Meine Karte“ und „Bingo-Einstellungen“; ohne laufendes Bingo führt „Bingo einrichten“ zur Einrichtung, danach direkt zur Einladung
 - Tipp löschen: ✕ direkt im Eingabefeld (nur sichtbar, wenn etwas drinsteht)

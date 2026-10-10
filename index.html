@@ -406,6 +406,7 @@ body.card-mode>header,body.card-mode>main{display:none}
 .guess-clear:active{transform:translateY(-50%) scale(.9)}
 .guess-field:has(.guess-input:placeholder-shown) .guess-clear{display:none}
 /* „Markierungen löschen“ als kleiner Knopf */
+.chip-btn.force{color:#ffcf7a;border-color:rgba(255,176,32,.45)}
 .card-clear{font-size:.82rem;padding:.45em .85em;color:#ffb4b4;border-color:rgba(255,120,120,.35)}
 .card-clear .ic{width:1em;height:1em}
 .card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -1198,7 +1199,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '3.2.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.2.1', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -2634,9 +2635,11 @@ function checkCard() {
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
-    ${marks && win && (!who.host || Lobby.code) ? `<div class="chips" style="margin-top:6px">${who.ok
+    ${marks && (!who.host || Lobby.code) ? `<div class="chips" style="margin-top:6px">${who.ok
       ? '<span class="chip-btn on">✓ Bingo bestätigt</span>'
-      : `<button class="chip-btn" data-confirm="${esc(checkPlayer)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`}</div>` : ''}`;
+      : win ? `<button class="chip-btn" data-confirm="${esc(checkPlayer)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`
+      // Die App hat Bedenken – der Spielleiter kann trotzdem bestätigen (mit Rückfrage)
+      : `<button class="chip-btn force" data-confirm-force="${esc(checkPlayer)}">Trotzdem bestätigen</button>`}</div>` : ''}`;
   if (win && !over.length) { confetti(); beep(1046, .3); }
 }
 function confetti() {
@@ -3285,7 +3288,16 @@ document.addEventListener('click', async e => {
     if (checkPlayer) $('#checkNo').value = whoById(checkPlayer)?.num ?? '';
     if ($('#checkNo').value) checkCard();
   }
-  const conf = t.closest('[data-confirm]');
+  const force = t.closest('[data-confirm-force]');
+  if (force) {
+    const who = whoById(force.dataset.confirmForce);
+    const why = $('#checkBox .check-res')?.textContent || '';
+    if (who && await ask(`Bingo für ${who.name} wirklich bestätigen?\n\nDie Prüfung meldet: ${why}\n\nDer Sieg wird trotzdem gezählt.`, { ok: 'Bestätigen', danger: true })) {
+      force.dataset.confirm = force.dataset.confirmForce;
+      delete force.dataset.confirmForce;
+    } else return;
+  }
+  const conf = force || t.closest('[data-confirm]');
   if (conf) {
     Lobby.confirm(conf.dataset.confirm);
     const m = state.match;
