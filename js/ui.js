@@ -305,7 +305,7 @@ document.addEventListener('click', async e => {
   if (t.closest('[data-end-stop]')) { $('#endScreen').classList.add('hidden'); $('#btnBingoOff').click(); }
   if (t.closest('[data-end-leave]')) { if (leaveLobby) leaveLobby(); else location.replace(location.pathname + '?join'); }
   if (t.closest('[data-new-match]') && await ask('Nochmal spielen?\nAlle Siege werden auf 0 gesetzt, es geht mit Partie 1 los. Jeder kann seine Karte behalten oder eine neue wählen.', { ok: 'Nochmal spielen' })) {
-    newMatch(); state.match.game = 0; state.match.over = false; nextGame();
+    newMatch(state.match?.total); state.match.game = 0; state.match.over = false; nextGame();
     $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());
   }
   const pDel = t.closest('[data-player-del]');
@@ -385,7 +385,7 @@ function resetGame() {
   state.played = []; state.history = []; LS.set('played', []); LS.set('history', []);
   round = null; stopTimer(); clearTimeout(snippetT); renderAll();
   Lobby.syncRound(); Lobby.clearMarks();
-  if (state.match) { newMatch(); saveMatch(); }
+  if (state.match) { newMatch(state.match.total); saveMatch(); }
 }
 async function askNewGame() {
   if (state.history.length && !await ask(`Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.${state.bingo ? Lobby.code ? '\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.' : '\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.' : ''}`, { ok: 'Neues Spiel' })) return;

@@ -233,7 +233,8 @@ function statsHtml(m) {
   if (m.rounds) out.push(`🎵 ${m.rounds} ${m.rounds === 1 ? 'Song' : 'Songs'} in ${m.game} ${m.game === 1 ? 'Partie' : 'Partien'}`);
   if (m.fast) out.push(`⚡ Schnellstes Bingo: ${esc(m.fast.name)} nach ${m.fast.r} ${m.fast.r === 1 ? 'Runde' : 'Runden'}`);
   const tips = Object.entries(m.tips || {}).sort((a, b) => b[1] - a[1]);
-  if (tips.length) out.push(`💬 Meiste Tipps: ${esc(m.names?.[tips[0][0]] || '?')} (${tips[0][1]})`);
+  const most = tips.filter(t => t[1] === tips[0]?.[1]).map(t => esc(m.names?.[t[0]] || '?'));   // bei Gleichstand alle
+  if (tips.length) out.push(`💬 Meiste Tipps: ${nameList(most)} (${tips[0][1]})`);
   return out.map(x => `<div>${x}</div>`).join('');
 }
 function showEnd(m, buttons) {

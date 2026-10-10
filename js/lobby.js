@@ -163,9 +163,10 @@ const Lobby = {
 /* ---------------- Partien & Siege (nur mit Lobby) ---------------- */
 // state.match = { total: Anzahl Partien (0 = endlos), game: aktuelle Partie, wins: { id: Siege }, names: { id: Name },
 //                 won: [ids, die die aktuelle Partie gewonnen haben], over: Spiel vorbei }
-function newMatch() {
+// total: Anzahl Partien – „Nochmal spielen“ und „Neues Spiel“ übernehmen die des laufenden Spiels
+function newMatch(total = state.settings.games ?? 0) {
   endShown = false;
-  state.match = { total: state.settings.games ?? 0, game: 1, wins: {}, names: {}, won: [], over: false, rounds: 0, tips: {} };
+  state.match = { total, game: 1, wins: {}, names: {}, won: [], over: false, rounds: 0, tips: {} };
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   LS.set('match', state.match);
 }

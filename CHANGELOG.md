@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.2.1 – 10.10.2026
+- Komplett-Test aller Funktionen (Spielleiter, zwei Mitspieler, Fernseher, mit/ohne Lobby). Behoben:
+  - „Nochmal spielen“ und „Neues Spiel“ übernehmen die Partienzahl des laufenden Spiels (vorher konnte daraus „endlos“ werden)
+  - Spielende: eine noch offene Kartenwahl der Mitspieler wird geschlossen
+  - Statistik „Meiste Tipps“ nennt bei Gleichstand alle
+
 ## 4.2.0 – 10.10.2026
 - Neu: ★ Joker in der Mitte (Bingo einrichten, bei 3 × 3 und 5 × 5) – das mittlere Feld ist schon frei, Bingo geht schneller. Funktioniert mit und ohne Lobby
 - Behoben: Wurde während eines laufenden Bingos eine Kategorie hinzugefügt oder eingeschaltet, konnte eine Runde eine Kategorie ziehen, die auf keiner Karte steht – niemand konnte markieren. Jetzt werden nur Kategorien gezogen, die auf den Karten stehen; ein Hinweis unter Einstellungen → Kategorien erklärt das

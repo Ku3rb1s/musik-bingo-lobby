@@ -266,6 +266,9 @@ async function lobbyMode(code, autoName = null) {
       m.wins ??= {}; m.names ??= {}; m.won ??= []; m.tips ??= {};
       box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
       if (lastGame !== null && !m.over && (m.game !== lastGame || lastOver)) showRepick(m);
+      // Spiel vorbei: eine offene Kartenwahl (neue Partie) ist hinfällig
+      const rp = $('#repickBox');
+      if (m.over && !rp.classList.contains('hidden')) { rp.classList.add('hidden'); rp.innerHTML = ''; $('#cardLive .card-wrap').classList.remove('hidden'); }
       if (m.over) showEnd(m, '<button class="big" data-end-leave>Lobby verlassen</button><button class="ghost" data-end-close>Hier bleiben</button>');
       else $('#endScreen').classList.add('hidden');
       lastGame = m.game; lastOver = !!m.over;
