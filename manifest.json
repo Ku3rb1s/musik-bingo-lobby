@@ -7,7 +7,7 @@
   "start_url": "/musik-bingo-lobby/",
   "scope": "/musik-bingo-lobby/",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#0c0c0f",
   "theme_color": "#0c0c0f",
   "icons": [

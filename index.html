@@ -511,7 +511,36 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
   #toast.show{transform:translateX(-50%) translateY(0)}
 }
 @keyframes sheetUp{from{transform:translateY(100%)}}
-@media (pointer:coarse){.volume,.hint{display:none}}
+/* Touch: keine Tastatur-Hinweise. Lautstärke nur am Handy ausblenden – am iPad steuert sie z. B. die Box */
+@media (pointer:coarse){.hint{display:none}}
+@media (pointer:coarse) and (max-width:640px){.volume{display:none}}
+
+/* ---------- iPad / Tablet ---------- */
+@media (min-width:641px) and (pointer:coarse){
+  .hbtn{padding:.75em 1.15em;font-size:1.02rem;border-radius:16px}
+  .controls .big{font-size:1.22rem;padding:1.05em 2.1em;border-radius:22px}
+  .controls .ghost{padding:.95em 1.4em}
+  .pill-btn{font-size:1rem;padding:.65em 1.15em}
+  .volume input[type=range]{height:34px}
+  .cell{min-height:52px}
+  .bcell{font-size:clamp(.8rem,1.9vw,1.1rem)}
+  #cardApp{max-width:680px}
+}
+/* iPad hochkant: die Höhe nutzen – größere Platte und Kategorie */
+@media (min-width:641px) and (min-height:900px){
+  main{max-width:860px}
+  .stage{padding:30px 34px 34px}
+  .disc-wrap{width:min(400px,48vw);margin:34px auto 30px}
+  .cat-icon{width:66px;height:66px;font-size:2rem;border-radius:19px}
+  .sheet{width:min(660px,calc(100vw - 48px));height:min(940px,calc(100dvh - 90px))}
+}
+/* iPad quer: Platte an die Höhe anpassen, damit die Knöpfe ohne Scrollen sichtbar bleiben */
+@media (min-width:900px) and (max-height:899px) and (pointer:coarse){
+  header{padding-top:calc(var(--sat) + 10px);padding-bottom:10px}
+  .disc-wrap{width:min(300px,32vh);margin:14px auto 14px}
+  .round-meta{margin-bottom:10px}
+  .sheet{height:calc(100dvh - 40px)}
+}
 </style>
 </head>
 <body>
@@ -1079,6 +1108,7 @@ function offerSpotifyWake(msg) {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') return;
   if (round) keepScreenOn();
+  if (Player.mode === 'connect' && !wakeRetry) Player.syncState();   // wurde in der Spotify-App pausiert/gewechselt?
   if (wakeRetry && wakeRetry === round && round.phase !== 'revealed') {
     wakeRetry = null;
     Player.connectDev = null;
@@ -1478,8 +1508,15 @@ const Player = {
     try { actx = actx || new AudioContext(); actx.resume(); } catch {}
   },
 
-  async ensure() {
-    if (this.mode) return;
+  // Nur einmal gleichzeitig suchen – sonst starten zwei schnelle Klicks zwei Player
+  ensure() {
+    // „Automatisch“ ist mangels Spotify-App auf Vorschau ausgewichen → ab und zu erneut nach einem Gerät suchen
+    if (this.mode === 'embed' && this.fallbackAt && Date.now() - this.fallbackAt > 20000) { this.mode = null; this.fallbackAt = 0; }
+    if (this.mode) return Promise.resolve();
+    this.ensuring ??= this.pick().finally(() => { this.ensuring = null; });
+    return this.ensuring;
+  },
+  async pick() {
     const want = state.settings.mode;
     if (want === 'connect') { this.mode = 'connect'; renderStatus(); return; }
     if (want !== 'embed' && state.tok) {
@@ -1506,6 +1543,7 @@ const Player = {
               // iPhone ohne aktive Spotify-App: lieber Spotify aufwecken als nur Vorschau spielen
               if (!drm) throw wakeError('Die Spotify-App ist gerade nicht aktiv.');
             }
+            if (want === 'auto') this.fallbackAt = Date.now();
             toast(drm
               ? 'Der Browser-Player konnte nicht starten (' + e.message + ') – es gibt nur Vorschau-Ausschnitte.'
               : 'Öffne die Spotify-App, spiel kurz etwas ab und wähle in den Einstellungen „Spotify-App / Box“ – sonst gibt es nur Vorschau-Ausschnitte.', 11000);
@@ -1531,6 +1569,10 @@ const Player = {
           getOAuthToken: cb => ensureToken().then(() => cb(state.tok.access_token)).catch(e => toast(e.message)),
         });
         p.addListener('ready', ({ device_id }) => { this.deviceId = device_id; clearTimeout(to); res(); });
+        // Gerät geht verloren (Standby, Netzwechsel) → beim nächsten Abspielen neu verbinden
+        p.addListener('not_ready', () => { this.deviceId = null; });
+        p.addListener('playback_error', ({ message }) => console.warn('Spotify:', message));
+        p.addListener('autoplay_failed', () => toast('Der Browser hat die Wiedergabe blockiert – tippe auf die Platte.', 6000));
         p.addListener('initialization_error', ({ message }) => rej(new Error(message)));
         p.addListener('authentication_error', ({ message }) => rej(new Error(message)));
         p.addListener('account_error', ({ message }) => rej(new Error(message)));
@@ -1573,14 +1615,22 @@ const Player = {
     return 0;
   },
 
+  // Jeder Aufruf bekommt eine Nummer: Wird schnell weitergeklickt, bricht der ältere ab und
+  // kann den neuen Song nicht mehr überschreiben (z. B. durch ein verspätetes Springen).
+  seq: 0,
   async play(t, pos = this.startMs(t)) {
+    const my = ++this.seq, stale = () => my !== this.seq;
     await this.ensure();
+    if (stale()) return;
+    const body = JSON.stringify({ uris: [t.uri], position_ms: pos });
     if (this.mode === 'sdk') {
-      await api(`/me/player/play?device_id=${this.deviceId}`, { method: 'PUT', body: JSON.stringify({ uris: [t.uri], position_ms: pos }) });
+      await this.sdkPlay(body);
+      if (stale()) return;
       if (pos) {
         // position_ms wird beim ersten Abspielen manchmal ignoriert → nachträglich springen
         for (let i = 0; i < 10; i++) {
           await sleep(300);
+          if (stale()) return;
           const s = await this.sdk.getCurrentState().catch(() => null);
           if (s?.track_window?.current_track?.id === t.id || s?.track_window?.current_track?.uri === t.uri) {
             if (Math.abs(s.position - pos) > 3000) await this.sdk.seek(pos);
@@ -1589,22 +1639,32 @@ const Player = {
         }
       }
     } else if (this.mode === 'connect') {
-      const d = await this.connectDevice();
+      let d = await this.connectDevice();
       try {
-        await api(`/me/player/play?device_id=${d.id}`, { method: 'PUT', body: JSON.stringify({ uris: [t.uri], position_ms: pos }) });
+        await api(`/me/player/play?device_id=${d.id}`, { method: 'PUT', body });
       } catch (e) {
+        if (e.status !== 404 && e.status !== 502) throw e;
+        // Gerät war kurz weg (Spotify-App im Hintergrund) → Liste neu holen und einmal erneut versuchen
         this.connectDev = null;
-        if (e.status === 404) throw wakeError(`„${d.name}“ ist gerade nicht erreichbar.`);
-        throw e;
+        d = await this.connectDevice();
+        try { await api(`/me/player/play?device_id=${d.id}`, { method: 'PUT', body }); }
+        catch (e2) { this.connectDev = null; if (e2.status === 404) throw wakeError(`„${d.name}“ ist gerade nicht erreichbar.`); throw e2; }
       }
+      this.startSync();
     } else {
       this.lastUpdate = null;
       this.embed.loadUri(t.uri);
       await sleep(700);
+      if (stale()) return;
       this.embed.play();
+      // Der Embed startet manchmal nicht beim ersten Mal → kurz prüfen und notfalls nochmal anstoßen
+      for (let i = 0; i < 12 && !(this.lastUpdate && !this.lastUpdate.isPaused); i++) await sleep(200);
+      if (stale()) return;
+      if (!this.lastUpdate || this.lastUpdate.isPaused) this.embed.play();
       if (pos) {
         // warten, bis der Embed die echte Länge meldet
         for (let i = 0; i < 15 && !(this.lastUpdate?.duration > 0 && !this.lastUpdate.isBuffering); i++) await sleep(200);
+        if (stale()) return;
         const d = this.lastUpdate?.duration || 0;
         this.preview = d > 0 && d < 35000;
         if (this.preview) {
@@ -1615,6 +1675,25 @@ const Player = {
     }
     this.playing = true; renderPlayState();
   },
+  // Browser-Player: nach Standby ist das Gerät oft „verschwunden“ → neu verbinden und einmal wiederholen
+  async sdkPlay(body) {
+    const go = () => api(`/me/player/play?device_id=${this.deviceId}`, { method: 'PUT', body });
+    if (!this.deviceId) await this.sdkReconnect();
+    try { await go(); }
+    catch (e) {
+      if (e.status !== 404 && e.status !== 502) throw e;
+      await this.sdkReconnect();
+      await api('/me/player', { method: 'PUT', body: JSON.stringify({ device_ids: [this.deviceId], play: false }) }).catch(() => {});
+      await sleep(600);
+      await go();
+    }
+  },
+  async sdkReconnect() {
+    this.deviceId = null;
+    try { await this.sdk.connect(); } catch {}
+    for (let i = 0; i < 25 && !this.deviceId; i++) await sleep(200);
+    if (!this.deviceId) throw new Error('Browser-Player nicht bereit – lade die Seite neu');
+  },
   async connectDevice() {
     if (this.connectDev) return this.connectDev;
     const devs = await getDevices();
@@ -1623,25 +1702,66 @@ const Player = {
     this.connectDev = d; renderStatus();
     return d;
   },
+  // Spotify-App/Box: echten Zustand abfragen – wer direkt in Spotify pausiert oder das Gerät wechselt,
+  // bringt sonst die Anzeige (und Pause/Play) durcheinander
+  async syncState() {
+    if (this.mode !== 'connect' || !state.tok) return null;
+    const s = await api('/me/player').catch(() => null);
+    if (this.mode !== 'connect') return null;
+    if (s) {
+      this.playing = !!s.is_playing;
+      if (s.device?.id && s.device.id !== this.connectDev?.id && s.device.name !== 'Musik-Bingo') { this.connectDev = s.device; renderStatus(); }
+    } else this.playing = false;
+    renderPlayState();
+    return s;
+  },
+  startSync() {
+    if (this.syncIv) return;
+    this.syncIv = setInterval(() => {
+      if (this.mode !== 'connect' || !round) { clearInterval(this.syncIv); this.syncIv = null; return; }
+      if (document.visibilityState === 'visible') this.syncState();
+    }, 5000);
+  },
   async pause() {
+    ++this.seq;   // ein noch laufender Start soll nicht nachträglich wieder abspielen
     try {
       if (this.mode === 'sdk') await this.sdk.pause();
-      else if (this.mode === 'connect') { if (this.playing && this.connectDev) await api(`/me/player/pause?device_id=${this.connectDev.id}`, { method: 'PUT' }); }
+      else if (this.mode === 'connect') { if (this.connectDev) await api(`/me/player/pause?device_id=${this.connectDev.id}`, { method: 'PUT' }); }
       else this.embed?.pause();
     } catch {}
     this.playing = false; renderPlayState();
   },
   async toggle() {
     try {
-      if (this.mode === 'sdk') await this.sdk.togglePlay();
-      else if (this.mode === 'connect') {
+      if (this.mode === 'sdk') {
+        await this.sdk.togglePlay();
+        const s = await this.sdk.getCurrentState().catch(() => null);
+        this.playing = s ? !s.paused : !this.playing;
+      } else if (this.mode === 'connect') {
         if (!this.connectDev) return;
-        await api(`/me/player/${this.playing ? 'pause' : 'play'}?device_id=${this.connectDev.id}`, { method: 'PUT' });
-      } else this.embed?.togglePlay();
-    } catch (e) { if (this.mode === 'connect') { if (e.status === 404) return offerSpotifyWake('Spotify ist gerade nicht erreichbar.'); toast(e.message); } }
-    this.playing = !this.playing; renderPlayState();
+        const s = await this.syncState();
+        const play = !s?.is_playing;
+        await api(`/me/player/${play ? 'play' : 'pause'}?device_id=${this.connectDev.id}`, { method: 'PUT' });
+        this.playing = play;
+      } else { this.embed?.togglePlay(); this.playing = !this.playing; }
+    } catch (e) {
+      if (this.mode === 'connect') { if (e.status === 404) return offerSpotifyWake('Spotify ist gerade nicht erreichbar.'); toast(e.message); }
+      else this.playing = !this.playing;
+    }
+    renderPlayState();
   },
-  async reset() { await this.pause(); this.mode = null; this.connectDev = null; renderStatus(); },
+  async reset() { await this.pause(); this.mode = null; this.connectDev = null; this.fallbackAt = 0; renderStatus(); },
+  // Anderes Gerät gewählt: laufende Musik direkt dorthin übergeben
+  async switchDevice(id) {
+    const was = this.playing;
+    this.connectDev = null;
+    if (this.mode !== 'connect') return;
+    try {
+      await api('/me/player', { method: 'PUT', body: JSON.stringify({ device_ids: [id], play: was }) });
+      await this.connectDevice();
+      toast(`Spielt jetzt auf „${this.connectDev.name}“`);
+    } catch (e) { toast('Gerätewechsel fehlgeschlagen: ' + e.message, 6000); }
+  },
   setVolume(v) {
     // Der Spotify-Embed bietet keine Lautstärke-Steuerung – nur Browser-Player und Connect.
     try {
@@ -2517,9 +2637,9 @@ function renderStatus() {
     : Player.mode === 'connect' ? `Spielt über Spotify auf „${Player.connectDev?.name || 'deinem Gerät'}“. Achtung: Die Spotify-App zeigt den Titel an.`
     : Player.mode === 'embed' ? 'Spielt nur kurze Vorschau-Ausschnitte. Für ganze Songs „Spotify-App / Box“ wählen.'
     : s.mode === 'connect' ? 'Spotify-App öffnen, kurz etwas abspielen, dann das Gerät hier auswählen. Ganze Songs, braucht Premium.'
-    : s.mode === 'sdk' ? 'Spielt im Browser – klappt am PC in Chrome/Edge mit Premium, nicht am iPhone.'
+    : s.mode === 'sdk' ? 'Spielt im Browser – klappt am PC in Chrome/Edge mit Premium, nicht am iPhone oder iPad.'
     : s.mode === 'embed' ? 'Nur 30-Sekunden-Vorschau, funktioniert ohne Premium.'
-    : 'Am PC spielt der Browser selbst, am iPhone wird automatisch die Spotify-App gesteuert.';
+    : 'Am PC spielt der Browser selbst, am iPhone und iPad wird automatisch die Spotify-App (oder eine Box) gesteuert.';
   renderVolume();
 }
 function renderVolume() {
@@ -2622,7 +2742,11 @@ async function renderDevices() {
   sel.innerHTML = '<option value="">Suche …</option>';
   try {
     const devs = await getDevices();
-    if (!devs.length) { sel.innerHTML = '<option value="">Keins gefunden</option>'; return; }
+    if (!devs.length) {
+      sel.innerHTML = '<option value="">Keins gefunden</option>';
+      $('#modeInfo').textContent = 'Kein Spotify-Gerät gefunden: Öffne die Spotify-App (oder schalte die Box ein), spiel kurz etwas ab und tippe dann auf ↻.';
+      return;
+    }
     sel.innerHTML = devs.map(d => `<option value="${esc(d.id)}">${DEV_ICON[d.type] || '🎧'} ${esc(d.name)}</option>`).join('');
     const cur = devs.find(d => d.id === state.settings.device) || devs.find(d => d.is_active) || devs[0];
     sel.value = cur.id;
@@ -2792,12 +2916,17 @@ $('#btnClearLib').onclick = async () => {
 
 $('#setSec').oninput = e => { state.settings.seconds = +e.target.value; fillRange(e.target); $('#secVal').textContent = e.target.value + ' s'; saveSettings(); };
 $('#setStart').onchange = e => { state.settings.start = e.target.value; saveSettings(); };
-$('#setMode').onchange = e => { state.settings.mode = e.target.value; saveSettings(); Player.reset(); renderSettings(); };
+$('#setMode').onchange = async e => {
+  const wasPlaying = Player.playing;
+  state.settings.mode = e.target.value; saveSettings();
+  await Player.reset(); renderSettings();
+  // Läuft gerade ein Song, direkt mit der neuen Wiedergabe-Art weiterspielen
+  if (round && round.phase !== 'revealed' && wasPlaying) playSnippet().then(renderSettings);
+};
 $('#setDevice').onchange = e => {
   if (!e.target.value) return;
   state.settings.device = e.target.value; saveSettings();
-  Player.connectDev = null;
-  if (Player.mode === 'connect') Player.connectDevice().catch(() => {});
+  Player.switchDevice(e.target.value).then(renderStatus);
 };
 $('#btnDevRefresh').onclick = e => { e.preventDefault(); renderDevices(); };
 $('#setBeep').onchange = e => { state.settings.beep = e.target.checked; saveSettings(); };
