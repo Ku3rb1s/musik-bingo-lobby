@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.8.0 – 11.10.2026
+- Neue Sprachen: Französisch 🇫🇷 und Spanisch 🇪🇸 (je alle 500 Texte). Geräte mit französischer bzw. spanischer Systemsprache starten automatisch darin
+
 ## 4.7.1 – 11.10.2026
 - Sprache in den Einstellungen jetzt als Globus-Knopf „🌐 DE“ links oben in der Kopfzeile (statt eigener Zeile); auf Unterseiten steht dort wie gewohnt „‹ Zurück“
 

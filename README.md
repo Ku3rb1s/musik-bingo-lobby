@@ -18,7 +18,7 @@ Einrichtung von Firebase: siehe [FIREBASE.md](FIREBASE.md). Ohne Firebase laufen
 |---|---|
 | `index.html` | Seitenaufbau (Markup) |
 | `css/app.css` | Aussehen |
-| `js/lang/en.js` | Sprachdatei Englisch (weitere Sprachen: gleiche Form, z. B. `fr.js`) |
+| `js/lang/*.js` | Sprachdateien: `en.js` (Englisch, Vorlage), `fr.js` (Französisch), `es.js` (Spanisch) |
 | `js/i18n.js` | Sprachen: Auswahl, `tx()`, Übersetzen der Seite (Texte stehen im Code auf Deutsch) |
 | `js/core.js` | Hilfsfunktionen, Konstanten, Spielzustand, Menüs |
 | `js/spotify.js` | Spotify-Anmeldung, Playlists/CSV, Wiedergabe |
