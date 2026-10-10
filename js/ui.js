@@ -271,7 +271,7 @@ document.addEventListener('click', async e => {
   if (t.closest('[data-back]')) goPage(t.closest('dialog'), 'main', true);
   if (t.closest('[data-close]')) t.closest('dialog').close();
   const open = t.closest('[data-open]');
-  if (open && !t.closest('.sc[data-lobby-check]')) { const [id, page] = open.dataset.open.split(':'); openSheet(id, page); }   // Name in der Leiste → Karte (unten)
+  if (open) { const [id, page] = open.dataset.open.split(':'); openSheet(id, page); }
 
   const bc = t.closest('[data-bcat]');
   if (bc) { const c = state.cats[+bc.dataset.bcat]; if (c) { c.enabled = !c.enabled; saveCats(); renderBingo(); } }

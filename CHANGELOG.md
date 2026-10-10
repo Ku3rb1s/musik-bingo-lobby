@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.5.2 – 10.10.2026
+- Leiste unter der Spielfläche: Antippen der freien Fläche macht nichts mehr – nur die Namen öffnen die Karte des Spielers
+
 ## 4.5.1 – 10.10.2026
 - Leiste unter der Spielfläche: Namen antippen öffnet direkt die Karte dieses Spielers (mit seinen Markierungen); die freie Fläche daneben öffnet wie bisher das Bingo-Menü
 

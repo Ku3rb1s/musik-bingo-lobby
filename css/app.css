@@ -278,7 +278,7 @@ button.cell{transform:none!important;filter:none!important}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .chip-btn{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--line);border-radius:99px;padding:.5em 1em;font-weight:600}
 .chip-btn.on{background:var(--accent);color:#06150b;border-color:transparent}
-.scorebar{margin-top:16px;padding:12px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;cursor:pointer}
+.scorebar{margin-top:16px;padding:12px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
 .scorebar::-webkit-scrollbar{display:none}
 .scorebar .sc{cursor:pointer;transition:transform .1s,background .15s}
 .scorebar .sc:active{transform:scale(.95)}
