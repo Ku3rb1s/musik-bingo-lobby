@@ -36,7 +36,7 @@ async function nextRound() {
   // n = Anzeige (übersprungene Runden behalten die Nummer), id = eindeutig – daran hängen die Tipps in der Lobby
   round = { n: (state.history[0]?.n || 0) + 1, id: Date.now(), track, cat, phase: 'playing', hints: 0, pos: Player.startMs(track) };
   mbLookup(track);
-  if (cat.answer === 'country') countryLookup(track);
+  if (ARTIST_FACTS.includes(cat.answer)) artistLookup(track);
   spinCategory(cat);
   render(); Lobby.syncRound();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -135,7 +135,7 @@ function reveal() {
   if (state.settings.pauseOnReveal) Player.pause();
   beep(1046, .25);
   render(); renderHist(); Lobby.syncRound();
-  if (round.cat.answer === 'country') countryLookup(t);
+  if (ARTIST_FACTS.includes(round.cat.answer)) artistLookup(t);
   // Statistik fürs Spielende: gespielte Songs und wer wie oft getippt hat
   const m = state.match;
   if (Lobby.code && m && !m.over) {
@@ -154,9 +154,9 @@ function answerFor(cat, t) {
     case 'decade': return decadeOf(y);
     case 'range': return y ? `${y} <span class="small">(richtig: ${y - cat.tol}–${y + cat.tol})</span>` : '?';
     case 'album': return esc(t.album || '?');
-    case 'country': {
-      const c = countryOf(t);
-      return c ? esc(c) : c === null ? '🔎 Wird nachgeschlagen …' : '🤔 Unbekannt – ihr entscheidet selbst';
+    case 'country': case 'kind': case 'gender': {   // kommt von MusicBrainz
+      const v = artistFact(t, cat.answer);
+      return v ? esc(v) : v === null ? '🔎 Wird nachgeschlagen …' : '🤔 Unbekannt – ihr entscheidet selbst';
     }
     // Eigene Frage ohne Daten (z. B. „Aus welchem Film?“): die App kennt die Antwort nicht – der Song steht darunter
     default: return '🤔 Ihr entscheidet selbst';
@@ -233,9 +233,10 @@ function mbLookup(t) {
   });
 }
 
-/* ---------------- Herkunftsland über MusicBrainz ---------------- */
+/* ---------------- Künstler über MusicBrainz: Land, Band/Solo, Sänger/Sängerin ---------------- */
 // Erst die Aufnahme suchen (Titel + Interpret) – so ist klar, welcher Künstler gemeint ist (es gibt z. B. zwei Bands „Nirvana“).
-// Dann beim Künstler das Land nachschlagen. Ergebnis je Künstler gespeichert ('' = MusicBrainz kennt es nicht).
+// Dann den Künstler nachschlagen. Ergebnis je Künstler gespeichert ({} = MusicBrainz kennt ihn nicht).
+const ARTIST_FACTS = ['country', 'kind', 'gender'];
 const artistOf = t => (t.artists.split(',')[0] || '').trim();
 const REGION_DE = (() => { try { return new Intl.DisplayNames(['de'], { type: 'region' }); } catch { return null; } })();
 function regionName(code) {
@@ -243,10 +244,18 @@ function regionName(code) {
   if (code === 'XW') return 'Weltweit';
   try { return REGION_DE?.of(code) || code; } catch { return code; }
 }
-// null = noch unbekannt (Suche läuft/offen), '' = nicht gefunden, sonst Ländername
-function countryOf(t) {
-  const v = state.mbCountry[normStr(artistOf(t))];
-  return v === undefined ? null : v ? regionName(v) : '';
+const KIND_DE = { Person: 'Solo', Group: 'Band', Orchestra: 'Orchester', Choir: 'Chor' };
+const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-binär' };
+// Antwort für country/kind/gender: null = noch nicht nachgeschlagen, '' = unbekannt, sonst Text
+function artistFact(t, what) {
+  const a = state.mbArtist[normStr(artistOf(t))];
+  if (a === undefined) return null;
+  const guest = t.artists.includes(',') ? ' · mit Gast' : '';   // Spotify nennt Gastkünstler als weitere Interpreten
+  if (what === 'country') return a.c ? regionName(a.c) : '';
+  if (what === 'kind') return KIND_DE[a.t] ? KIND_DE[a.t] + guest : '';
+  // Geschlecht gibt es nur bei Einzelpersonen – bei Bands, Orchestern, Chören entscheidet die Runde (z. B. nach der Stimme)
+  if (what === 'gender') return a.t && a.t !== 'Person' ? `🤔 ${KIND_DE[a.t] || 'Gruppe'} – ihr entscheidet selbst` : GENDER_DE[a.g] ? GENDER_DE[a.g] + guest : '';
+  return '';
 }
 async function mbJson(url) {
   let r = await fetch(url);
@@ -254,11 +263,11 @@ async function mbJson(url) {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
-function countryLookup(t) {
+function artistLookup(t) {
   const name = artistOf(t), k = normStr(name);
-  if (!k || k in state.mbCountry) return;
+  if (!k || k in state.mbArtist) return;
   mbBusy = mbBusy.then(async () => {
-    if (k in state.mbCountry) return;
+    if (k in state.mbArtist) return;
     try {
       const MB = 'https://musicbrainz.org/ws/2/';
       const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND artist:"${name.replace(/"/g, '')}"`;
@@ -266,23 +275,23 @@ function countryLookup(t) {
       let id = null;
       for (const rec of j.recordings || []) {
         if ((rec.score ?? 0) < 85) continue;
-        const ac = (rec['artist-credit'] || []).find(a => normStr(a.artist?.name) === k || normStr(a.name) === k);
+        const ac = (rec['artist-credit'] || []).find(x => normStr(x.artist?.name) === k || normStr(x.name) === k);
         if (ac?.artist?.id) { id = ac.artist.id; break; }
       }
       await sleep(1100);
       if (!id) {   // Aufnahme nicht gefunden → Künstler direkt suchen (gleicher Name)
         const s = await mbJson(MB + 'artist?fmt=json&limit=5&query=' + encodeURIComponent(`artist:"${name.replace(/"/g, '')}"`));
-        id = (s.artists || []).find(a => (a.score ?? 0) >= 90 && normStr(a.name) === k)?.id || null;
+        id = (s.artists || []).find(x => (x.score ?? 0) >= 90 && normStr(x.name) === k)?.id || null;
         await sleep(1100);
       }
-      let code = '';
+      let info = {};
       if (id) {
-        const a = await mbJson(MB + 'artist/' + id + '?fmt=json');
-        code = a.country || a.area?.['iso-3166-1-codes']?.[0] || '';
+        const x = await mbJson(MB + 'artist/' + id + '?fmt=json');
+        info = { c: x.country || x.area?.['iso-3166-1-codes']?.[0] || '', t: x.type || '', g: x.gender || '' };
       }
-      state.mbCountry[k] = code; LS.set('mbCountry', state.mbCountry);
+      state.mbArtist[k] = info; LS.set('mbArtist', state.mbArtist);
       // Kam die Antwort erst nach der Auflösung: nachreichen (auch an Handys und Fernseher)
-      if (round?.track === t && round.cat.answer === 'country') {
+      if (round?.track === t && ARTIST_FACTS.includes(round.cat.answer)) {
         if (round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } else render();
       }
     } catch { /* offline o. ä. – beim nächsten Mal erneut versuchen */ }
@@ -306,7 +315,9 @@ function hintsFor(cat, t) {
     decade: [y && (y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), `Der Interpret beginnt mit „${first(artist0)}“`],
     album: [`Das Album beginnt mit „${first(t.album)}“`, dec && `Erschienen in den ${dec}`, cover],
     none: [dec && `Erschienen in den ${dec}`, `Der Interpret beginnt mit „${first(artist0)}“`, cover],
-    country: [countryOf(t) && `Das Land beginnt mit „${countryOf(t)[0]}“`, `Der Interpret beginnt mit „${first(artist0)}“`],
+    country: [artistFact(t, 'country') && `Das Land beginnt mit „${artistFact(t, 'country')[0]}“`, `Der Interpret beginnt mit „${first(artist0)}“`],
+    kind: [`Der Interpret beginnt mit „${first(artist0)}“`, dec && `Erschienen in den ${dec}`],
+    gender: [`Der Interpret beginnt mit „${first(artist0)}“`, dec && `Erschienen in den ${dec}`],
   }[cat.answer] || [];
   return list.filter(Boolean).slice(0, 2);   // immer (höchstens) 2 Tipps pro Runde
 }

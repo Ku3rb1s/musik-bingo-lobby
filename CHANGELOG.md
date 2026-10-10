@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.4.0 – 10.10.2026
+- Zwei neue Kategorien mit Antwort von MusicBrainz, von Haus aus ausgeschaltet:
+  - „Band oder Solo?“ 👥 – Antwort Band, Solo, Orchester oder Chor (mit „· mit Gast“, wenn Spotify weitere Interpreten nennt)
+  - „Sänger oder Sängerin?“ 🎙️ – bei Bands, Orchestern und Chören „🤔 … – ihr entscheidet selbst“
+- Land, Band/Solo und Sänger/Sängerin kommen aus einer gemeinsamen Künstler-Suche (einmal je Künstler, danach gespeichert)
+
 ## 4.3.0 – 10.10.2026
 - Neue Kategorie „Aus welchem Land kommt der Künstler?“ 🌍 – die Antwort schlägt die App automatisch bei MusicBrainz nach (erst die Aufnahme, dann den Künstler, damit gleichnamige Bands nicht verwechselt werden). Von Haus aus ausgeschaltet; einschalten unter Einstellungen → Kategorien oder beim Bingo-Einrichten. Auch als Auflösung für eigene Kategorien wählbar („Herkunftsland (automatisch)“)
 - Eigene Fragen ohne Daten (z. B. „Aus welchem Film?“): Die Auflösung zeigt jetzt ehrlich „🤔 Ihr entscheidet selbst“ und darunter den Song – statt so zu tun, als wäre „Interpret – Titel“ die Antwort. Die Option heißt jetzt „Keine – ihr entscheidet selbst“

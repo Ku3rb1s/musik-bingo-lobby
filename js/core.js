@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.3.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.4.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -44,14 +44,16 @@ const DEFAULT_CATS = [
   { id: 'range3', name: 'Erscheinungsjahr ± 3 Jahre', answer: 'range', tol: 3, enabled: true, builtin: true },
   // Neu (4.3.0): Antwort kommt von MusicBrainz – von Haus aus ausgeschaltet
   { id: 'country', name: 'Aus welchem Land kommt der Künstler?', answer: 'country', enabled: false, builtin: true },
+  { id: 'kind', name: 'Band oder Solo?', answer: 'kind', enabled: false, builtin: true },
+  { id: 'gender', name: 'Sänger oder Sängerin?', answer: 'gender', enabled: false, builtin: true },
 ];
 const ANSWER_TYPES = {
   title: 'Songtitel', artist: 'Interpret', year: 'Genaues Jahr', decade: 'Jahrzehnt',
-  range: 'Jahr ± Toleranz', album: 'Album', country: 'Herkunftsland (automatisch)', none: 'Keine – ihr entscheidet selbst',
+  range: 'Jahr ± Toleranz', album: 'Album', country: 'Herkunftsland (automatisch)', kind: 'Band oder Solo (automatisch)', gender: 'Sänger oder Sängerin (automatisch)', none: 'Keine – ihr entscheidet selbst',
 };
 const CAT_STYLE = {
   title: ['🎵', '#1ed760'], artist: ['🎤', '#ff4fa3'], year: ['🎯', '#ffb020'], decade: ['🕰️', '#8b6cff'],
-  range: ['📅', '#22d3ee'], album: ['💿', '#ff8a3d'], country: ['🌍', '#60a5fa'], none: ['❓', '#a3e635'],
+  range: ['📅', '#22d3ee'], album: ['💿', '#ff8a3d'], country: ['🌍', '#60a5fa'], kind: ['👥', '#f87171'], gender: ['🎙️', '#e879f9'], none: ['❓', '#a3e635'],
 };
 const catStyle = c => {
   const base = CAT_STYLE[c?.answer] || CAT_STYLE.none;
@@ -100,11 +102,12 @@ const state = {
   match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
   partieFrom: LS.get('partieFrom', 0),   // Rundennummer, ab der die aktuelle Partie zählt (für die Bingo-Prüfung)
   mb: LS.get('mb', {}),             // Originaljahre laut MusicBrainz (0 = nichts Besseres gefunden)
-  mbCountry: LS.get('mbCountry', {}),   // Herkunftsland je Künstler laut MusicBrainz (ISO-Code, '' = unbekannt)
+  mbArtist: LS.get('mbArtist', {}),   // Künstler laut MusicBrainz: { c: Land (ISO), t: Art (Person/Group/…), g: Geschlecht } – {} = nicht gefunden
   yearFix: LS.get('yearFix', {}),
   history: LS.get('history', []),
 };
 // Ältere eigene Kategorien (noch ohne eigene Farbe) nachträglich einfärben
+LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
 // Neue Standard-Kategorien auch bei bestehenden Spielern ergänzen – so, wie sie ausgeliefert werden (Herkunftsland: aus)
 if (DEFAULT_CATS.some(d => !state.cats.some(c => c.id === d.id))) {
   for (const d of DEFAULT_CATS) if (!state.cats.some(c => c.id === d.id)) state.cats.push(structuredClone(d));
