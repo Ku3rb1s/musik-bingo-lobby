@@ -319,6 +319,30 @@ button.cell{transform:none!important;filter:none!important}
 .round-live .rl-a{margin-top:3px;font-weight:600;color:var(--accent)}
 .join-box{padding:22px 18px;text-align:center}
 .join-box h3{margin:6px 0 4px;font-size:1.35rem}
+/* Kartenauswahl beim Beitreten: kleine Vorschau nur mit Symbolen */
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:14px}
+.pick{flex-direction:column;gap:6px;padding:10px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:.85rem}
+.pick:hover,.pick:focus-visible{border-color:var(--accent)}
+.bgrid.mini{gap:3px;margin:0;width:100%}
+.bgrid.mini .bcell{border-radius:6px;padding:1px;font-size:.7rem;cursor:inherit}
+.bgrid.mini .bcell span:not(.bi){display:none}
+.bgrid.mini .bcell .bi{font-size:1.15em}
+/* Partie-Stand und Tipps */
+.match-live{padding:10px 14px;margin-bottom:12px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.match-live b{color:var(--accent)}
+.match-tbl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.match-tbl span{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:99px;padding:.3em .8em;font-weight:600;white-space:nowrap}
+.match-tbl span.lead{background:var(--accent);color:#06150b;border-color:transparent}
+.match-card{text-align:center;padding:12px 14px;margin:6px 0 12px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--g-brd)}
+.match-card .mc-h{font-weight:800;font-size:1.05rem}
+.guess-live{margin:-4px 0 12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:.85rem}
+.guess-live span{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:12px;padding:.35em .7em}
+.guess-live span.ok{border-color:var(--accent)}
+.guess-live b{color:var(--accent)}
+.guess-list{margin-top:12px;text-align:left;background:rgba(255,255,255,.06);border:1px solid var(--g-brd);border-radius:18px;padding:10px 14px}
+.guess-list .gl-h{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.guess-list div{padding:3px 0;border-top:1px solid rgba(255,255,255,.06)}
+.guess-list div:first-of-type{border-top:0}
 .join-box input{width:100%;margin:16px 0 12px;font-size:1.1rem;padding:.8em 1em;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);text-align:center}
 
 /* ---------- Bingo ---------- */
@@ -372,6 +396,19 @@ body.card-mode>header,body.card-mode>main{display:none}
   box-shadow:inset 0 2px 6px rgba(0,0,0,.12),0 6px 16px -8px rgba(0,0,0,.5)}
 .guess-input::placeholder{color:#9aa6c4}
 .guess-input:focus{outline:3px solid var(--accent2)}
+/* Lobby am Handy: kompakt, damit Karte und Tipp ohne Scrollen auf den Bildschirm passen.
+   Die anderen sehen die Tipps ohnehin live – „Groß zeigen“ gibt es als kleinen Link. */
+.lobby-only{display:none}
+body.lobby-mode .lobby-only{display:inline}
+body.lobby-mode .guess-wrap{padding:10px 14px 12px;margin-bottom:10px}
+body.lobby-mode .guess-head{margin-bottom:6px}
+body.lobby-mode .guess-input{height:50px;font-size:1.75rem;line-height:40px;margin-bottom:0;padding-top:4px}
+body.lobby-mode #btnGuessShow,body.lobby-mode .card-help{display:none}
+body.lobby-mode .round-live{padding:10px 14px;margin-bottom:10px}
+body.lobby-mode .round-live .rl-ic{font-size:1.5rem}
+body.lobby-mode .match-live{padding:8px 12px;margin-bottom:10px}
+body.lobby-mode #cardApp .card-wrap{padding:12px}
+body.lobby-mode #cardApp .card-head{margin-bottom:10px}
 .guess-show{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent}
 .guess-show[open]{display:grid;place-items:center;animation:pop .3s ease}
 .guess-show::backdrop{background:rgba(var(--deep),.85)}
@@ -400,9 +437,11 @@ body.card-mode>header,body.card-mode>main{display:none}
 .glass::before{background:var(--g-bg);backdrop-filter:var(--g-blur);-webkit-backdrop-filter:var(--g-blur)}
 .glass::after{background:var(--g-sheen)}
 /* Unschärfe nur auf großen Flächen – kleine Elemente liegen schon auf Glas (schont das iPhone beim Scrollen) */
-.hbtn{backdrop-filter:var(--g-blur);-webkit-backdrop-filter:var(--g-blur)}
+/* Kopfzeilen-Knöpfe ohne Milchglas: Safari (v. a. iPad) zeichnet Schrift über den animierten Hintergrund sonst unscharf */
+.hbtn{backdrop-filter:none;-webkit-backdrop-filter:none}
 .hbtn,.pill,button.ghost,.chip-btn,.cat-chip,.scorebar .sc{box-shadow:var(--g-hi)}
-.hbtn{background:var(--g-bg) var(--g-sheen);border-color:var(--g-brd);border-radius:99px}
+.hbtn{background:rgba(var(--surf),.82) var(--g-sheen);border-color:var(--g-brd);border-radius:99px}
+.logo span{-webkit-font-smoothing:antialiased}
 .pill{background:var(--g-bg);border-color:var(--g-brd)}
 button.ghost{background:rgba(255,255,255,.09) var(--g-sheen);border-color:var(--g-brd)}
 .chip-btn{background:rgba(255,255,255,.08) var(--g-sheen);border-color:var(--g-brd)}
@@ -529,16 +568,73 @@ html.ios .volume,html.ios .hint{display:none}
 @media (min-width:641px) and (min-height:900px){
   main{max-width:860px}
   .stage{padding:30px 34px 34px}
-  .disc-wrap{width:min(400px,48vw);margin:34px auto 30px}
+  .disc-wrap{margin:30px auto 26px}
   .cat-icon{width:66px;height:66px;font-size:2rem;border-radius:19px}
   .sheet{width:min(660px,calc(100vw - 48px));height:min(940px,calc(100dvh - 90px))}
 }
 /* iPad quer: Platte an die Höhe anpassen, damit die Knöpfe ohne Scrollen sichtbar bleiben */
 @media (min-width:900px) and (max-height:899px) and (pointer:coarse){
   header{padding-top:calc(var(--sat) + 10px);padding-bottom:10px}
-  .disc-wrap{width:min(300px,32vh);margin:14px auto 14px}
+  .disc-wrap{margin:14px auto 14px}
   .round-meta{margin-bottom:10px}
   .sheet{height:calc(100dvh - 40px)}
+}
+/* ---------- Alles auf einen Bildschirm ---------- */
+/* Eigene Karte und Mitspieler-Leiste nebeneinander statt untereinander */
+.below{display:flex;gap:12px;margin-top:14px;align-items:stretch}
+.below>.hidden{display:none}
+.below .mycard-btn{margin:0;width:auto;flex:none;padding:.8em 1.3em}
+.below .scorebar{margin:0;flex:1;min-width:0;padding:10px 14px}
+.below .mycard-btn:only-child,.below .mycard-btn:has(+ .scorebar.hidden){flex:1}
+/* Platte richtet sich nach der Höhe: der Rest der Spielfläche (Kopf, Kategorie, Knöpfe, Leiste) braucht ca. 640 px */
+.disc-wrap{width:min(62vw,clamp(140px,calc(100dvh - 640px),420px))}
+/* Niedrige Bildschirme (Laptop): enger, Tastatur-Hinweis weg */
+@media (min-width:641px) and (max-height:900px){
+  header{padding-top:calc(var(--sat) + 10px);padding-bottom:10px}
+  .stage{padding:14px 22px 16px}
+  .round-meta{margin-bottom:8px}
+  .cat-badge{padding:8px 18px 8px 8px}
+  .cat-icon{width:44px;height:44px;font-size:1.35rem}
+  .cat-name{font-size:clamp(1.3rem,3.4vw,2rem)}
+  .disc-wrap{margin:12px auto 12px;width:min(62vw,clamp(140px,calc(100dvh - 500px),400px))}
+  .hint{display:none}
+  .volume{margin-top:8px}
+}
+/* Auflösung auf breiten Bildschirmen: Platte links, Lösung rechts – so passt alles ohne Scrollen */
+@media (min-width:900px){
+  .stage.revealed{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);column-gap:28px;align-items:center;
+    grid-template-areas:"meta meta" "cat cat" "hints hints" "disc reveal" "act reveal" "ctrl ctrl" "vol vol" "hint hint"}
+  .stage.revealed>.round-meta{grid-area:meta}
+  .stage.revealed>.cat{grid-area:cat}
+  .stage.revealed>.hintbox{grid-area:hints}
+  .stage.revealed>.disc-wrap{grid-area:disc;width:min(100%,clamp(150px,calc(100dvh - 560px),340px));margin:14px auto 8px}
+  .stage.revealed>.action-row{grid-area:act;margin-top:0}
+  .stage.revealed>.reveal{grid-area:reveal;margin:14px 0 8px;max-width:none;width:100%}
+  .stage.revealed>.controls{grid-area:ctrl;margin-top:10px}
+  .stage.revealed>.volume{grid-area:vol}
+  .stage.revealed>.hint{grid-area:hint}
+}
+/* Schmal/hochkant (iPad hochkant, kleine Fenster): Platte bei der Auflösung klein, Lösung darunter */
+@media (min-width:641px) and (max-width:899px){
+  .stage.revealed .disc-wrap{width:min(62vw,clamp(110px,calc(100dvh - 1000px),300px));margin:12px auto 10px}
+  .stage.revealed .reveal{margin:10px auto 10px}
+}
+/* Kompakte Auflösung auf niedrigen Bildschirmen: Album/Datum und Jahres-Chips weg (die Antwort steht ja oben) */
+@media (max-height:900px),(max-width:640px){
+  .stage.revealed .rv-meta,.stage.revealed .tags{display:none}
+  .stage.revealed .rv-answer{padding:12px 16px;margin-bottom:8px}
+  .stage.revealed .rv-song{padding:10px 14px}
+  .stage.revealed .guess-list{margin-top:8px;padding:8px 12px}
+}
+/* Handy: Bedienleiste ist fest unten */
+@media (max-width:640px){
+  .below{gap:8px;margin-top:10px}
+  .below .mycard-btn{padding:.7em .95em;border-radius:18px;font-size:.92rem}
+  .below .mycard-btn .lg{display:none}
+  .below .scorebar{padding:8px 10px}
+  .disc-wrap{width:min(64vw,clamp(130px,calc(100dvh - 505px),260px))}
+  .stage.revealed .disc-wrap{width:min(50vw,clamp(96px,calc(100dvh - 760px),200px))}
+  .stage.revealed .reveal{margin:12px auto 8px}
 }
 </style>
 </head>
@@ -617,8 +713,11 @@ html.ios .volume,html.ios .hint{display:none}
     <p class="hint"><kbd>Leertaste</kbd> nächster Schritt · <kbd>P</kbd> Pause · <kbd>↑</kbd><kbd>↓</kbd> Lautstärke</p>
   </section>
 
-  <button id="myCardBtn" class="ghost mycard-btn hidden" data-open="sheetGame:mycard"><svg class="ic"><use href="#i-grid"/></svg>Meine Bingo-Karte</button>
-  <div id="scorebar" class="scorebar glass hidden" data-open="sheetGame:main"></div>
+  <!-- Unter der Spielfläche in einer Zeile: eigene Karte + Mitspieler -->
+  <div class="below">
+    <button id="myCardBtn" class="ghost mycard-btn hidden" data-open="sheetGame:mycard"><svg class="ic"><use href="#i-grid"/></svg><span>Meine <span class="lg">Bingo-</span>Karte</span></button>
+    <div id="scorebar" class="scorebar glass hidden" data-open="sheetGame:main"></div>
+  </div>
 
   <details class="hist glass" id="histBox">
     <summary>Verlauf</summary>
@@ -831,6 +930,7 @@ html.ios .volume,html.ios .hint{display:none}
     <section class="page" data-page="main" data-title="Bingo">
       <div class="group-h">Mitspieler in der Lobby</div>
       <div id="lobbyCodeBox" class="hidden"><div class="lobby-code" id="lobbyCode"></div><div class="group-f" style="text-align:center;margin-top:0">Lobby-Code · Beitreten über den QR-Code bei den Bingo-Karten</div></div>
+      <div id="matchMain" class="hidden"></div>
       <div class="group" id="playerList"></div>
       <div class="group-f" id="playerNote"></div>
 
@@ -867,6 +967,20 @@ html.ios .volume,html.ios .hint{display:none}
             <button data-lobby="1">Mit Lobby<small>live, Beitritt per Code</small></button>
             <button data-lobby="0">Ohne Lobby<small>nur QR-Code, ohne Internet-Sync</small></button>
           </div>
+          <div id="bingoGamesBox">
+            <div class="group-h">Partien</div>
+            <div class="seg" id="bingoGamesSeg">
+              <button data-games="1">1<small>einmal</small></button>
+              <button data-games="3">3<small>kurz</small></button>
+              <button data-games="5">5<small>Abend</small></button>
+              <button data-games="10">10<small>lang</small></button>
+              <button data-games="0">∞<small>endlos</small></button>
+            </div>
+            <div class="group-f" style="text-align:center;margin-top:6px">Nach jedem bestätigten Bingo startest du die nächste Partie mit neuen Karten – die Siege werden gezählt.</div>
+          </div>
+        </div>
+        <div class="group" style="margin-top:14px">
+          <label class="cell"><span class="grow">Ich spiele selbst mit<span class="sub">Eigene Karte für den Spielleiter</span></span><span class="switch"><input type="checkbox" class="set-host-plays"><span></span></span></label>
         </div>
         <div class="group-h">Felder</div>
         <div class="chip-scroll" id="bingoCats"></div>
@@ -882,9 +996,11 @@ html.ios .volume,html.ios .hint{display:none}
           <div class="lobby-code" id="joinCodeBig"></div>
         </div>
         <div class="chip-scroll" id="bingoInfo"></div>
+        <div id="matchBox" class="hidden"></div>
         <div class="group">
+          <label class="cell"><span class="grow">Ich spiele selbst mit</span><span class="switch"><input type="checkbox" class="set-host-plays"><span></span></span></label>
           <button class="cell tap accent" id="btnBingoShare"><svg class="ic"><use href="#i-link"/></svg><span class="grow">Link kopieren</span></button>
-          <button class="cell tap" data-go="mycard"><svg class="ic"><use href="#i-grid"/></svg><span class="grow">Meine Karte<span class="sub">Als Spielleiter selbst mitspielen</span></span><svg class="ic chev"><use href="#i-chev"/></svg></button>
+          <button class="cell tap" data-go="mycard" id="myCardCell"><svg class="ic"><use href="#i-grid"/></svg><span class="grow">Meine Karte<span class="sub">Als Spielleiter selbst mitspielen</span></span><svg class="ic chev"><use href="#i-chev"/></svg></button>
         </div>
         <div class="group-h">Bingo prüfen</div>
         <div id="checkWhoBox">
@@ -944,18 +1060,24 @@ html.ios .volume,html.ios .hint{display:none}
     <input id="joinCodeInput" class="hidden" placeholder="Lobby-Code" maxlength="8" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.2em;font-weight:800">
     <input id="joinName" placeholder="Dein Name" maxlength="24" autocomplete="nickname" enterkeyhint="go">
     <button class="big full" id="btnJoin">Beitreten</button>
+    <div id="pickBox" class="hidden">
+      <div class="pick-grid" id="pickGrid"></div>
+      <button class="ghost" id="btnPickMore" style="margin-top:12px">Andere Karten zeigen</button>
+    </div>
   </div>
   <div id="cardLive">
+  <div id="matchLive" class="glass match-live hidden"></div>
   <div id="roundLive" class="glass round-live hidden"></div>
+  <div id="guessLive" class="guess-live hidden"></div>
   <div class="glass guess-wrap">
-    <div class="guess-head"><span>Dein Tipp</span><button class="link small" id="btnGuessClear">Löschen</button></div>
+    <div class="guess-head"><span>Dein Tipp</span><span><button class="link small lobby-only" id="btnGuessBig">Groß zeigen</button><span class="lobby-only muted"> · </span><button class="link small" id="btnGuessClear">Löschen</button></span></div>
     <textarea id="guessText" class="guess-input" rows="2" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
     <button class="big full" id="btnGuessShow"><svg class="ic"><use href="#i-eye"/></svg> Tipp zeigen</button>
   </div>
   <div class="glass card-wrap">
     <div class="card-top"><span class="pill" id="cardHits"></span><button class="link small" id="btnCardClear">Markierungen löschen</button></div>
     <div id="cardGrid" class="bgrid"></div>
-    <p class="small muted" style="margin:6px 2px 10px">Hast du die Frage einer Runde <b>richtig</b> beantwortet? Dann markiere <b>ein</b> Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = <b>BINGO!</b> Ruf es laut und nenn deine Kartennummer.</p>
+    <p class="small muted card-help" style="margin:6px 2px 10px">Hast du die Frage einer Runde <b>richtig</b> beantwortet? Dann markiere <b>ein</b> Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = <b>BINGO!</b> Ruf es laut und nenn deine Kartennummer.</p>
     <div class="chip-scroll" id="cardLegend"></div>
     <div class="small muted" id="cardLobbyInfo" style="text-align:center;margin-top:8px"></div>
   </div>
@@ -1003,7 +1125,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '2.3.1', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.0.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -1069,9 +1191,11 @@ const state = {
   played: LS.get('played', []),
   cats: LS.get('cats', null) || structuredClone(DEFAULT_CATS),
   settings: Object.assign({ seconds: 30, start: 'begin', beep: true, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
-    limit: 0, hints: true, mb: true, theme: 'graphit' }, LS.get('settings', {})),
+    limit: 0, hints: true, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
   bingo: LS.get('bingo', null)?.k ? LS.get('bingo', null) : null,   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
   lobby: LS.get('lobby', null),     // Code der eigenen Lobby (Firebase), solange Bingo läuft
+  match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
+  partieFrom: LS.get('partieFrom', 0),   // Rundennummer, ab der die aktuelle Partie zählt (für die Bingo-Prüfung)
   mb: LS.get('mb', {}),             // Originaljahre laut MusicBrainz (0 = nichts Besseres gefunden)
   yearFix: LS.get('yearFix', {}),
   history: LS.get('history', []),
@@ -1084,6 +1208,8 @@ if (state.cats.some(c => !c.builtin && !c.color)) {
 // Bingo-Felder: Farbe/Symbol stecken direkt im Feld (k.c ohne „#“, k.e), ältere Runden hatten nur den Antworttyp (k.a)
 const kStyle = k => { const base = CAT_STYLE[k.a] || CAT_STYLE.none; return [k.e || base[0], k.c ? '#' + k.c : base[1]]; };
 if (state.bingo) state.bingo.k = state.bingo.k.map(k => { const [e, c] = kStyle(k); return { i: k.i, c: c.slice(1), e, n: k.n }; });
+// Firebase lässt leere Listen/Objekte weg → beim Laden ergänzen
+if (state.match) { state.match.wins ??= {}; state.match.names ??= {}; state.match.won ??= []; }
 let round = null;      // { n, track, cat, phase: 'playing'|'countdown'|'revealed', timeUp }
 let spinning = false;
 
@@ -2066,7 +2192,8 @@ const Lobby = {
     for (let i = 0; i < 10; i++) {
       const code = Array.from(crypto.getRandomValues(new Uint8Array(4)), x => LOBBY_CHARS[x % LOBBY_CHARS.length]).join('');
       if ((await f.get(f.at('lobbies/' + code))).exists()) continue;
-      await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), bingo: b });
+      newMatch();
+      await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), bingo: b, match: state.match });
       state.lobby = code; LS.set('lobby', code);
       this.watch();
       return code;
@@ -2083,8 +2210,10 @@ const Lobby = {
       if (this.code !== code) return;
       const snap = await f.get(f.at(`lobbies/${code}/host`));
       if (snap.exists() && snap.val() !== f.uid) throw new Error('Diese Lobby gehört zu einem anderen Gerät');
+      if (!state.match) newMatch();
       // Lobby wurde gelöscht (z. B. aufgeräumt) → mit demselben Code neu anlegen
-      if (!snap.exists()) await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), bingo: state.bingo });
+      if (!snap.exists()) await f.set(f.at('lobbies/' + code), { host: f.uid, created: f.serverTimestamp(), bingo: state.bingo, match: state.match });
+      else if (state.match) await f.set(f.at(`lobbies/${code}/match`), state.match);
       let first = true;
       this.unsub = f.onValue(f.at(`lobbies/${code}/players`), s => {
         const prev = this.players;
@@ -2093,6 +2222,7 @@ const Lobby = {
         first = false;
         renderLobby();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'bingo') renderCheckWho();
+        if (round && !spinning) round.phase === 'revealed' ? renderGuessList() : render();   // Tipps der Mitspieler
       }, e => toast('Lobby: ' + e.message, 6000));
       this.syncRound();
     } catch (e) {
@@ -2124,16 +2254,75 @@ const Lobby = {
   },
   close() {
     const code = this.code; this.stop();
-    state.lobby = null; LS.del('lobby');
+    state.lobby = null; LS.del('lobby'); state.match = null; LS.del('match');
     if (code) firebase().then(f => f.remove(f.at('lobbies/' + code))).catch(() => {});
   },
-  confirm(id) { this.write(`players/${id}/ok`, true); },
+  // Bingo bestätigen: Spieler bekommt die Bestätigung aufs Handy, der Sieg wird für die Lobby gezählt
+  confirm(id) {
+    const p = whoById(id);
+    if (id !== HOST_ID) this.write(`players/${id}/ok`, true);
+    const m = state.match; if (!m || m.over || !p) return;
+    if (!m.won.includes(id)) { m.won.push(id); m.wins[id] = (m.wins[id] || 0) + 1; m.names[id] = p.name; }
+    if (m.total && m.game >= m.total) m.over = true;
+    saveMatch();
+  },
   kick(id) { this.write(`players/${id}`, null); },
   onBingo(id, p) {
     confetti(); beep(1046, .3);
     toast(`🎉 BINGO von ${p.name} – Karte Nr. ${p.num}`, 12000, { label: 'Prüfen', fn: () => checkLobbyPlayer(id) });
   },
 };
+/* ---------------- Partien & Siege (nur mit Lobby) ---------------- */
+// state.match = { total: Anzahl Partien (0 = endlos), game: aktuelle Partie, wins: { id: Siege }, names: { id: Name },
+//                 won: [ids, die die aktuelle Partie gewonnen haben], over: Spiel vorbei }
+function newMatch() {
+  state.match = { total: state.settings.games ?? 0, game: 1, wins: {}, names: {}, won: [], over: false };
+  state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
+  LS.set('match', state.match);
+}
+function saveMatch() {
+  LS.set('match', state.match);
+  if (Lobby.code) Lobby.write('match', state.match);
+  renderMatch(); renderLobby();
+}
+// Nächste Partie: neue Karten für alle (gleiche Größe/Felder), Markierungen weg, Prüfung zählt nur neue Runden
+function nextGame() {
+  const m = state.match; if (!m || m.over || !state.bingo) return;
+  m.game++; m.won = [];
+  state.bingo = { ...state.bingo, g: randStr(6) }; LS.set('bingo', state.bingo);
+  state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
+  Lobby.setBingo(state.bingo);
+  saveMatch(); renderBingo(); renderMyCardBtn();
+  $('#checkBox').innerHTML = '';
+  toast(`Partie ${m.game}${m.total ? ' von ' + m.total : ''} – alle haben eine neue Karte 🎲`, 6000);
+}
+// Siegertabelle als Chips; lead = wer vorne liegt
+function winsHtml(m) {
+  const rows = Object.entries(m.wins || {}).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return '<div class="group-f" style="text-align:center;margin:4px 0">Noch keine Siege</div>';
+  const top = rows[0][1];
+  return `<div class="match-tbl">${rows.map(([id, n]) => `<span class="${n === top ? 'lead' : ''}">🏆 ${esc(m.names?.[id] || '?')} ${n}</span>`).join('')}</div>`;
+}
+const matchTitle = m => m.over ? '🏁 Spiel vorbei' : `Partie ${m.game}${m.total ? ' von ' + m.total : ' · endlos'}`;
+function matchWinner(m) {
+  const rows = Object.entries(m.wins || {}).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return '';
+  const best = rows.filter(r => r[1] === rows[0][1]).map(r => m.names?.[r[0]] || '?');
+  return best.length > 1 ? `Unentschieden: ${best.join(', ')}` : `🏆 ${best[0]} gewinnt!`;
+}
+function renderMatch() {
+  const m = state.match, on = !!(Lobby.code && m && state.bingo);
+  for (const id of ['#matchBox', '#matchMain']) $(id).classList.toggle('hidden', !on);
+  if (!on) return;
+  const action = m.over
+    ? `<div class="mc-h" style="margin-top:6px">${esc(matchWinner(m))}</div><button class="ghost" data-new-match style="margin-top:10px">Neues Spiel (Siege zurücksetzen)</button>`
+    : m.won.length
+      ? `<div class="small" style="margin:4px 0 8px">Gewonnen: ${m.won.map(id => esc(m.names[id] || '?')).join(', ')}</div><button class="big" data-next-game>Nächste Partie starten</button>`
+      : '<div class="group-f" style="margin:4px 0 0;text-align:center">Wer Bingo hat, prüfst du unten – nach dem Bestätigen geht es mit der nächsten Partie weiter.</div>';
+  $('#matchBox').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${action}</div>`;
+  $('#matchMain').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${m.won.length && !m.over ? '<button class="big" data-next-game style="margin-top:6px">Nächste Partie starten</button>' : m.over ? `<div class="mc-h">${esc(matchWinner(m))}</div>` : ''}</div>`;
+}
+
 function checkLobbyPlayer(id) {
   const p = Lobby.players[id]; if (!p) return;
   openSheet('sheetGame', 'bingo');
@@ -2150,7 +2339,7 @@ function renderLobby() {
   $('#playerList').innerHTML = list.map(p => `
     <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false ? 'opacity:.5' : ''}">
       <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false ? '💤' : '·'}</span>
-      <span class="grow">${esc(p.name)}<span class="sub">Karte Nr. ${esc(p.num)}${p.bingo ? (p.ok ? ' · Bingo bestätigt' : ' · ruft BINGO!') : ''}</span></span>
+      <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">Karte Nr. ${esc(p.num)}${p.bingo ? (p.ok ? ' · Bingo bestätigt' : ' · ruft BINGO!') : ''}</span></span>
       <span class="marks">${marksOf(p)} / ${b ? b.s * b.s : '–'}</span>
       <span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="Entfernen">${ic('trash')}</span>
     </button>`).join('')
@@ -2165,7 +2354,8 @@ function renderLobby() {
   const bar = $('#scorebar');
   bar.classList.toggle('hidden', !code || !list.length);
   bar.innerHTML = code ? list.map(p =>
-    `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false ? 'off' : ''}">${p.bingo ? '🎉' : ''} ${esc(p.name)} <b>${marksOf(p)}</b></span>`).join('') : '';
+    `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false ? 'off' : ''}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${state.match?.wins?.[p.id] ? ` 🏆${state.match?.wins?.[p.id]}` : ''} <b>${marksOf(p)}</b></span>`).join('') : '';
+  renderMatch();
 }
 
 /* ---------------- Bingo ---------------- */
@@ -2254,12 +2444,17 @@ async function renderBingo() {
     document.querySelectorAll('#bingoSizeSeg button').forEach(x => x.classList.toggle('on', +x.dataset.size === bingoSize));
     $('#bingoLobbyBox').classList.toggle('hidden', !hasFirebase());
     document.querySelectorAll('#bingoLobbySeg button').forEach(x => x.classList.toggle('on', (x.dataset.lobby === '1') === (state.settings.lobby !== false)));
+    $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
+    document.querySelectorAll('#bingoGamesSeg button').forEach(x => x.classList.toggle('on', +x.dataset.games === (state.settings.games ?? 0)));
+    document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
     const cats = state.cats.filter(c => c.enabled);
     $('#bingoCats').innerHTML = cats.map(catChip).join('') || '<span class="muted small">Keine Kategorie aktiv</span>';
     return;
   }
   $('#bingoInfo').innerHTML = `${b.s} × ${b.s} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('')}`;
-  renderCheckWho();
+  renderCheckWho(); renderMatch();
+  document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
+  $('#myCardCell').classList.toggle('hidden', state.settings.hostPlays === false);
   $('#checkBox').innerHTML = '';
   $('#qrNote').textContent = Lobby.code ? `Mit der Handy-Kamera scannen · Lobby ${Lobby.code}` : 'Mit der Handy-Kamera scannen';
   // Beitreten ohne QR-Code: kurze Adresse + Code
@@ -2278,8 +2473,8 @@ async function renderBingo() {
 // Eigene Karte des Spielleiters („Meine Karte“) – wird wie ein Mitspieler geprüft
 const HOST_ID = '__host';
 function hostCard() {
-  const b = state.bingo, st = b && LS.get('card_' + b.g, null);
-  return st ? { name: 'Spielleiter', num: st.num, marks: st.marks, g: b.g, host: true } : null;
+  const b = state.bingo, st = state.settings.hostPlays !== false && b && LS.get('card_' + b.g, null);
+  return st ? { name: 'Spielleiter', num: st.num, marks: st.marks, g: b.g, host: true, ok: !!state.match?.won?.includes(HOST_ID) } : null;
 }
 const whoById = id => id === HOST_ID ? hostCard() : Lobby.players[id];
 function renderCheckWho() {
@@ -2316,7 +2511,7 @@ function checkCard() {
   $('#checkNo').blur();
   const fields = cardFields(b, num);
   const avail = {};
-  for (const h of state.history) if (h.catId) avail[h.catId] = (avail[h.catId] || 0) + 1;
+  for (const h of state.history) if (h.catId && h.n > (state.partieFrom || 0)) avail[h.catId] = (avail[h.catId] || 0) + 1;
   const lineOk = l => {
     const need = {};
     for (const i of l) if (fields[i] !== '*') need[fields[i]] = (need[fields[i]] || 0) + 1;
@@ -2346,7 +2541,7 @@ function checkCard() {
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
-    ${marks && win && !who.host ? `<div class="chips" style="margin-top:6px">${who.ok
+    ${marks && win && (!who.host || Lobby.code) ? `<div class="chips" style="margin-top:6px">${who.ok
       ? '<span class="chip-btn on">✓ Bingo bestätigt</span>'
       : `<button class="chip-btn" data-confirm="${esc(checkPlayer)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`}</div>` : ''}`;
   if (win && !over.length) { confetti(); beep(1046, .3); }
@@ -2491,7 +2686,8 @@ async function codeMode() {
 // autoName: kommt von der Code-Seite – dann direkt mit diesem Namen beitreten
 async function lobbyMode(code, autoName = null) {
   code = code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
-  document.body.classList.add('card-mode');
+  document.body.classList.add('card-mode', 'lobby-mode');
+  $('#btnGuessBig').onclick = () => $('#btnGuessShow').click();
   $('#cardApp').classList.remove('hidden');
   $('#cardLive').classList.add('hidden');
   $('#joinBox').classList.remove('hidden');
@@ -2555,9 +2751,46 @@ async function lobbyMode(code, autoName = null) {
       if (p.ok && !wasOk) { toast('✅ Der Spielleiter hat dein Bingo bestätigt!', 8000); confetti(); }
       wasOk = !!p.ok;
     });
+    // Tipps: werden beim Tippen automatisch abgegeben (nur solange die Runde läuft).
+    // Die anderen sehen erst nach dem Auflösen, was getippt wurde – vorher nur, wer schon getippt hat.
+    let curRound = null, lastN = null, allPlayers = {}, guessT;
+    const sendGuess = () => {
+      if (!curRound || curRound.ph !== 'p') return;
+      const t = $('#guessText').value.trim().slice(0, 80);
+      f.update(meRef, { guess: t ? { t, n: curRound.n } : null }).catch(() => {});
+    };
+    $('#guessText').addEventListener('input', () => { clearTimeout(guessT); guessT = setTimeout(sendGuess, 600); });
+    $('#btnGuessClear').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
+    $('#btnGuessShow').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
+    const renderGuesses = () => {
+      const box = $('#guessLive'), r = curRound;
+      const list = Object.entries(allPlayers).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
+      box.classList.toggle('hidden', !r || list.length < 2);
+      if (!r || list.length < 2) return;
+      const has = p => p.guess?.n === r.n && p.guess.t;
+      box.innerHTML = r.ph === 'r'
+        ? list.map(p => `<span class="${has(p) ? 'ok' : ''}"><b>${esc(p.name)}${p.id === f.uid ? ' (du)' : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
+        : `<span>💬 Tipps: ${list.filter(has).length} / ${list.length}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
+    };
+    f.onValue(f.at(`${base}/players`), s => { allPlayers = s.val() || {}; renderGuesses(); });
+    // Partie-Stand und Siege
+    f.onValue(f.at(`${base}/match`), s => {
+      const m = s.val(), box = $('#matchLive');
+      box.classList.toggle('hidden', !m);
+      if (!m) return;
+      m.wins ??= {}; m.names ??= {}; m.won ??= [];
+      box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
+    });
     // Aktuelle Runde
     f.onValue(f.at(`${base}/round`), s => {
       const r = s.val(), box = $('#roundLive');
+      curRound = r;
+      // Neue Runde → alter Tipp weg
+      if (r && r.n !== lastN) {
+        if (lastN !== null) { $('#guessText').value = ''; LS.set('guess', ''); }
+        lastN = r.n;
+      }
+      renderGuesses();
       box.classList.toggle('hidden', !r);
       if (!r) return;
       box.style.borderColor = r.c;
@@ -2569,19 +2802,37 @@ async function lobbyMode(code, autoName = null) {
   if (me?.name) return start();
   $('#joinName').value = LS.get('name', '');
   btn.disabled = false; msg('Gib deinen Namen ein, dann bekommst du deine Bingo-Karte.');
-  const join = async () => {
-    const name = $('#joinName').value.trim().slice(0, 24);
-    if (!name) return $('#joinName').focus();
+  // Nach dem Namen: 5 Karten zur Auswahl (Nummern, die in der Lobby noch frei sind)
+  const showPicker = async name => {
     btn.disabled = true;
     try {
-      // Kartennummer, die in der Lobby noch niemand hat – sonst hätten zwei Spieler dieselbe Karte
-      const used = new Set(Object.values((await f.get(f.at(`${base}/players`))).val() || {}).map(p => +p?.num));
-      let num; do num = 1000 + Math.floor(Math.random() * 9000); while (used.has(num));
-      me = { name, num, on: true, joined: f.serverTimestamp() };
-      await f.set(meRef, me);
-      LS.set('name', name); $('#joinName').blur();
-      start();
-    } catch (e) { btn.disabled = false; msg('Beitreten fehlgeschlagen: ' + e.message); }
+      const [b, players] = await Promise.all([f.get(f.at(`${base}/bingo`)), f.get(f.at(`${base}/players`))]).then(r => r.map(x => x.val()));
+      const used = new Set(Object.values(players || {}).map(p => +p?.num));
+      const nums = [];
+      while (nums.length < 5) { const n = 1000 + Math.floor(Math.random() * 9000); if (!used.has(n) && !nums.includes(n)) nums.push(n); }
+      $('#joinName').classList.add('hidden'); $('#joinCodeInput').classList.add('hidden'); btn.classList.add('hidden');
+      $('#pickBox').classList.remove('hidden');
+      msg(`Hallo ${name}! Such dir eine von 5 Karten aus:`);
+      $('#pickGrid').innerHTML = nums.map(n => `<button class="pick" data-pick="${n}">
+        <div class="bgrid mini n${b.s}" style="--n:${b.s}">${cardFields(b, n).map(fl => bcell(b, fl)).join('')}</div>Karte ${n}</button>`).join('');
+      $('#pickGrid').onclick = async e => {
+        const p = e.target.closest('[data-pick]'); if (!p) return;
+        $('#pickGrid').onclick = null; msg('Einen Moment …');
+        try {
+          me = { name, num: +p.dataset.pick, on: true, joined: f.serverTimestamp() };
+          await f.set(meRef, me);
+          LS.set('name', name);
+          start();
+        } catch (err) { msg('Beitreten fehlgeschlagen: ' + err.message); showPicker(name); }
+      };
+      $('#btnPickMore').onclick = () => showPicker(name);
+    } catch (e) { btn.disabled = false; msg('Fehler: ' + e.message); }
+  };
+  const join = () => {
+    const name = $('#joinName').value.trim().slice(0, 24);
+    if (!name) return $('#joinName').focus();
+    $('#joinName').blur();
+    showPicker(name);
   };
   btn.onclick = join;
   $('#joinName').onkeydown = e => { if (e.key === 'Enter') join(); };
@@ -2600,7 +2851,7 @@ function renderMyCard() {
     if (num != null) { $('#myCardWinNo').textContent = num; if (!initial) { confetti(); beep(1046, .3); } }
   });
 }
-const renderMyCardBtn = () => $('#myCardBtn').classList.toggle('hidden', !state.bingo);
+const renderMyCardBtn = () => $('#myCardBtn').classList.toggle('hidden', !state.bingo || state.settings.hostPlays === false);
 
 /* ---------------- Rendering ---------------- */
 function render() {
@@ -2622,6 +2873,7 @@ function render() {
   // Bei der Auflösung dreht sich die Platte um und zeigt das Cover
   const dw = $('#discWrap');
   dw.classList.toggle('flipped', ph === 'revealed');
+  $('.stage').classList.toggle('revealed', ph === 'revealed');
   dw.classList.toggle('idle', !round);
   dw.classList.toggle('counting', ph === 'countdown');
   if (ph !== 'countdown') { dw.classList.remove('urgent'); $('#timerNum').textContent = ph === 'playing' ? '?' : ''; }
@@ -2650,6 +2902,9 @@ function render() {
       acts.push(`<button class="pill-btn" data-act="hint" ${left > 0 ? '' : 'disabled'}>${ic('bulb')}Tipp${left > 0 ? ` · ${left}` : ''}</button>`);
     }
     acts.push(`<button class="pill-btn" data-act="next">${ic('skip')}Überspringen</button>`);
+    // Lobby: wie viele Mitspieler schon einen Tipp abgegeben haben (Inhalt erst nach dem Auflösen)
+    const pl = Lobby.code ? lobbyList().length : 0;
+    if (pl) acts.push(`<span class="pill">💬 ${guessesFor(round.n).length} / ${pl} Tipps</span>`);
   }
   if (ph === 'revealed') acts.push(`<button class="pill-btn" data-act="fixYear">${ic('pen')}Jahr korrigieren</button>`);
   $('#actionRow').innerHTML = acts.join('');
@@ -2680,6 +2935,15 @@ function discTap() {
   dw.classList.remove('tapped'); void dw.offsetWidth; dw.classList.add('tapped');
   try { navigator.vibrate?.(10); } catch {}
 }
+// Tipps, die Mitspieler in der Lobby für diese Runde abgegeben haben
+const guessesFor = n => lobbyList().filter(p => p.guess?.n === n && p.guess.t);
+function renderGuessList() {
+  const el = $('#guessHost'); if (!el || !round) return;
+  const list = Lobby.code ? lobbyList() : [], got = guessesFor(round.n);
+  el.classList.toggle('hidden', !list.length);
+  el.innerHTML = `<div class="gl-h">Tipps der Mitspieler · ${got.length} / ${list.length}</div>` +
+    (got.map(p => `<div><b>${esc(p.name)}:</b> ${esc(p.guess.t)}</div>`).join('') || '<div class="muted">Niemand hat getippt</div>');
+}
 function renderReveal() {
   const t = round.track, y = yearOf(t), cat = round.cat;
   const fixed = state.yearFix[t.id] != null;
@@ -2701,7 +2965,9 @@ function renderReveal() {
         ${y ? `<span>± 3: ${y - 3}–${y + 3}</span>` : ''}
       </div>
       ${fromMb ? `<div class="rv-meta">Spotify nennt ${t.year} (Album/Remaster) – Originaljahr laut MusicBrainz.</div>` : ''}
-    </div>`;
+    </div>
+    <div id="guessHost" class="guess-list hidden"></div>`;
+  renderGuessList();
   loadCover(t);
 }
 function renderHist() {
@@ -2870,7 +3136,16 @@ document.addEventListener('click', async e => {
     if ($('#checkNo').value) checkCard();
   }
   const conf = t.closest('[data-confirm]');
-  if (conf) { Lobby.confirm(conf.dataset.confirm); conf.outerHTML = '<span class="chip-btn on">✓ Bingo bestätigt</span>'; }
+  if (conf) {
+    Lobby.confirm(conf.dataset.confirm);
+    const m = state.match;
+    conf.outerHTML = '<span class="chip-btn on">✓ Bingo bestätigt</span>' +
+      (m && Lobby.code ? (m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : '<button class="big" data-next-game style="width:100%;margin-top:8px">Nächste Partie starten</button>') : '');
+  }
+  if (t.closest('[data-next-game]')) nextGame();
+  if (t.closest('[data-new-match]') && await ask('Neues Spiel?\nAlle Siege werden zurückgesetzt, alle bekommen neue Karten.', { ok: 'Neues Spiel' })) {
+    newMatch(); state.match.game = 0; state.match.over = false; nextGame();
+  }
   const pDel = t.closest('[data-player-del]');
   if (pDel) {
     const id = pDel.dataset.playerDel, p = Lobby.players[id];
@@ -2947,6 +3222,7 @@ function resetGame() {
   state.played = []; state.history = []; LS.set('played', []); LS.set('history', []);
   round = null; stopTimer(); clearTimeout(snippetT); renderAll();
   Lobby.syncRound(); Lobby.clearMarks();
+  if (state.match) { newMatch(); saveMatch(); }
 }
 async function askNewGame() {
   if (state.history.length && !await ask(`Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.${state.bingo ? Lobby.code ? '\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht.' : '\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.' : ''}`, { ok: 'Neues Spiel' })) return;
@@ -2957,6 +3233,14 @@ async function askNewGame() {
 $('#btnNewGame').onclick = askNewGame;
 $('#btnGame').onclick = () => openSheet('sheetGame');
 $('#btnBingoCreate').onclick = createBingo;
+$('#bingoGamesSeg').onclick = e => {
+  const b = e.target.closest('[data-games]'); if (!b) return;
+  state.settings.games = +b.dataset.games; LS.set('settings', state.settings); renderBingo();
+};
+document.querySelectorAll('.set-host-plays').forEach(x => x.onchange = () => {
+  state.settings.hostPlays = x.checked; LS.set('settings', state.settings);
+  renderBingo(); renderMyCardBtn(); renderCheckWho();
+});
 $('#bingoLobbySeg').onclick = e => {
   const b = e.target.closest('[data-lobby]'); if (!b) return;
   state.settings.lobby = b.dataset.lobby === '1'; LS.set('settings', state.settings); renderBingo();

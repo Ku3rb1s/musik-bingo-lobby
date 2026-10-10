@@ -9,15 +9,36 @@
           "$uid": {
             ".write": "auth != null && $uid === auth.uid && data.parent().parent().child('bingo').exists()",
             ".validate": "newData.hasChildren(['name', 'num'])",
-            "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 24" },
-            "num": { ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9999" },
-            "g": { ".validate": "newData.isString()" },
-            "marks": { ".validate": "newData.hasChildren()" },
-            "on": { ".validate": "newData.isBoolean()" },
-            "bingo": { ".validate": "newData.isNumber()" },
-            "joined": { ".validate": "newData.isNumber()" },
-            "ok": { ".validate": "newData.isBoolean() && (data.parent().parent().parent().child('host').val() === auth.uid || newData.val() === data.val())" },
-            "$other": { ".validate": false }
+            "name": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 24"
+            },
+            "num": {
+              ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9999"
+            },
+            "g": {
+              ".validate": "newData.isString()"
+            },
+            "marks": {
+              ".validate": "newData.hasChildren()"
+            },
+            "on": {
+              ".validate": "newData.isBoolean()"
+            },
+            "bingo": {
+              ".validate": "newData.isNumber()"
+            },
+            "joined": {
+              ".validate": "newData.isNumber()"
+            },
+            "ok": {
+              ".validate": "newData.isBoolean() && (data.parent().parent().parent().child('host').val() === auth.uid || newData.val() === data.val())"
+            },
+            "$other": {
+              ".validate": false
+            },
+            "guess": {
+              ".validate": "newData.hasChildren(['t', 'n']) && newData.child('t').isString() && newData.child('t').val().length <= 80 && newData.child('n').isNumber()"
+            }
           }
         }
       }

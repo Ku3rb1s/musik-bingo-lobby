@@ -2,6 +2,14 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.0.0 – 10.10.2026
+- Mehrere Partien pro Lobby: nach einem bestätigten Bingo startet der Spielleiter die nächste Partie (neue Karten für alle), die Siege werden gezählt. Einstellbar: 1, 3, 5, 10 Partien oder endlos; am Ende Siegerehrung
+- Kartenwahl beim Beitreten: jeder Mitspieler sucht sich eine von 5 Karten aus (oder lässt sich andere zeigen)
+- Tipps live: Tipps werden beim Schreiben automatisch abgegeben. Während der Runde sieht jeder, wer schon getippt hat – nach dem Auflösen sehen alle (auch der Spielleiter) die Tipps, Handys zeigen ist nicht mehr nötig
+- „Ich spiele selbst mit“ ist jetzt ein Schalter (Spielleiter-Karte optional)
+- Alles auf einen Bildschirm: Platte passt sich der Höhe an, Auflösung auf breiten Bildschirmen zweispaltig, kompakter auf niedrigen Bildschirmen; Mitspieler-Ansicht am Handy kompakter
+- iPad: Menü-Knöpfe oben ohne Milchglas, damit die Schrift nicht mehr verschwommen wirkt
+
 ## 2.3.1 – 10.10.2026
 - Fehler behoben: Das letzte Feld, das zum Bingo führt, wurde in der Lobby nicht gespeichert (nur die Bingo-Meldung kam)
 - „Bingo prüfen“: Chip „Nummer“ ersetzt durch „⭐ Spielleiter“ (prüft die eigene Karte des Spielleiters); ohne gewählten Chip wird die eingetippte Kartennummer geprüft, gewählten Chip erneut antippen = abwählen
