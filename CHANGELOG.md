@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.5.1 – 10.10.2026
+- Leiste unter der Spielfläche: Namen antippen öffnet direkt die Karte dieses Spielers (mit seinen Markierungen); die freie Fläche daneben öffnet wie bisher das Bingo-Menü
+
 ## 4.5.0 – 10.10.2026
 - Markieren (Lobby) erst nach der Auflösung – vorher wackelt das Feld mit „Erst nach der Auflösung markieren“, und es leuchtet noch nichts
 - Vergessen zu markieren? Läuft schon der nächste Song, kann man für die zuletzt aufgelöste Runde noch ein Feld nachtragen – bis die neue Runde aufgelöst wird. Die Felder leuchten dann, ein Hinweis unter der Karte sagt es dazu. Gilt auch für den Spielleiter, wenn er mitspielt; nicht über eine neue Partie hinweg
