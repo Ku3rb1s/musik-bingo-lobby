@@ -759,6 +759,7 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
         </div>
       </div>
       <div class="group-f" id="modeInfo"></div>
+      <div class="group-f" id="appVersion" style="text-align:center;margin-top:28px;opacity:.6"></div>
     </section>
 
     <section class="page" data-page="account" data-title="Spotify-Konto">
@@ -871,7 +872,7 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
         <div class="qr-box"><div id="qr"></div><div class="small" id="qrNote">Mit der Handy-Kamera scannen</div></div>
         <div class="chip-scroll" id="bingoInfo"></div>
         <div class="group">
-          <button class="cell tap accent" id="btnBingoShare"><svg class="ic"><use href="#i-share"/></svg><span class="grow">Link teilen</span></button>
+          <button class="cell tap accent" id="btnBingoShare"><svg class="ic"><use href="#i-link"/></svg><span class="grow">Link kopieren</span></button>
           <button class="cell tap" data-go="mycard"><svg class="ic"><use href="#i-grid"/></svg><span class="grow">Meine Karte<span class="sub">Als Spielleiter selbst mitspielen</span></span><svg class="ic chev"><use href="#i-chev"/></svg></button>
         </div>
         <div class="group-h">Bingo prüfen</div>
@@ -987,6 +988,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
+// Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
+const APP_VERSION = '2.2.0', APP_DATE = '10.10.2026';
+
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem('mb_' + k, JSON.stringify(v)); } catch {} },
@@ -1024,8 +1028,8 @@ const ANSWER_TYPES = {
   range: 'Jahr ± Toleranz', album: 'Album', none: 'Alle Infos',
 };
 const CAT_STYLE = {
-  title: ['🎵', '#1ed760'], artist: ['🎤', '#ff4fa3'], year: ['📅', '#ffb020'], decade: ['🕰️', '#8b6cff'],
-  range: ['🎯', '#22d3ee'], album: ['💿', '#ff8a3d'], none: ['❓', '#a3e635'],
+  title: ['🎵', '#1ed760'], artist: ['🎤', '#ff4fa3'], year: ['🎯', '#ffb020'], decade: ['🕰️', '#8b6cff'],
+  range: ['📅', '#22d3ee'], album: ['💿', '#ff8a3d'], none: ['❓', '#a3e635'],
 };
 const catStyle = c => {
   const base = CAT_STYLE[c?.answer] || CAT_STYLE.none;
@@ -2259,12 +2263,23 @@ function renderCheckWho() {
     : '';
   $('#checkWhoBox').classList.toggle('hidden', !list.length);
 }
-async function shareBingo() {
+// Link direkt in die Zwischenablage (Fallback für Browser ohne Clipboard-API)
+async function copyBingoLink() {
   const url = joinUrl(state.bingo);
-  try {
-    if (navigator.share) await navigator.share({ title: 'Musik-Bingo', text: 'Deine Bingo-Karte:', url });
-    else { await navigator.clipboard.writeText(url); toast('Link kopiert'); }
-  } catch (e) { if (e.name !== 'AbortError') toast('Teilen nicht möglich'); }
+  let ok = false;
+  try { await navigator.clipboard.writeText(url); ok = true; } catch {
+    const ta = Object.assign(document.createElement('textarea'), { value: url, readOnly: true });
+    ta.style.cssText = 'position:fixed;opacity:0';
+    (document.querySelector('dialog[open]') || document.body).appendChild(ta);
+    ta.select(); ta.setSelectionRange(0, url.length);
+    try { ok = document.execCommand('copy'); } catch {}
+    ta.remove();
+  }
+  if (!ok) return toast('Kopieren nicht möglich – ' + url, 8000);
+  toast('Link kopiert'); beep(1320, .06);
+  const lbl = $('#btnBingoShare .grow');
+  lbl.textContent = '✓ Kopiert'; clearTimeout(copyBingoLink.t);
+  copyBingoLink.t = setTimeout(() => { lbl.textContent = 'Link kopieren'; }, 1800);
 }
 // Prüft, ob eine Karte ein Bingo haben kann: Für jede Linie muss es genug Runden der jeweiligen
 // Kategorie gegeben haben. Mit gewähltem Lobby-Spieler werden seine echten Markierungen geprüft.
@@ -2495,7 +2510,10 @@ async function lobbyMode(code) {
     if (!name) return $('#joinName').focus();
     btn.disabled = true;
     try {
-      me = { name, num: 1000 + Math.floor(Math.random() * 9000), on: true, joined: f.serverTimestamp() };
+      // Kartennummer, die in der Lobby noch niemand hat – sonst hätten zwei Spieler dieselbe Karte
+      const used = new Set(Object.values((await f.get(f.at(`${base}/players`))).val() || {}).map(p => +p?.num));
+      let num; do num = 1000 + Math.floor(Math.random() * 9000); while (used.has(num));
+      me = { name, num, on: true, joined: f.serverTimestamp() };
       await f.set(meRef, me);
       LS.set('name', name); $('#joinName').blur();
       start();
@@ -2702,6 +2720,7 @@ function renderSettings() {
   $('#setBeep').checked = s.beep; $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
   $('#setLimit').value = String(s.limit || 0); $('#setHints').checked = s.hints; $('#setMb').checked = s.mb;
   renderThemes();
+  $('#appVersion').textContent = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}`;
   const showDev = s.mode === 'connect' || Player.mode === 'connect';
   $('#devRow').classList.toggle('hidden', !showDev);
   if (showDev) renderDevices();
@@ -2877,7 +2896,7 @@ $('#bingoSizeSeg').onclick = e => {
   const b = e.target.closest('[data-size]'); if (!b) return;
   bingoSize = +b.dataset.size; renderBingo();
 };
-$('#btnBingoShare').onclick = shareBingo;
+$('#btnBingoShare').onclick = copyBingoLink;
 $('#btnCheck').onclick = checkCard;
 $('#checkNo').onkeydown = e => { if (e.key === 'Enter') checkCard(); };
 $('#btnBingoNew').onclick = async () => {
