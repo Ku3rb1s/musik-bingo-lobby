@@ -5,7 +5,7 @@ Musik-Quiz mit deinen Spotify-Playlists – mit Bingo-Karten fürs Handy, Lobbys
 **Online:** https://ku3rb1s.github.io/musik-bingo-lobby/
 
 - Spielleiter: Spotify verbinden, Playlist laden, unter **Bingo → Bingo-Karten** Karten erstellen. Dabei öffnet sich eine Lobby.
-- Mitspieler: QR-Code scannen, Namen eingeben, Karte bekommen – ohne Konto, ohne App.
+- Mitspieler: QR-Code scannen (oder https://ku3rb1s.github.io/musik-bingo-lobby/join öffnen und den Lobby-Code eingeben), Namen eingeben, Karte bekommen – ohne Konto, ohne App.
 - Markierungen, „Bingo!“-Rufe und die aktuelle Runde werden live synchronisiert.
 - Lokal starten: `start.bat` (öffnet http://127.0.0.1:8888/).
 

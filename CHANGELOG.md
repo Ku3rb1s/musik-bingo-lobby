@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 2.3.0 – 10.10.2026
+- Schalter „Mit Lobby / Ohne Lobby“ beim Erstellen der Bingo-Karten (ohne Lobby: Karte steckt im QR-Code, kein Internet-Sync)
+- Beitreten ohne QR-Code: Seite …/musik-bingo-lobby/join öffnen, Lobby-Code und Namen eingeben
+- Leiste auf dem Hauptbildschirm zeigt nur noch die Mitspieler (Lobby-Code steht im Bingo-Menü)
+
 ## 2.2.1 – 10.10.2026
 - Lautstärke-Regler und Tastatur-Hinweise auf iPhone und iPad ausgeblendet (auch iPad mit Tastatur), nur noch am PC/Laptop
 
