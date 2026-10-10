@@ -1,0 +1,24 @@
+# Täglich alte Lobbys löschen (24 h ohne Aktivität). Läuft auch per Hand: Actions → „Alte Lobbys aufräumen“ → Run workflow.
+name: Alte Lobbys aufräumen
+
+on:
+  schedule:
+    - cron: '17 3 * * *'   # täglich 03:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Alte Lobbys löschen
+        run: node scripts/cleanup-lobbies.js
+        env:
+          FIREBASE_CLEANUP_KEY: ${{ secrets.FIREBASE_CLEANUP_KEY }}
