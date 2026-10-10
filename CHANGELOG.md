@@ -2,6 +2,16 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.0.2 – 10.10.2026
+- Alte Lobbys werden jetzt täglich automatisch gelöscht (GitHub Action „Alte Lobbys aufräumen“, 24 h ohne Aktivität) – über ein eigenes Firebase-Konto, das nur die Datenbank verwalten darf
+- Fehlerbehebungen nach Durchsicht:
+  - Mitspieler-Ansicht: mögliche Absturzstelle beseitigt, wenn Firebase Daten sofort aus dem Zwischenspeicher liefert
+  - Fernseher zeigt nach „Bingo beenden“ zuverlässig „Das Bingo wurde beendet“
+  - Spielende-Bildschirm des Spielleiters aktualisiert sich, wenn nachträglich ein weiterer Sieger bestätigt wird (Unentschieden)
+  - „Zurück zur Lobby-Auswahl“ entfernt den Mitspieler aus der Lobby (statt als 💤 stehen zu bleiben)
+  - Hinweise bleiben vorne, wenn sich danach ein Menü, eine Rückfrage oder der Tipp im Vollbild öffnet
+  - „Bingo beenden“ löscht die Lobby auch nach einem Verbindungsfehler beim Start
+
 ## 4.0.1 – 10.10.2026
 - Hinweise (z. B. „In dieser Runde zählt nur …“) erscheinen jetzt über geöffneten Menüs statt dahinter – und ihre Knöpfe (z. B. „Prüfen“) lassen sich auch bei offenem Menü antippen
 - Fernseher-Ansicht: Text zum Beitreten steht unter dem QR-Code statt über den weißen Rand hinaus

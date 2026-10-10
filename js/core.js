@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.0.1', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.0.2', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -115,6 +115,8 @@ function placeToast() {
   if (el.parentElement !== host) host.appendChild(el);
   if (el.showPopover) { try { if (el.matches(':popover-open')) el.hidePopover(); el.showPopover(); } catch {} }
 }
+// Ist gerade ein Hinweis zu sehen und öffnet sich ein Fenster, holt ihn das wieder nach vorn
+const raiseToast = () => { if ($('#toast').classList.contains('show')) placeToast(); };
 function toast(msg, ms = 3500, action = null) {
   const el = $('#toast'), btn = $('#toastBtn');
   $('#toastMsg').textContent = msg;
@@ -163,7 +165,7 @@ function ask(msg, { input = null, ok = 'OK', danger = false } = {}) {
   $('#askOk').classList.toggle('danger', danger);
   inp.classList.toggle('hidden', input == null); inp.value = input ?? '';
   d.returnValue = '';
-  d.showModal(); if (input != null) inp.select();
+  d.showModal(); raiseToast(); if (input != null) inp.select();
   return new Promise(res => d.addEventListener('close', () => {
     const yes = d.returnValue === 'yes';
     res(input == null ? yes : (yes ? inp.value : null));
@@ -190,6 +192,7 @@ function openSheet(id, page = 'main') {
   goPage(d, page, false);
   if (!d.open) d.showModal();
   document.body.classList.add('locked');
+  raiseToast();
 }
 function goPage(d, page, back) {
   d.querySelectorAll('.page').forEach(p => {

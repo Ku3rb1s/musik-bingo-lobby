@@ -304,7 +304,7 @@ document.addEventListener('click', async e => {
   if (t.closest('[data-next-game]')) { nextGame(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
   if (t.closest('[data-end-close]')) $('#endScreen').classList.add('hidden');
   if (t.closest('[data-end-stop]')) { $('#endScreen').classList.add('hidden'); $('#btnBingoOff').click(); }
-  if (t.closest('[data-end-leave]')) location.replace(location.pathname + '?join');
+  if (t.closest('[data-end-leave]')) { if (leaveLobby) leaveLobby(); else location.replace(location.pathname + '?join'); }
   if (t.closest('[data-new-match]') && await ask('Neues Spiel?\nAlle Siege werden zurückgesetzt, alle bekommen neue Karten.', { ok: 'Neues Spiel' })) {
     newMatch(); state.match.game = 0; state.match.over = false; nextGame();
     $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());

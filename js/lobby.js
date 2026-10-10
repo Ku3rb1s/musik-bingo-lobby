@@ -116,7 +116,7 @@ const Lobby = {
     this.touch();
   },
   close() {
-    const code = this.code; this.stop();
+    const code = this.code || state.lobby; this.stop();   // auch wenn die Verbindung beim Start fehlschlug
     state.lobby = null; LS.del('lobby'); state.match = null; LS.del('match');
     if (code) firebase().then(f => f.remove(f.at('lobbies/' + code))).catch(() => {});
   },

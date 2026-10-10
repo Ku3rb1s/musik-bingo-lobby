@@ -112,6 +112,8 @@ async function codeMode(note = null) {
   inp.focus();
 }
 
+let leaveLobby = null;   // wird in der Lobby-Ansicht gesetzt
+
 /* Lobby-Ansicht für Mitspieler (?l=CODE): Name + Karte wählen, Markierungen und „Bingo!“ gehen live an den
    Spielleiter, die aktuelle Runde wird oben angezeigt. autoName: kommt von der Code-Seite. */
 async function lobbyMode(code, autoName = null) {
@@ -148,14 +150,22 @@ async function lobbyMode(code, autoName = null) {
     $('#joinBox').classList.add('hidden');
     $('#cardLive').classList.remove('hidden');
     $('#cardLobbyInfo').textContent = `Lobby ${code} · ${me.name}`;
+    // Lobby von sich aus verlassen (Knopf auf dem Spielende-Bildschirm)
+    leaveLobby = () => {
+      leaving = true;
+      f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).cancel().catch(() => {})
+        .then(() => f.remove(meRef)).catch(() => {}).finally(() => location.replace(location.pathname + '?join'));
+    };
     // Online-Status für den Spielleiter
     f.onValue(f.at('.info/connected'), s => {
       if (!s.val()) return;
       f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).set(false);
       f.set(f.at(`${base}/players/${f.uid}/on`), true).catch(() => {});
     });
-    // Karte: wird neu aufgebaut, wenn der Spielleiter neue Karten erstellt oder man selbst eine neue Karte wählt
-    let curB = null, card = null, mounted = null, wonSent = null, hot = null;
+    // Alle Zustände zuerst anlegen: Firebase kann Rückmeldungen aus dem Zwischenspeicher sofort liefern
+    let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
+    let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false;
+    const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const mountMine = () => {
       const b = curB; wonSent = null;
       card = mountCard(b, { grid: $('#cardGrid'), no: $('#cardNo'), hits: $('#cardHits'), legend: $('#cardLegend'), clear: $('#btnCardClear') }, (num, initial) => {
@@ -191,6 +201,7 @@ async function lobbyMode(code, autoName = null) {
     f.onValue(meRef, async s => {
       const p = s.val();
       if (!p) {      // entfernt: Lobby noch da → neu beitreten, sonst zurück zur Code-Eingabe
+        if (leaving) return;
         const still = await f.get(f.at(`${base}/bingo`)).then(x => x.exists()).catch(() => false);
         if (still) f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).cancel().finally(() => location.reload());
         else leave('Die Lobby wurde geschlossen. Für ein neues Spiel den neuen Lobby-Code eingeben.');
@@ -205,8 +216,6 @@ async function lobbyMode(code, autoName = null) {
     });
     // Tipps: werden mit „Fertig“ auf der Tastatur (oder beim Verlassen des Felds) abgegeben – nur solange die Runde läuft.
     // Die anderen sehen erst nach dem Auflösen, was getippt wurde – vorher nur, wer schon fertig ist.
-    let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true;
-    const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const sendGuess = () => {
       if (!curRound || curRound.ph === 'r') return;
       const t = $('#guessText').value.trim().slice(0, 80);
@@ -243,7 +252,6 @@ async function lobbyMode(code, autoName = null) {
       renderGuesses();
     });
     // Partie-Stand und Siege; neue Partie → Karte behalten oder neu wählen; Spiel vorbei → Spielende-Bildschirm
-    let lastGame = null, lastOver = false;
     f.onValue(f.at(`${base}/match`), s => {
       const m = s.val(), box = $('#matchLive');
       box.classList.toggle('hidden', !m);
@@ -256,7 +264,7 @@ async function lobbyMode(code, autoName = null) {
       lastGame = m.game; lastOver = !!m.over;
     });
     // Neue Partie: Karte behalten oder eine neue (freie) Nummer wählen
-    const showRepick = m => {
+    function showRepick(m) {
       if (!curB) return;
       const box = $('#repickBox');
       const used = new Set(Object.entries(allPlayers).filter(([id]) => id !== f.uid).map(([, p]) => +p?.num));
@@ -265,7 +273,7 @@ async function lobbyMode(code, autoName = null) {
       const done = () => { box.classList.add('hidden'); box.innerHTML = ''; };
       cardPicker(box.querySelector('.rp-pick'), curB, used, num => { f.update(meRef, { num, marks: null }).catch(e => toast('Fehler: ' + e.message)); done(); }, { num: me.num, onKeep: done });
       box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
+    }
     // Aktuelle Runde
     f.onValue(f.at(`${base}/round`), s => {
       const r = s.val(), box = $('#roundLive');
@@ -338,10 +346,11 @@ async function tvMode(code) {
   if (!await lobbyAlive(f, code).catch(() => false)) return show(`<div class="tv-idle">Die Lobby „${esc(code)}“ gibt es nicht.</div>`);
   loadQrLib().then(qrcode => { const q = qrcode(0, 'L'); q.addData(lobbyUrl(code)); q.make(); $('#tvQr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }).catch(() => {});
   const base = `lobbies/${code}`;
-  let r = null, players = {}, match = null, cdIv = null;
+  let r = null, players = {}, match = null, cdIv = null, ended = false;
   const key = x => x ? x.id ?? x.n : null;
   const draw = () => {
     clearInterval(cdIv); cdIv = null;
+    if (ended) return show('<div class="tv-idle">Das Bingo wurde beendet.</div>');
     if (!r) return show('<div class="tv-idle">Gleich geht’s los …</div><div class="tv-k">Jetzt beitreten – QR-Code scannen</div>');
     const head = `<div class="tv-k">Runde ${esc(r.n)}</div><div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span>${esc(r.q)}</div>`;
     if (r.ph === 'r') return show(head + (r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '') +
@@ -368,7 +377,7 @@ async function tvMode(code) {
     drawSide();
     if (match?.over) showEnd(match, ''); else $('#endScreen').classList.add('hidden');
   });
-  f.onValue(f.at(`${base}/bingo`), s => { if (!s.exists()) show('<div class="tv-idle">Das Bingo wurde beendet.</div>'); });
+  f.onValue(f.at(`${base}/bingo`), s => { ended = !s.exists(); draw(); });
 }
 
 /* Eigene Karte des Spielleiters (im Menü „Bingo“)

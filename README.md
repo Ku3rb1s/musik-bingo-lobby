@@ -27,3 +27,10 @@ Einrichtung von Firebase: siehe [FIREBASE.md](FIREBASE.md). Ohne Firebase laufen
 | `js/ui.js` | Anzeige, Klicks, Einstellungen, Start |
 
 Die Skripte werden in dieser Reihenfolge geladen. Bei jedem Update `APP_VERSION` in `js/core.js` und `?v=` in `index.html` erhöhen.
+
+## Alte Lobbys aufräumen
+
+Die GitHub Action `.github/workflows/cleanup-lobbies.yml` löscht täglich (03:17 UTC) Lobbys ohne Aktivität seit 24 Stunden.
+Sie nutzt das Firebase-Konto `lobby-cleanup` (nur Rolle „Realtime Database Admin“), dessen Schlüssel im Repo-Secret
+`FIREBASE_CLEANUP_KEY` liegt. Per Hand starten: Actions → „Alte Lobbys aufräumen“ → Run workflow.
+Hinweis: GitHub pausiert zeitgesteuerte Jobs in öffentlichen Repos nach 60 Tagen ohne Änderungen – dann dort wieder einschalten.

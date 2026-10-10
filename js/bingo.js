@@ -236,10 +236,9 @@ function showEnd(m, buttons) {
 }
 let endShown = false;
 function showEndHost() {
-  if (endShown || !state.match?.over) return;
-  endShown = true;
-  Player.fadeOut();   // Song sanft ausblenden
-  document.querySelectorAll('dialog[open]').forEach(d => d.close());
+  if (!state.match?.over) return;
+  // Beim ersten Mal: Song ausblenden, Menüs schließen. Danach (weiterer Sieger) nur die Anzeige aktualisieren.
+  if (!endShown) { endShown = true; Player.fadeOut(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
   showEnd(state.match, '<button class="big" data-new-match>Neues Spiel (Siege zurücksetzen)</button>' +
     '<button class="ghost" data-end-stop>Bingo beenden</button><button class="ghost" data-end-close>Schließen</button>');
 }
@@ -322,7 +321,7 @@ function mountGuess(text, show, clear) {
     // Der Text steht in einem Rahmen mit 90 % Breite – so bleibt Luft für die schräge Handschrift
     el.innerHTML = `<span style="display:inline-block;max-width:90%">${esc(v)}</span>`;
     const span = el.firstChild;
-    d.showModal();
+    d.showModal(); raiseToast();
     // Schrift so groß wie möglich, ohne dass etwas abgeschnitten wird. Wörter nicht mittendrin trennen –
     // nur bei sehr langen Wörtern als Notlösung.
     requestAnimationFrame(() => {
