@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.2.0 – 10.10.2026
+- Bingo-Menü neu aufgeteilt: Übersicht (Lobby-Code, Partie-Stand, Mitspieler) mit Unterseiten „Mitspieler einladen“, „Bingo prüfen“, „Meine Karte“ und „Bingo-Einstellungen“; ohne laufendes Bingo führt „Bingo einrichten“ zur Einrichtung, danach direkt zur Einladung
+- Tipp löschen: ✕ direkt im Eingabefeld (nur sichtbar, wenn etwas drinsteht)
+- „Markierungen löschen“ als richtiger Knopf über der Karte (auch beim Spielleiter)
+- Spielleiter wird in der Lobby nie mehr als offline (💤) angezeigt
+
 ## 3.1.0 – 10.10.2026
 - Spielleiter erscheint in der Lobby, wenn er mitspielt („⭐ Name“): Markierungen, Bingo, Tipps und Siege laufen wie bei allen anderen
 - „Meine Karte“ des Spielleiters im neuen Stil: eigene Kartenwahl, kompaktes Tipp-Feld, live synchronisiert

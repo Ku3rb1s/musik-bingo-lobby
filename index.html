@@ -398,6 +398,24 @@ body.card-mode>header,body.card-mode>main{display:none}
   background:#fffdf3 repeating-linear-gradient(transparent 0 39px,#c9d6f2 39px 40px);background-position:0 6px;
   box-shadow:inset 0 2px 6px rgba(0,0,0,.12),0 6px 16px -8px rgba(0,0,0,.5)}
 .guess-input::placeholder{color:#9aa6c4}
+/* Tipp: Eingabe (mit ✕ zum Löschen) und „Groß zeigen“ nebeneinander */
+.guess-field{position:relative;flex:1;min-width:0;display:flex}
+.guess-field .guess-input{padding-right:46px}
+.guess-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;padding:0;border-radius:50%;
+  background:rgba(31,58,147,.12);color:#1f3a93;font-size:.95rem;font-weight:800;box-shadow:none}
+.guess-clear:active{transform:translateY(-50%) scale(.9)}
+.guess-field:has(.guess-input:placeholder-shown) .guess-clear{display:none}
+/* „Markierungen löschen“ als kleiner Knopf */
+.card-clear{font-size:.82rem;padding:.45em .85em;color:#ffb4b4;border-color:rgba(255,120,120,.35)}
+.card-clear .ic{width:1em;height:1em}
+.card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+/* Bingo-Übersicht: Lobby-Code oben */
+.lobby-hero{text-align:center;padding:16px 14px 14px;margin:6px 0 12px;border-radius:20px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,transparent),color-mix(in srgb,var(--accent2) 14%,transparent));
+  border:1px solid var(--g-brd);box-shadow:var(--g-hi)}
+.lobby-hero .lh-k{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.lobby-hero .lobby-code{margin:2px 0 0}
+.lobby-hero .lh-sub{font-size:.85rem;color:var(--muted);margin-top:2px}
 /* Tipp: Eingabe und „Groß zeigen“ nebeneinander */
 .guess-row{display:flex;gap:10px;align-items:stretch}
 .guess-row .guess-input{flex:1;min-width:0;margin:0;height:58px;font-size:1.75rem;line-height:40px;padding:8px 12px 0;overflow:hidden;background-position:0 9px}
@@ -930,33 +948,62 @@ html.ios .volume,html.ios .hint{display:none}
 <dialog id="sheetGame" class="sheet">
   <div class="sheet-head">
     <span class="grab"></span>
-    <button class="nav-back invisible" data-back><svg class="ic"><use href="#i-back"/></svg>Spiel</button>
-    <div class="nav-title">Spiel</div>
+    <button class="nav-back invisible" data-back><svg class="ic"><use href="#i-back"/></svg>Bingo</button>
+    <div class="nav-title">Bingo</div>
     <button class="nav-done" data-close>Fertig</button>
   </div>
   <div class="sheet-body">
+    <!-- Übersicht -->
     <section class="page" data-page="main" data-title="Bingo">
-      <div class="group-h">Mitspieler in der Lobby</div>
-      <div id="lobbyCodeBox" class="hidden"><div class="lobby-code" id="lobbyCode"></div><div class="group-f" style="text-align:center;margin-top:0">Lobby-Code · Beitreten über den QR-Code bei den Bingo-Karten</div></div>
-      <div id="matchMain" class="hidden"></div>
-      <div class="group" id="playerList"></div>
-      <div class="group-f" id="playerNote"></div>
-
-      <div class="group icons" style="margin-top:22px">
-        <button class="cell tap" data-go="bingo">
-          <span class="cell-ic" style="background:linear-gradient(135deg,#ff4fa3,#ffb020)"><svg class="ic"><use href="#i-grid"/></svg></span>
-          <span class="grow">Bingo-Karten<span class="sub" id="bingoSub"></span></span>
+      <div id="bingoStart">
+        <div class="welcome">
+          <img class="big-ic" src="icon-192.png?v=5" alt="">
+          <h3>Bingo-Karten fürs Handy</h3>
+          <p>Jeder Mitspieler bekommt eine eigene Karte aufs Handy – ohne Anmeldung, ohne App.</p>
+        </div>
+        <button class="big full" data-go="setup">Bingo einrichten</button>
+      </div>
+      <div id="bingoActive">
+        <div class="lobby-hero" id="lobbyHero" data-go="invite" role="button" style="cursor:pointer">
+          <div class="lh-k" id="lobbyHeroK">Lobby-Code</div>
+          <div class="lobby-code" id="lobbyCode"></div>
+          <div class="lh-sub" id="bingoSub"></div>
+        </div>
+        <div id="matchMain" class="hidden"></div>
+        <div class="group-h" id="playerHead">Mitspieler</div>
+        <div class="group" id="playerList"></div>
+        <div class="group-f" id="playerNote"></div>
+        <div class="group icons" style="margin-top:20px">
+        <button class="cell tap" data-go="invite">
+          <span class="cell-ic" style="background:#0ea5e9"><svg class="ic"><use href="#i-share"/></svg></span>
+          <span class="grow">Mitspieler einladen<span class="sub">QR-Code, Lobby-Code und Link</span></span>
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
+        <button class="cell tap" data-go="check">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#ffb020,#ff8a3d)"><svg class="ic"><use href="#i-target"/></svg></span>
+          <span class="grow">Bingo prüfen<span class="sub">Karte eines Spielers kontrollieren</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+        <button class="cell tap" data-go="mycard" id="myCardCell">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#ff4fa3,#8b6cff)"><svg class="ic"><use href="#i-grid"/></svg></span>
+          <span class="grow">Meine Karte<span class="sub">Als Spielleiter selbst mitspielen</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+        <button class="cell tap" data-go="bset">
+          <span class="cell-ic" style="background:#6b7280"><svg class="ic"><use href="#i-sliders"/></svg></span>
+          <span class="grow">Bingo-Einstellungen<span class="sub">Mitspielen, neue Karten, beenden</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+        </div>
       </div>
-
       <div class="group-h">Spielstand</div>
       <div class="group">
         <button class="cell tap" id="btnNewGame"><span class="grow">Neues Spiel<span class="sub">Verlauf, gespielte Songs und alle Markierungen zurücksetzen</span></span></button>
       </div>
     </section>
 
-    <section class="page" data-page="bingo" data-title="Bingo-Karten">
+    <!-- Bingo einrichten -->
+    <section class="page" data-page="setup" data-title="Bingo einrichten">
       <div id="bingoOff">
         <div class="welcome">
           <img class="big-ic" src="icon-192.png?v=5" alt="">
@@ -996,44 +1043,58 @@ html.ios .volume,html.ios .hint{display:none}
         <button id="btnBingoCreate" class="big full" style="margin-top:20px">Karten erstellen</button>
         <div class="group-f" style="text-align:center;margin-top:12px">Wer die Frage einer Runde richtig beantwortet, markiert auf seiner Karte ein Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = „Bingo!“.</div>
       </div>
-      <div id="bingoOn">
-        <div class="qr-box"><div id="qr"></div><div class="small" id="qrNote">Mit der Handy-Kamera scannen</div></div>
-        <div id="joinCodeBox" class="hidden" style="text-align:center;margin:4px 0 10px">
-          <div class="group-f" style="margin:0">Oder ohne QR-Code: Seite öffnen und Code eingeben</div>
-          <div style="font-weight:700;margin-top:4px" id="joinUrlShort"></div>
-          <div class="lobby-code" id="joinCodeBig"></div>
+    </section>
+
+    <!-- Einladen -->
+    <section class="page" data-page="invite" data-title="Einladen">
+      <div class="qr-box"><div id="qr"></div><div class="small" id="qrNote">Mit der Handy-Kamera scannen</div></div>
+      <div id="joinCodeBox" class="hidden" style="text-align:center;margin:4px 0 10px">
+        <div class="group-f" style="margin:0">Oder ohne QR-Code: Seite öffnen und Code eingeben</div>
+        <div style="font-weight:700;margin-top:4px" id="joinUrlShort"></div>
+        <div class="lobby-code" id="joinCodeBig"></div>
+      </div>
+      <div class="group">
+        <button class="cell tap accent" id="btnBingoShare"><svg class="ic"><use href="#i-link"/></svg><span class="grow">Link kopieren</span></button>
+      </div>
+    </section>
+
+    <!-- Bingo prüfen -->
+    <section class="page" data-page="check" data-title="Bingo prüfen">
+      <div id="checkWhoBox">
+        <div class="group-f" style="margin:12px 16px 6px">Wer hat Bingo gerufen?</div>
+        <div class="chip-scroll" id="checkWho" style="justify-content:flex-start;margin:0 4px 10px"></div>
+      </div>
+      <div class="group">
+        <div class="cell">
+          <span>Karte Nr.</span>
+          <input id="checkNo" class="bare num" style="flex:1;text-align:left" type="number" inputmode="numeric" min="1" max="9999" placeholder="z. B. 4821" enterkeyhint="go">
+          <button id="btnCheck" class="mini">Prüfen</button>
         </div>
-        <div class="chip-scroll" id="bingoInfo"></div>
-        <div id="matchBox" class="hidden"></div>
-        <div class="group">
-          <label class="cell"><span class="grow">Ich spiele selbst mit</span><span class="switch"><input type="checkbox" class="set-host-plays"><span></span></span></label>
-          <button class="cell tap accent" id="btnBingoShare"><svg class="ic"><use href="#i-link"/></svg><span class="grow">Link kopieren</span></button>
-          <button class="cell tap" data-go="mycard" id="myCardCell"><svg class="ic"><use href="#i-grid"/></svg><span class="grow">Meine Karte<span class="sub">Als Spielleiter selbst mitspielen</span></span><svg class="ic chev"><use href="#i-chev"/></svg></button>
-        </div>
-        <div class="group-h">Bingo prüfen</div>
-        <div id="checkWhoBox">
-          <div class="group-f" style="margin:0 16px 6px">Wer hat Bingo gerufen?</div>
-          <div class="chip-scroll" id="checkWho" style="justify-content:flex-start;margin:0 4px 10px"></div>
-        </div>
-        <div class="group">
-          <div class="cell">
-            <span>Karte Nr.</span>
-            <input id="checkNo" class="bare num" style="flex:1;text-align:left" type="number" inputmode="numeric" min="1" max="9999" placeholder="z. B. 4821" enterkeyhint="go">
-            <button id="btnCheck" class="mini">Prüfen</button>
-          </div>
-        </div>
-        <div id="checkBox"></div>
-        <div class="group" style="margin-top:22px">
-          <button class="cell tap danger" id="btnBingoNew"><span class="grow">Neue Karten erstellen<span class="sub" id="bingoNewSub">Alle müssen den neuen QR-Code scannen</span></span></button>
-          <button class="cell tap danger" id="btnBingoOff"><span class="grow">Bingo beenden</span></button>
-        </div>
+      </div>
+      <div class="group-f">Spieler antippen prüft seine echten Markierungen. Ohne Auswahl wird die eingetippte Kartennummer geprüft.</div>
+      <div id="checkBox"></div>
+    </section>
+
+    <!-- Bingo-Einstellungen -->
+    <section class="page" data-page="bset" data-title="Bingo-Einstellungen">
+      <div class="group-h">Spielleiter</div>
+      <div class="group">
+        <label class="cell"><span class="grow">Ich spiele selbst mit<span class="sub">Eigene Karte, du erscheinst in der Lobby</span></span><span class="switch"><input type="checkbox" class="set-host-plays"><span></span></span></label>
+      </div>
+      <div class="group-h">Karten</div>
+      <div class="chip-scroll" id="bingoInfo"></div>
+      <div class="group" style="margin-top:10px">
+        <button class="cell tap" id="btnBingoNew"><span class="grow">Neue Karten erstellen<span class="sub" id="bingoNewSub">Alle müssen den neuen QR-Code scannen</span></span></button>
+      </div>
+      <div class="group" style="margin-top:22px">
+        <button class="cell tap danger" id="btnBingoOff"><span class="grow">Bingo beenden</span></button>
       </div>
     </section>
 
     <section class="page" data-page="mycard" data-title="Meine Karte">
       <div id="myCardOff" class="notice">
         <p>Erstelle zuerst Bingo-Karten – dann bekommst du hier deine eigene.</p>
-        <button data-go="bingo">Zu den Bingo-Karten</button>
+        <button data-go="setup">Bingo einrichten</button>
       </div>
       <div id="myCardOn">
         <div id="myCardPick" class="hidden">
@@ -1042,20 +1103,17 @@ html.ios .volume,html.ios .hint{display:none}
         </div>
         <div id="myCardPlay">
         <div class="guess-wrap glass">
-          <div class="guess-head"><span>Dein Tipp <small class="guess-state" id="myGuessState"></small></span><button class="link small" id="btnMyGuessClear">Löschen</button></div>
+          <div class="guess-head"><span>Dein Tipp <small class="guess-state" id="myGuessState"></small></span></div>
           <div class="guess-row">
-            <textarea id="myGuessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
+            <div class="guess-field"><textarea id="myGuessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea><button class="guess-clear" id="btnMyGuessClear" aria-label="Tipp löschen" title="Tipp löschen">✕</button></div>
             <button class="guess-big" id="btnMyGuessShow" aria-label="Tipp groß zeigen"><svg class="ic"><use href="#i-eye"/></svg><span>Groß<br>zeigen</span></button>
           </div>
         </div>
-        <div class="card-top" style="margin-top:14px"><span class="pill">Karte Nr. <b id="myCardNo"></b></span><span class="pill" id="myCardHits"></span></div>
+        <div class="card-top" style="margin-top:14px"><span class="pill">Karte Nr. <b id="myCardNo"></b> · <span id="myCardHits"></span></span><button class="pill-btn card-clear" id="btnMyCardClear"><svg class="ic"><use href="#i-trash"/></svg>Markierungen löschen</button></div>
         <div id="myCardWin" class="check-res won hidden">🎉 BINGO! Ruf es laut – Karte Nr. <span id="myCardWinNo"></span></div>
         <div id="myCardGrid" class="bgrid"></div>
         <div class="chip-scroll" id="myCardLegend"></div>
         <div class="group-f" style="text-align:center">Hast du die Frage einer Runde richtig beantwortet? Dann markiere ein Feld dieser Kategorie – genau wie die Mitspieler.</div>
-        <div class="group" style="margin-top:16px">
-          <button class="cell tap danger" id="btnMyCardClear"><span class="grow">Markierungen löschen</span></button>
-        </div>
         </div>
       </div>
     </section>
@@ -1083,14 +1141,14 @@ html.ios .volume,html.ios .hint{display:none}
   <div id="roundLive" class="glass round-live hidden"></div>
   <div id="guessLive" class="guess-live hidden"></div>
   <div class="guess-wrap glass">
-          <div class="guess-head"><span>Dein Tipp <small class="guess-state" id="plGuessState"></small></span><button class="link small" id="btnGuessClear">Löschen</button></div>
+          <div class="guess-head"><span>Dein Tipp <small class="guess-state" id="plGuessState"></small></span></div>
           <div class="guess-row">
-            <textarea id="guessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea>
+            <div class="guess-field"><textarea id="guessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea><button class="guess-clear" id="btnGuessClear" aria-label="Tipp löschen" title="Tipp löschen">✕</button></div>
             <button class="guess-big" id="btnGuessShow" aria-label="Tipp groß zeigen"><svg class="ic"><use href="#i-eye"/></svg><span>Groß<br>zeigen</span></button>
           </div>
         </div>
   <div class="glass card-wrap">
-    <div class="card-top"><span class="pill" id="cardHits"></span><button class="link small" id="btnCardClear">Markierungen löschen</button></div>
+    <div class="card-top"><span class="pill" id="cardHits"></span><button class="pill-btn card-clear" id="btnCardClear"><svg class="ic"><use href="#i-trash"/></svg>Markierungen löschen</button></div>
     <div id="cardGrid" class="bgrid"></div>
     <p class="small muted card-help" style="margin:6px 2px 10px">Hast du die Frage einer Runde <b>richtig</b> beantwortet? Dann markiere <b>ein</b> Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = <b>BINGO!</b> Ruf es laut und nenn deine Kartennummer.</p>
     <div class="chip-scroll" id="cardLegend"></div>
@@ -1140,7 +1198,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '3.1.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.2.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -1329,8 +1387,9 @@ function onPage(id, page) {
     if (page === 'account') renderAccount();
     if (page === 'cats') renderCats();
   } else if (id === 'sheetGame') {
-    if (page === 'main') renderLobby();
-    if (page === 'bingo') renderBingo();
+    if (page === 'main') { renderLobby(); renderBingo(); }
+    if (page === 'setup' || page === 'invite' || page === 'bset') renderBingo();
+    if (page === 'check') renderCheckWho();
     if (page === 'mycard') renderMyCard();
   } else if (id === 'sheetLib') {
     if (page === 'main') renderLib();
@@ -2237,11 +2296,13 @@ const Lobby = {
         if (!first) for (const [id, p] of Object.entries(this.players)) if (p.bingo && !prev[id]?.bingo && id !== this.uid) this.onBingo(id, p);
         first = false;
         renderLobby();
-        if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'bingo') renderCheckWho();
+        if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'check') renderCheckWho();
         if (round && !spinning) round.phase === 'revealed' ? renderGuessList() : render();   // Tipps der Mitspieler
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
       }, e => toast('Lobby: ' + e.message, 6000));
       this.syncRound();
+      // Spielleiter ist da, solange die App offen ist (ein früher geschlossener Mitspieler-Tab kann ihn auf „offline“ gesetzt haben)
+      if ((await f.get(f.at(`lobbies/${code}/players/${f.uid}/name`))).exists()) this.write(`players/${f.uid}/on`, true);
     } catch (e) {
       toast('Lobby nicht verfügbar: ' + e.message, 8000);
       if (/anderen Gerät/.test(e.message)) { state.lobby = null; LS.del('lobby'); this.code = null; }
@@ -2340,20 +2401,19 @@ function matchWinner(m) {
 }
 function renderMatch() {
   const m = state.match, on = !!(Lobby.code && m && state.bingo);
-  for (const id of ['#matchBox', '#matchMain']) $(id).classList.toggle('hidden', !on);
+  $('#matchMain').classList.toggle('hidden', !on);
   if (!on) return;
   const action = m.over
     ? `<div class="mc-h" style="margin-top:6px">${esc(matchWinner(m))}</div><button class="ghost" data-new-match style="margin-top:10px">Neues Spiel (Siege zurücksetzen)</button>`
     : m.won.length
       ? `<div class="small" style="margin:4px 0 8px">Gewonnen: ${m.won.map(id => esc(m.names[id] || '?')).join(', ')}</div><button class="big" data-next-game>Nächste Partie starten</button>`
-      : '<div class="group-f" style="margin:4px 0 0;text-align:center">Wer Bingo hat, prüfst du unten – nach dem Bestätigen geht es mit der nächsten Partie weiter.</div>';
-  $('#matchBox').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${action}</div>`;
-  $('#matchMain').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${m.won.length && !m.over ? '<button class="big" data-next-game style="margin-top:6px">Nächste Partie starten</button>' : m.over ? `<div class="mc-h">${esc(matchWinner(m))}</div>` : ''}</div>`;
+      : '<div class="group-f" style="margin:4px 0 0;text-align:center">Ruft jemand Bingo, prüfst du es unter „Bingo prüfen“ – nach dem Bestätigen geht es mit der nächsten Partie weiter.</div>';
+  $('#matchMain').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${action}</div>`;
 }
 
 function checkLobbyPlayer(id) {
   const p = Lobby.players[id]; if (!p) return;
-  openSheet('sheetGame', 'bingo');
+  openSheet('sheetGame', 'check');
   checkPlayer = id; $('#checkNo').value = p.num;
   renderCheckWho(); checkCard();
 }
@@ -2362,11 +2422,15 @@ const lobbyList = () => Object.entries(Lobby.players).filter(([, p]) => p?.name)
 const marksOf = p => p.g === state.bingo?.g ? (p.marks || []).length : 0;
 function renderLobby() {
   const list = lobbyList(), b = state.bingo, code = Lobby.code;
-  $('#lobbyCodeBox').classList.toggle('hidden', !code);
+  $('#lobbyHeroK').textContent = code ? 'Lobby-Code' : 'Bingo ohne Lobby';
+  $('#lobbyCode').classList.toggle('hidden', !code);
   $('#lobbyCode').textContent = code || '';
+  $('#playerHead').textContent = code ? `Mitspieler (${list.length})` : 'Mitspieler';
+  $('#playerHead').classList.toggle('hidden', !code);
+  $('#playerList').classList.toggle('hidden', !code);
   $('#playerList').innerHTML = list.map(p => `
-    <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false ? 'opacity:.5' : ''}">
-      <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false ? '💤' : '·'}</span>
+    <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false && p.id !== Lobby.uid ? 'opacity:.5' : ''}">
+      <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : '·'}</span>
       <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">Karte Nr. ${esc(p.num)}${p.bingo ? (p.ok ? ' · Bingo bestätigt' : ' · ruft BINGO!') : ''}</span></span>
       <span class="marks">${marksOf(p)} / ${b ? b.s * b.s : '–'}</span>
       <span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="Entfernen">${ic('trash')}</span>
@@ -2377,12 +2441,12 @@ function renderLobby() {
     : code ? 'Antippen, um die Karte eines Mitspielers zu prüfen. Markierungen und „Bingo!“ kommen hier live an.'
     : b ? 'Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.'
     : 'Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.';
-  $('#bingoSub').textContent = b ? `Aktiv · ${b.s} × ${b.s}${code ? ' · Lobby ' + code : ' · ohne Lobby'}` : 'Karten für die Handys der Mitspieler';
+  $('#bingoSub').textContent = b ? `${b.s} × ${b.s} Karten · ${b.k.length} Kategorien${code ? ' · antippen zum Einladen' : ''}` : '';
   // Leiste auf dem Hauptbildschirm: nur die Mitspieler und wie viel sie markiert haben (der Code steht im Bingo-Menü)
   const bar = $('#scorebar');
   bar.classList.toggle('hidden', !code || !list.length);
   bar.innerHTML = code ? list.map(p =>
-    `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false ? 'off' : ''}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${state.match?.wins?.[p.id] ? ` 🏆${state.match?.wins?.[p.id]}` : ''} <b>${marksOf(p)}</b></span>`).join('') : '';
+    `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${state.match?.wins?.[p.id] ? ` 🏆${state.match?.wins?.[p.id]}` : ''} <b>${marksOf(p)}</b></span>`).join('') : '';
   renderMatch();
 }
 
@@ -2466,8 +2530,8 @@ function loadQrLib() {
 let checkPlayer = null;
 async function renderBingo() {
   const b = state.bingo;
-  $('#bingoOff').classList.toggle('hidden', !!b);
-  $('#bingoOn').classList.toggle('hidden', !b);
+  $('#bingoStart').classList.toggle('hidden', !!b);
+  $('#bingoActive').classList.toggle('hidden', !b);
   if (!b) {
     document.querySelectorAll('#bingoSizeSeg button').forEach(x => x.classList.toggle('on', +x.dataset.size === bingoSize));
     $('#bingoLobbyBox').classList.toggle('hidden', !hasFirebase());
@@ -3318,7 +3382,7 @@ async function askNewGame() {
 }
 $('#btnNewGame').onclick = askNewGame;
 $('#btnGame').onclick = () => openSheet('sheetGame');
-$('#btnBingoCreate').onclick = createBingo;
+$('#btnBingoCreate').onclick = () => { createBingo(); if (state.bingo) goPage($('#sheetGame'), 'invite'); };
 $('#bingoGamesSeg').onclick = e => {
   const b = e.target.closest('[data-games]'); if (!b) return;
   state.settings.games = +b.dataset.games; LS.set('settings', state.settings); renderBingo();
@@ -3348,6 +3412,7 @@ $('#btnBingoOff').onclick = async () => {
   if (!await ask(Lobby.code ? 'Bingo beenden?\nDie Lobby wird geschlossen.' : 'Bingo beenden?', { ok: 'Beenden', danger: true })) return;
   Lobby.close();
   state.bingo = null; LS.del('bingo'); renderBingo(); renderLobby(); renderMyCardBtn();
+  goPage($('#sheetGame'), 'main', true);
 };
 $('#setLimit').onchange = e => { state.settings.limit = +e.target.value; saveSettings(); };
 $('#setHints').onchange = e => { state.settings.hints = e.target.checked; saveSettings(); };
