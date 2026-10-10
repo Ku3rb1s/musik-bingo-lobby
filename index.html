@@ -1003,7 +1003,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '2.3.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '2.3.1', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -2275,14 +2275,20 @@ async function renderBingo() {
   } catch (e) { $('#qr').textContent = e.message; }
 }
 // „Wer hat Bingo gerufen?“ – die Mitspieler aus der Lobby
+// Eigene Karte des Spielleiters („Meine Karte“) – wird wie ein Mitspieler geprüft
+const HOST_ID = '__host';
+function hostCard() {
+  const b = state.bingo, st = b && LS.get('card_' + b.g, null);
+  return st ? { name: 'Spielleiter', num: st.num, marks: st.marks, g: b.g, host: true } : null;
+}
+const whoById = id => id === HOST_ID ? hostCard() : Lobby.players[id];
 function renderCheckWho() {
-  const list = lobbyList();
-  if (checkPlayer && !Lobby.players[checkPlayer]) checkPlayer = null;
-  $('#checkWho').innerHTML = list.length
-    ? `<button class="chip-btn ${!checkPlayer ? 'on' : ''}" data-check-who="">Nummer</button>` +
-      list.map(p => `<button class="chip-btn ${checkPlayer === p.id ? 'on' : ''}" data-check-who="${esc(p.id)}">${p.bingo ? '🎉 ' : ''}${esc(p.name)}</button>`).join('')
-    : '';
-  $('#checkWhoBox').classList.toggle('hidden', !list.length);
+  const list = lobbyList(), host = hostCard();
+  if (checkPlayer && !whoById(checkPlayer)) checkPlayer = null;
+  // Kein Chip gewählt = beliebige Kartennummer prüfen (Feld unten). Gewählten Chip nochmal antippen = abwählen.
+  $('#checkWho').innerHTML = (host ? `<button class="chip-btn ${checkPlayer === HOST_ID ? 'on' : ''}" data-check-who="${HOST_ID}">⭐ Spielleiter</button>` : '') +
+    list.map(p => `<button class="chip-btn ${checkPlayer === p.id ? 'on' : ''}" data-check-who="${esc(p.id)}">${p.bingo ? '🎉 ' : ''}${esc(p.name)}</button>`).join('');
+  $('#checkWhoBox').classList.toggle('hidden', !list.length && !host);
 }
 // Link direkt in die Zwischenablage (Fallback für Browser ohne Clipboard-API)
 async function copyBingoLink() {
@@ -2316,7 +2322,7 @@ function checkCard() {
     for (const i of l) if (fields[i] !== '*') need[fields[i]] = (need[fields[i]] || 0) + 1;
     return Object.entries(need).every(([c, n]) => (avail[c] || 0) >= n);
   };
-  const who = checkPlayer ? Lobby.players[checkPlayer] : null;
+  const who = checkPlayer ? whoById(checkPlayer) : null;
   const marks = who && +who.num === num ? new Set(who.g === b.g ? who.marks || [] : []) : null;
   // Mit Lobby: nur die Linien, die der Spieler wirklich voll markiert hat
   const fullLines = marks ? bingoLines(b.s).filter(l => l.every(i => fields[i] === '*' || marks.has(i))) : bingoLines(b.s);
@@ -2340,7 +2346,7 @@ function checkCard() {
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
-    ${marks && win ? `<div class="chips" style="margin-top:6px">${who.ok
+    ${marks && win && !who.host ? `<div class="chips" style="margin-top:6px">${who.ok
       ? '<span class="chip-btn on">✓ Bingo bestätigt</span>'
       : `<button class="chip-btn" data-confirm="${esc(checkPlayer)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`}</div>` : ''}`;
   if (win && !over.length) { confetti(); beep(1046, .3); }
@@ -2389,11 +2395,13 @@ function mountCard(b, el, onWin, sync = null) {
     const i = +c.dataset.i; if (fields[i] === '*') return;
     st.marks = st.marks.includes(i) ? st.marks.filter(x => x !== i) : [...st.marks, i];
     LS.set(key, st); try { navigator.vibrate?.(10); } catch {}
-    draw(); sync?.onChange(st.marks);
+    // Erst die Markierung speichern, dann zeichnen: draw() kann „Bingo!“ an den Server melden, und dessen
+    // Echo darf die neue Markierung nicht mit dem alten Stand überschreiben
+    sync?.onChange(st.marks); draw();
   };
   el.clear.onclick = async () => {
     if (!await ask('Alle Markierungen löschen?', { ok: 'Löschen', danger: true })) return;
-    st.marks = []; LS.set(key, st); draw(); sync?.onChange(st.marks);
+    st.marks = []; LS.set(key, st); sync?.onChange(st.marks); draw();
   };
   draw();
   // Markierungen von außen setzen (z. B. der Spielleiter startet ein neues Spiel)
@@ -2856,9 +2864,9 @@ document.addEventListener('click', async e => {
 
   const cw = t.closest('[data-check-who]');
   if (cw) {
-    checkPlayer = cw.dataset.checkWho || null;
+    checkPlayer = cw.dataset.checkWho === checkPlayer ? null : cw.dataset.checkWho || null;
     document.querySelectorAll('[data-check-who]').forEach(x => x.classList.toggle('on', (x.dataset.checkWho || null) === checkPlayer));
-    if (checkPlayer) $('#checkNo').value = Lobby.players[checkPlayer]?.num ?? '';
+    if (checkPlayer) $('#checkNo').value = whoById(checkPlayer)?.num ?? '';
     if ($('#checkNo').value) checkCard();
   }
   const conf = t.closest('[data-confirm]');
