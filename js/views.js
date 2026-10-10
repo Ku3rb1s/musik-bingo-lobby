@@ -263,15 +263,27 @@ async function lobbyMode(code, autoName = null) {
       else $('#endScreen').classList.add('hidden');
       lastGame = m.game; lastOver = !!m.over;
     });
-    // Neue Partie: Karte behalten oder eine neue (freie) Nummer wählen
+    // Neue Partie: Karte behalten oder eine neue (freie) Nummer wählen.
+    // Erst nur zwei Knöpfe – die eigene Karte steht ja darunter. Beim Aussuchen ersetzt die Vorschau die eigene Karte,
+    // so ist nie mehr als eine Karte auf dem Bildschirm.
     function showRepick(m) {
       if (!curB) return;
-      const box = $('#repickBox');
+      const box = $('#repickBox'), own = $('#cardLive .card-wrap');
       const used = new Set(Object.entries(allPlayers).filter(([id]) => id !== f.uid).map(([, p]) => +p?.num));
+      const done = () => { box.classList.add('hidden'); box.innerHTML = ''; own.classList.remove('hidden'); };
+      own.classList.remove('hidden');
       box.classList.remove('hidden');
-      box.innerHTML = `<div class="rp-h">Partie ${esc(m.game)}${m.total ? ' von ' + esc(m.total) : ''} beginnt</div><div class="small muted" style="margin-bottom:10px">Behalte deine Karte oder such dir eine neue aus.</div><div class="rp-pick"></div>`;
-      const done = () => { box.classList.add('hidden'); box.innerHTML = ''; };
-      cardPicker(box.querySelector('.rp-pick'), curB, used, num => { f.update(meRef, { num, marks: null }).catch(e => toast('Fehler: ' + e.message)); done(); }, { num: me.num, onKeep: done });
+      box.innerHTML = `<div class="rp-h">Partie ${esc(m.game)}${m.total ? ' von ' + esc(m.total) : ''} beginnt</div>
+        <div class="small muted" style="margin-bottom:12px">Die Markierungen sind gelöscht. Mit deiner Karte weiterspielen oder eine neue aussuchen?</div>
+        <button class="big rp-keep" style="width:100%">${ic('check')} Karte Nr. ${esc(me.num)} behalten</button>
+        <button class="ghost rp-new" style="width:100%;margin-top:10px">${ic('refresh')} Neue Karte aussuchen</button>`;
+      box.querySelector('.rp-keep').onclick = done;
+      box.querySelector('.rp-new').onclick = () => {
+        own.classList.add('hidden');
+        box.innerHTML = '<div class="rp-h">Neue Karte aussuchen</div><div class="rp-pick"></div><button class="ghost rp-back" style="width:100%;margin-top:10px">Doch meine alte Karte behalten</button>';
+        box.querySelector('.rp-back').onclick = done;
+        cardPicker(box.querySelector('.rp-pick'), curB, used, num => { f.update(meRef, { num, marks: null }).catch(e => toast('Fehler: ' + e.message)); done(); });
+      };
       box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     // Aktuelle Runde

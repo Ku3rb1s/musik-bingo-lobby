@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.0.4 – 10.10.2026
+- Neue Partie (Mitspieler): statt Vorschau-Karte plus eigener Karte (zwei Bingo-Felder untereinander) erst nur „Karte Nr. … behalten“ oder „Neue Karte aussuchen“; beim Aussuchen ersetzt die Vorschau die eigene Karte – es ist immer nur eine Karte zu sehen
+
 ## 4.0.3 – 10.10.2026
 - Behoben: Findet die App das Originaljahr (MusicBrainz) erst nach der Auflösung, bekamen Handys und Fernseher noch das falsche Jahr als Lösung – jetzt wird es nachgereicht (ebenso ein nachgeladenes Cover für den Fernseher)
 - Countdown läuft jetzt auch auf den Handys der Mitspieler mit („Runde 3 · noch 12 s“)
