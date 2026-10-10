@@ -11,7 +11,7 @@ const b64u = {
 };
 function hashStr(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-const SHORT = { title: 'Titel', artist: 'Interpret', year: 'Genaues Jahr', decade: 'Jahrzehnt', album: 'Album' };
+const SHORT = { title: 'Titel', artist: 'Interpret', year: 'Genaues Jahr', decade: 'Jahrzehnt', album: 'Album', country: 'Herkunftsland' };
 const shortCat = c => c.builtin && c.answer === 'range' ? `Jahr ± ${c.tol}`
   : c.builtin && SHORT[c.answer] ? SHORT[c.answer]
   : c.name.length > 22 ? c.name.slice(0, 21) + '…' : c.name;

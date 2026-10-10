@@ -36,6 +36,7 @@ async function nextRound() {
   // n = Anzeige (übersprungene Runden behalten die Nummer), id = eindeutig – daran hängen die Tipps in der Lobby
   round = { n: (state.history[0]?.n || 0) + 1, id: Date.now(), track, cat, phase: 'playing', hints: 0, pos: Player.startMs(track) };
   mbLookup(track);
+  if (cat.answer === 'country') countryLookup(track);
   spinCategory(cat);
   render(); Lobby.syncRound();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -134,6 +135,7 @@ function reveal() {
   if (state.settings.pauseOnReveal) Player.pause();
   beep(1046, .25);
   render(); renderHist(); Lobby.syncRound();
+  if (round.cat.answer === 'country') countryLookup(t);
   // Statistik fürs Spielende: gespielte Songs und wer wie oft getippt hat
   const m = state.match;
   if (Lobby.code && m && !m.over) {
@@ -152,7 +154,12 @@ function answerFor(cat, t) {
     case 'decade': return decadeOf(y);
     case 'range': return y ? `${y} <span class="small">(richtig: ${y - cat.tol}–${y + cat.tol})</span>` : '?';
     case 'album': return esc(t.album || '?');
-    default: return `${esc(t.artists)} – ${esc(t.title)}`;
+    case 'country': {
+      const c = countryOf(t);
+      return c ? esc(c) : c === null ? '🔎 Wird nachgeschlagen …' : '🤔 Unbekannt – ihr entscheidet selbst';
+    }
+    // Eigene Frage ohne Daten (z. B. „Aus welchem Film?“): die App kennt die Antwort nicht – der Song steht darunter
+    default: return '🤔 Ihr entscheidet selbst';
   }
 }
 
@@ -226,6 +233,63 @@ function mbLookup(t) {
   });
 }
 
+/* ---------------- Herkunftsland über MusicBrainz ---------------- */
+// Erst die Aufnahme suchen (Titel + Interpret) – so ist klar, welcher Künstler gemeint ist (es gibt z. B. zwei Bands „Nirvana“).
+// Dann beim Künstler das Land nachschlagen. Ergebnis je Künstler gespeichert ('' = MusicBrainz kennt es nicht).
+const artistOf = t => (t.artists.split(',')[0] || '').trim();
+const REGION_DE = (() => { try { return new Intl.DisplayNames(['de'], { type: 'region' }); } catch { return null; } })();
+function regionName(code) {
+  if (code === 'XE') return 'Europa';
+  if (code === 'XW') return 'Weltweit';
+  try { return REGION_DE?.of(code) || code; } catch { return code; }
+}
+// null = noch unbekannt (Suche läuft/offen), '' = nicht gefunden, sonst Ländername
+function countryOf(t) {
+  const v = state.mbCountry[normStr(artistOf(t))];
+  return v === undefined ? null : v ? regionName(v) : '';
+}
+async function mbJson(url) {
+  let r = await fetch(url);
+  if (r.status === 503) { await sleep(2500); r = await fetch(url); }   // kurz überlastet / Ratenlimit
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+function countryLookup(t) {
+  const name = artistOf(t), k = normStr(name);
+  if (!k || k in state.mbCountry) return;
+  mbBusy = mbBusy.then(async () => {
+    if (k in state.mbCountry) return;
+    try {
+      const MB = 'https://musicbrainz.org/ws/2/';
+      const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND artist:"${name.replace(/"/g, '')}"`;
+      const j = await mbJson(MB + 'recording?fmt=json&limit=15&query=' + encodeURIComponent(q));
+      let id = null;
+      for (const rec of j.recordings || []) {
+        if ((rec.score ?? 0) < 85) continue;
+        const ac = (rec['artist-credit'] || []).find(a => normStr(a.artist?.name) === k || normStr(a.name) === k);
+        if (ac?.artist?.id) { id = ac.artist.id; break; }
+      }
+      await sleep(1100);
+      if (!id) {   // Aufnahme nicht gefunden → Künstler direkt suchen (gleicher Name)
+        const s = await mbJson(MB + 'artist?fmt=json&limit=5&query=' + encodeURIComponent(`artist:"${name.replace(/"/g, '')}"`));
+        id = (s.artists || []).find(a => (a.score ?? 0) >= 90 && normStr(a.name) === k)?.id || null;
+        await sleep(1100);
+      }
+      let code = '';
+      if (id) {
+        const a = await mbJson(MB + 'artist/' + id + '?fmt=json');
+        code = a.country || a.area?.['iso-3166-1-codes']?.[0] || '';
+      }
+      state.mbCountry[k] = code; LS.set('mbCountry', state.mbCountry);
+      // Kam die Antwort erst nach der Auflösung: nachreichen (auch an Handys und Fernseher)
+      if (round?.track === t && round.cat.answer === 'country') {
+        if (round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } else render();
+      }
+    } catch { /* offline o. ä. – beim nächsten Mal erneut versuchen */ }
+    await sleep(1100);
+  });
+}
+
 /* ---------------- Tipps ---------------- */
 function hintsFor(cat, t) {
   const y = yearOf(t), dec = y ? decLabel(Math.floor(y / 10) * 10) : null;
@@ -242,6 +306,7 @@ function hintsFor(cat, t) {
     decade: [y && (y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), `Der Interpret beginnt mit „${first(artist0)}“`],
     album: [`Das Album beginnt mit „${first(t.album)}“`, dec && `Erschienen in den ${dec}`, cover],
     none: [dec && `Erschienen in den ${dec}`, `Der Interpret beginnt mit „${first(artist0)}“`, cover],
+    country: [countryOf(t) && `Das Land beginnt mit „${countryOf(t)[0]}“`, `Der Interpret beginnt mit „${first(artist0)}“`],
   }[cat.answer] || [];
   return list.filter(Boolean).slice(0, 2);   // immer (höchstens) 2 Tipps pro Runde
 }
