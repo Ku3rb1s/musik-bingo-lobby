@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.5.2', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.6.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -129,8 +129,9 @@ let spinning = false;
 // Reihenfolge: eigene Korrektur > Originaljahr (MusicBrainz) > Spotify-Albumjahr
 const mbYear = t => state.settings.mb && state.mb[t.id] > 0 ? state.mb[t.id] : null;
 const yearOf = t => state.yearFix[t.id] ?? mbYear(t) ?? t.year ?? null;
-const decLabel = d => (d < 2000 ? String(d).slice(2) : d) + 'er';
-const decadeOf = y => y ? Math.floor(y / 10) * 10 + 'er' : '?';
+// Jahrzehnt: „80er“ / „80s“
+const decLabel = d => (d < 2000 ? String(d).slice(2) : d) + (LANG === 'en' ? 's' : 'er');
+const decadeOf = y => y ? Math.floor(y / 10) * 10 + (LANG === 'en' ? 's' : 'er') : '?';
 
 /* ---------------- UI-Helfer ---------------- */
 let toastT;
@@ -170,8 +171,8 @@ let wakeRetry = null;
 // Die Spotify-App schläft im Hintergrund gern ein → per Knopf öffnen, beim Zurückkommen automatisch weiterspielen
 function offerSpotifyWake(msg) {
   wakeRetry = round;   // auch wenn Spotify von Hand geöffnet wird, geht es beim Zurückkommen weiter
-  toast(msg + ' Öffne kurz Spotify – danach geht es automatisch weiter.', 15000, {
-    label: 'Spotify öffnen',
+  toast(msg + ' ' + tx('Öffne kurz Spotify – danach geht es automatisch weiter.'), 15000, {
+    label: tx('Spotify öffnen'),
     fn: () => { location.href = 'spotify://'; },
   });
 }
@@ -188,7 +189,7 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 // Eigener Ersatz für confirm()/prompt() – manche Browser blockieren die nativen Dialoge.
-function ask(msg, { input = null, ok = 'OK', danger = false } = {}) {
+function ask(msg, { input = null, ok = tx('OK'), danger = false } = {}) {
   const d = $('#dlgAsk'), inp = $('#askInput');
   if (d.open) d.close();   // eine noch offene Frage gilt als „Abbrechen“
   $('#askMsg').textContent = msg; $('#askOk').textContent = ok;

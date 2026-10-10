@@ -21,7 +21,7 @@ function firebase() {
   fbP.catch(() => { fbP = null; });
   return fbP;
 }
-const nameList = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + ' und ' + names.at(-1);
+const nameList = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + tx(' und ') + names.at(-1);
 const LOBBY_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const plainText = html => { const d = document.createElement('div'); d.innerHTML = html; return d.textContent; };
 
@@ -69,12 +69,12 @@ const Lobby = {
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'check') renderCheckWho();
         if (round?.phase === 'revealed') renderGuessList();   // Tipps der Mitspieler
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
-      }, e => toast('Lobby: ' + e.message, 6000));
+      }, e => toast('Lobby: ' + tx(e.message), 6000));
       this.syncRound();
       // Spielleiter ist da, solange die App offen ist (ein früher geschlossener Mitspieler-Tab kann ihn auf „offline“ gesetzt haben)
       if ((await f.get(f.at(`lobbies/${code}/players/${f.uid}/name`))).exists()) this.write(`players/${f.uid}/on`, true);
     } catch (e) {
-      toast('Lobby nicht verfügbar: ' + e.message, 8000);
+      toast(tx('Lobby nicht verfügbar: {e}', { e: tx(e.message) }), 8000);
       if (/anderen Gerät/.test(e.message)) { state.lobby = null; LS.del('lobby'); this.code = null; }
     }
     renderLobby();
@@ -96,7 +96,7 @@ const Lobby = {
   },
   write(path, val) {
     const code = this.code; if (!code) return;
-    firebase().then(f => f.set(f.at(`lobbies/${code}/${path}`), val)).catch(e => toast('Sync-Fehler: ' + e.message));
+    firebase().then(f => f.set(f.at(`lobbies/${code}/${path}`), val)).catch(e => toast(tx('Sync-Fehler: {e}', { e: tx(e.message) })));
   },
   // Alle Markierungen und Bingo-Rufe zurücksetzen (neues Spiel oder neue Karten)
   clearMarks() {
@@ -134,7 +134,7 @@ const Lobby = {
   // Bingo bestätigen: Spieler bekommt die Bestätigung aufs Handy, der Sieg wird für die Lobby gezählt
   confirm(id) {
     const p = whoById(id);
-    if (!p) return toast('Dieser Spieler ist nicht mehr in der Lobby');
+    if (!p) return toast(tx('Dieser Spieler ist nicht mehr in der Lobby'));
     if (id !== HOST_ID) this.write(`players/${id}/ok`, true);
     // Auch nach dem Ende zählen: haben mehrere gleichzeitig in der letzten Partie Bingo, bekommt jeder seinen Sieg
     const m = state.match; if (!m) return;
@@ -150,7 +150,7 @@ const Lobby = {
   kick(id) { this.write(`players/${id}`, null); },
   // Spielleiter spielt mit: tritt mit eigener Karte der Lobby bei („⭐ Name“)
   joinHost(num) {
-    const name = ('⭐ ' + (state.me?.name || 'Spielleiter')).slice(0, 24);
+    const name = ('⭐ ' + (state.me?.name || tx('Spielleiter'))).slice(0, 24);
     this.write(`players/${this.uid}`, { name, num, on: true, g: state.bingo.g });
   },
   leaveHost() { if (this.uid && this.players[this.uid]) this.kick(this.uid); },
@@ -159,7 +159,7 @@ const Lobby = {
     confetti(); beep(1046, .3);
     const callers = pendingCallers();
     if (!callers.length) return;
-    toast(`🎉 BINGO von ${nameList(callers.map(c => c.name))}`, 12000, { label: 'Prüfen', fn: checkCallers });
+    toast(tx('🎉 BINGO von {n}', { n: nameList(callers.map(c => c.name)) }), 12000, { label: tx('Prüfen'), fn: checkCallers });
   },
 };
 /* ---------------- Partien & Siege (nur mit Lobby) ---------------- */
@@ -187,31 +187,33 @@ function nextGame() {
   Lobby.syncRound();
   saveMatch(); renderBingo(); renderMyCardBtn();
   $('#checkBox').innerHTML = '';
-  toast(`Partie ${m.game}${m.total ? ' von ' + m.total : ''} – alle können ihre Karte behalten oder neu wählen 🎲`, 6000);
+  toast(tx('{p} – alle können ihre Karte behalten oder neu wählen 🎲', { p: partieName(m) }), 6000);
 }
 // Siegertabelle als Chips; lead = wer vorne liegt
 function winsHtml(m) {
   const rows = Object.entries(m.wins || {}).sort((a, b) => b[1] - a[1]);
-  if (!rows.length) return '<div class="group-f" style="text-align:center;margin:4px 0">Noch keine Siege</div>';
+  if (!rows.length) return `<div class="group-f" style="text-align:center;margin:4px 0">${tx('Noch keine Siege')}</div>`;
   const top = rows[0][1];
   return `<div class="match-tbl">${rows.map(([id, n]) => `<span class="${n === top ? 'lead' : ''}">🏆 ${esc(m.names?.[id] || '?')} ${n}</span>`).join('')}</div>`;
 }
-const matchTitle = m => m.over ? '🏁 Spiel vorbei' : `Partie ${m.game}${m.total ? ' von ' + m.total : ' · endlos'}`;
+// „Partie 2 von 3“ / „Partie 2“ (endlos)
+const partieName = m => m.total ? tx('Partie {g} von {t}', { g: m.game, t: m.total }) : tx('Partie {g}', { g: m.game });
+const matchTitle = m => m.over ? tx('🏁 Spiel vorbei') : m.total ? partieName(m) : tx('Partie {g} · endlos', { g: m.game });
 function matchWinner(m) {
   const rows = Object.entries(m.wins || {}).sort((a, b) => b[1] - a[1]);
   if (!rows.length) return '';
   const best = rows.filter(r => r[1] === rows[0][1]).map(r => m.names?.[r[0]] || '?');
-  return best.length > 1 ? `Unentschieden: ${best.join(', ')}` : `🏆 ${best[0]} gewinnt!`;
+  return best.length > 1 ? tx('Unentschieden: {n}', { n: best.join(', ') }) : tx('🏆 {n} gewinnt!', { n: best[0] });
 }
 function renderMatch() {
   const m = state.match, on = !!(Lobby.code && m && state.bingo);
   $('#matchMain').classList.toggle('hidden', !on);
   if (!on) return;
   const action = m.over
-    ? `<div class="mc-h" style="margin-top:6px">${esc(matchWinner(m))}</div><button class="ghost" data-new-match style="margin-top:10px">Nochmal spielen (Siege auf 0)</button>`
+    ? `<div class="mc-h" style="margin-top:6px">${esc(matchWinner(m))}</div><button class="ghost" data-new-match style="margin-top:10px">${tx('Nochmal spielen (Siege auf 0)')}</button>`
     : m.won.length
-      ? `<div class="small" style="margin:4px 0 8px">Gewonnen: ${m.won.map(id => esc(m.names[id] || '?')).join(', ')}</div><button class="big" data-next-game>Nächste Partie starten</button>`
-      : '<div class="group-f" style="margin:4px 0 0;text-align:center">Ruft jemand Bingo, prüfst du es unter „Bingo prüfen“ – nach dem Bestätigen geht es mit der nächsten Partie weiter.</div>';
+      ? `<div class="small" style="margin:4px 0 8px">${tx('Gewonnen: {n}', { n: m.won.map(id => esc(m.names[id] || '?')).join(', ') })}</div><button class="big" data-next-game>${tx('Nächste Partie starten')}</button>`
+      : `<div class="group-f" style="margin:4px 0 0;text-align:center">${tx('Ruft jemand Bingo, prüfst du es unter „Bingo prüfen“ – nach dem Bestätigen geht es mit der nächsten Partie weiter.')}</div>`;
   $('#matchMain').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${action}</div>`;
 }
 
@@ -226,26 +228,26 @@ const lobbyList = () => Object.entries(Lobby.players).filter(([, p]) => p?.name)
 const marksOf = p => p.g === state.bingo?.g ? (p.marks || []).length : 0;
 function renderLobby() {
   const list = lobbyList(), b = state.bingo, code = Lobby.code;
-  $('#lobbyHeroK').textContent = code ? 'Lobby-Code' : 'Bingo ohne Lobby';
+  $('#lobbyHeroK').textContent = code ? tx('Lobby-Code') : tx('Bingo ohne Lobby');
   $('#lobbyCode').classList.toggle('hidden', !code);
   $('#lobbyCode').textContent = code || '';
-  $('#playerHead').textContent = code ? `Mitspieler (${list.length})` : 'Mitspieler';
+  $('#playerHead').textContent = code ? tx('Mitspieler ({n})', { n: list.length }) : tx('Mitspieler');
   $('#playerHead').classList.toggle('hidden', !code);
   $('#playerList').classList.toggle('hidden', !code);
   $('#playerList').innerHTML = list.map(p => `
     <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false && p.id !== Lobby.uid ? 'opacity:.5' : ''}">
       <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : '·'}</span>
-      <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">Karte Nr. ${esc(p.num)}${p.bingo ? (p.ok ? ' · Bingo bestätigt' : ' · ruft BINGO!') : ''}</span></span>
+      <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">${tx('Karte Nr. {n}', { n: esc(p.num) })}${p.bingo ? (p.ok ? tx(' · Bingo bestätigt') : tx(' · ruft BINGO!')) : ''}</span></span>
       <span class="marks">${marksOf(p)} / ${b ? fieldCount(b) : '–'}</span>
-      <span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="Entfernen">${ic('trash')}</span>
+      <span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="${tx('Entfernen')}">${ic('trash')}</span>
     </button>`).join('')
-    || `<div class="cell muted">${code ? 'Noch niemand beigetreten.' : 'Noch keine Lobby.'}</div>`;
+    || `<div class="cell muted">${code ? tx('Noch niemand beigetreten.') : tx('Noch keine Lobby.')}</div>`;
   $('#playerNote').textContent = !hasFirebase()
     ? 'Für Lobbys mit Live-Sync muss im Code noch das Firebase-Projekt eingetragen werden (FIREBASE_CONFIG). Bis dahin funktionieren die Karten wie bisher über den QR-Code.'
-    : code ? 'Antippen, um die Karte eines Mitspielers zu prüfen. Markierungen und „Bingo!“ kommen hier live an.'
-    : b ? 'Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.'
-    : 'Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.';
-  $('#bingoSub').textContent = b ? `${b.s} × ${b.s} Karten${hasJoker(b) ? ' mit Joker' : ''} · ${b.k.length} Kategorien${code ? ' · antippen zum Einladen' : ''}` : '';
+    : code ? tx('Antippen, um die Karte eines Mitspielers zu prüfen. Markierungen und „Bingo!“ kommen hier live an.')
+    : b ? tx('Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.')
+    : tx('Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.');
+  $('#bingoSub').textContent = b ? tx('{s} × {s} Karten', { s: b.s }) + (hasJoker(b) ? tx(' mit Joker') : '') + tx(' · {n} Kategorien', { n: b.k.length }) + (code ? tx(' · antippen zum Einladen') : '') : '';
   renderScorebar(); renderMatch();
 }
 // Leiste auf dem Hauptbildschirm: Mitspieler mit Siegen und ✓, wer für diese Runde fertig getippt hat
@@ -255,6 +257,6 @@ function renderScorebar() {
   const done = p => round && p.guess?.n === round.id && p.guess.t;
   bar.innerHTML = code ? list.map(p => {
     const wins = state.match?.wins?.[p.id];
-    return `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}" data-lobby-check="${esc(p.id)}" role="button" title="Karte von ${esc(p.name)} ansehen">${p.bingo ? '🎉' : ''} ${esc(p.name)}${wins ? ` 🏆${wins}` : ''}${done(p) ? ' <b>✓</b>' : ''}</span>`;
+    return `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}" data-lobby-check="${esc(p.id)}" role="button" title="${tx('Karte von {n} ansehen', { n: esc(p.name) })}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${wins ? ` 🏆${wins}` : ''}${done(p) ? ' <b>✓</b>' : ''}</span>`;
   }).join('') : '';
 }

@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.6.0 – 10.10.2026
+- Sprachauswahl Deutsch / English: in den Einstellungen („Sprache · Language“), bei Mitspielern oben der Umschalter „DE | EN“. Voreinstellung ist die Sprache des Geräts. Jedes Gerät hat seine eigene Sprache – Spielleiter, Mitspieler und Fernseher können unterschiedlich eingestellt sein; Standard-Kategorien, Kartenfelder und feste Antworten (z. B. „Band“, Jahrzehnt) erscheinen jeweils übersetzt. Eigene Kategorien bleiben, wie sie eingegeben wurden; Ländernamen kommen in der Sprache des Spielleiters
+- Neue Datei js/i18n.js (Wörterbuch mit ~500 Texten)
+
 ## 4.5.2 – 10.10.2026
 - Leiste unter der Spielfläche: Antippen der freien Fläche macht nichts mehr – nur die Namen öffnen die Karte des Spielers
 

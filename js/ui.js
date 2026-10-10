@@ -4,18 +4,18 @@
 /* ---------------- Rendering ---------------- */
 function render() {
   const ph = round?.phase || 'idle';
-  $('#roundNo').textContent = round ? `Runde ${round.n}` : 'Runde –';
+  $('#roundNo').textContent = round ? tx('Runde {n}', { n: round.n }) : tx('Runde –');
   const left = state.tracks.filter(t => !state.played.includes(t.id)).length;
-  $('#remaining').textContent = state.tracks.length ? `${left} / ${state.tracks.length} Songs übrig` : 'Keine Songs';
-  $('#catLabel').textContent = round ? 'Kategorie dieser Runde' : 'Musik-Bingo';
+  $('#remaining').textContent = state.tracks.length ? tx('{a} / {b} Songs übrig', { a: left, b: state.tracks.length }) : tx('Keine Songs');
+  $('#catLabel').textContent = round ? tx('Kategorie dieser Runde') : 'Musik-Bingo';
   $('#cat').classList.toggle('idle', !round);
   if (!spinning) {
     if (round) showCat(round.cat);
     else {
       $('#catIcon').innerHTML = '<img src="icon-192.png?v=5" alt="">';
       document.documentElement.style.setProperty('--cat', '#ffa03c');
-      $('#catName').textContent = !state.tracks.length ? 'Füge eine Playlist hinzu'
-        : state.history.length ? `${state.history.length} ${state.history.length === 1 ? 'Runde' : 'Runden'} gespielt` : 'Bereit für das Spiel?';
+      $('#catName').textContent = !state.tracks.length ? tx('Füge eine Playlist hinzu')
+        : state.history.length ? tx(state.history.length === 1 ? '{n} Runde gespielt' : '{n} Runden gespielt', { n: state.history.length }) : tx('Bereit für das Spiel?');
     }
   }
   // Bei der Auflösung dreht sich die Platte um und zeigt das Cover
@@ -32,14 +32,14 @@ function render() {
   // Unten: ein Hauptknopf (plus „Auflösen“ ohne Countdown). Musik-Steuerung = auf die Platte tippen.
   const c = {
     idle: !state.tracks.length
-      ? `<button class="big" data-act="lib">${ic('plus')} Playlist hinzufügen</button>`
+      ? `<button class="big" data-act="lib">${ic('plus')} ${tx('Playlist hinzufügen')}</button>`
       : state.history.length
-        ? `<button class="ghost" data-act="newgame">${ic('restart')}<span>Neu</span></button><button class="big" data-act="next">${ic('play')} Weiterspielen</button>`
-        : `<button class="big" data-act="start">${ic('play')} Spiel starten</button>`,
-    playing: `<button class="ghost" data-act="reveal">${ic('eye')}<span>Auflösen</span></button>
+        ? `<button class="ghost" data-act="newgame">${ic('restart')}<span>${tx('Neu')}</span></button><button class="big" data-act="next">${ic('play')} ${tx('Weiterspielen')}</button>`
+        : `<button class="big" data-act="start">${ic('play')} ${tx('Spiel starten')}</button>`,
+    playing: `<button class="ghost" data-act="reveal">${ic('eye')}<span>${tx('Auflösen')}</span></button>
               <button class="big" data-act="countdown">${ic('timer')} Countdown · ${state.settings.seconds} s</button>`,
-    countdown: `<button class="big pink" data-act="reveal">${ic('eye')} Jetzt auflösen</button>`,
-    revealed: `<button class="big" data-act="next">${ic('skip')} Nächster Song</button>`,
+    countdown: `<button class="big pink" data-act="reveal">${ic('eye')} ${tx('Jetzt auflösen')}</button>`,
+    revealed: `<button class="big" data-act="next">${ic('skip')} ${tx('Nächster Song')}</button>`,
   }[ph];
   $('#controls').innerHTML = c;
   // Unter der Platte: kleine, beschriftete Zusatzknöpfe passend zur Phase
@@ -47,11 +47,11 @@ function render() {
   if (round && ph !== 'revealed') {
     if (state.settings.hints) {
       const left = hintsFor(round.cat, round.track).length - (round.hints || 0);
-      acts.push(`<button class="pill-btn" data-act="hint" ${left > 0 ? '' : 'disabled'}>${ic('bulb')}Tipp${left > 0 ? ` · ${left}` : ''}</button>`);
+      acts.push(`<button class="pill-btn" data-act="hint" ${left > 0 ? '' : 'disabled'}>${ic('bulb')}${tx('Tipp')}${left > 0 ? ` · ${left}` : ''}</button>`);
     }
-    acts.push(`<button class="pill-btn" data-act="next">${ic('skip')}Überspringen</button>`);
+    acts.push(`<button class="pill-btn" data-act="next">${ic('skip')}${tx('Überspringen')}</button>`);
   }
-  if (ph === 'revealed') acts.push(`<button class="pill-btn" data-act="fixYear">${ic('pen')}Jahr korrigieren</button>`);
+  if (ph === 'revealed') acts.push(`<button class="pill-btn" data-act="fixYear">${ic('pen')}${tx('Jahr korrigieren')}</button>`);
   $('#actionRow').innerHTML = acts.join('');
   renderPlayState(); renderScorebar();
   updHostMark();   // eigene Karte: Felder hervorheben, die man gerade markieren darf
@@ -89,8 +89,8 @@ function renderGuessList() {
   const el = $('#guessHost'); if (!el || !round) return;
   const list = Lobby.code ? lobbyList() : [], got = guessesFor(round.id);
   el.classList.toggle('hidden', !list.length);
-  el.innerHTML = `<div class="gl-h">Tipps der Mitspieler · ${got.length} / ${list.length}</div>` +
-    (got.map(p => `<div><b>${esc(p.name)}:</b> ${esc(p.guess.t)}</div>`).join('') || '<div class="muted">Niemand hat getippt</div>');
+  el.innerHTML = `<div class="gl-h">${tx('Tipps der Mitspieler · {a} / {b}', { a: got.length, b: list.length })}</div>` +
+    (got.map(p => `<div><b>${esc(p.name)}:</b> ${esc(p.guess.t)}</div>`).join('') || `<div class="muted">${tx('Niemand hat getippt')}</div>`);
 }
 function renderReveal() {
   const t = round.track, y = yearOf(t), cat = round.cat;
@@ -100,15 +100,15 @@ function renderReveal() {
   $('#discCover').innerHTML = t.cover ? `<img src="${esc(t.cover)}" alt="">` : '<span>♪</span>';
   $('#reveal').innerHTML = `
     <div class="rv-answer">
-      <div class="rv-q">${esc(cat.name)}</div>
+      <div class="rv-q">${esc(tx(cat.name))}</div>
       <div class="rv-a">${answerFor(cat, t)}</div>
     </div>
     <div class="rv-song">
       <div class="rv-title">${esc(t.title)}</div>
       <div class="rv-artist">${esc(t.artists)} <span class="rv-year">· ${y ?? '?'}</span></div>
       <div class="rv-meta">${[t.album, t.date].filter(Boolean).map(esc).join(' · ')}</div>
-      ${fixed ? '<div class="rv-meta">Jahr von dir korrigiert.</div>' : ''}
-      ${fromMb ? `<div class="rv-meta">Spotify nennt ${t.year} (Album/Remaster) – Originaljahr laut MusicBrainz.</div>` : ''}
+      ${fixed ? `<div class="rv-meta">${tx('Jahr von dir korrigiert.')}</div>` : ''}
+      ${fromMb ? `<div class="rv-meta">${tx('Spotify nennt {y} (Album/Remaster) – Originaljahr laut MusicBrainz.', { y: t.year })}</div>` : ''}
     </div>
     <div id="guessHost" class="guess-list hidden"></div>`;
   renderGuessList();
@@ -119,20 +119,20 @@ function renderHist() {
   $('#hist').innerHTML = state.history.map(h => {
     const cover = byId.get(h.id)?.cover;
     return `<li><b>#${h.n}</b>${cover ? `<img src="${esc(cover)}" alt="" loading="lazy">` : '<span class="ph"></span>'}
-      <span><span class="muted small">${esc(h.cat)}</span><br>${esc(h.artists)} – ${esc(h.title)} <span class="muted">(${h.year ?? '?'})</span></span></li>`;
-  }).join('') || '<li class="muted">Noch keine Runden gespielt</li>';
+      <span><span class="muted small">${esc(tx(h.cat))}</span><br>${esc(h.artists)} – ${esc(h.title)} <span class="muted">(${h.year ?? '?'})</span></span></li>`;
+  }).join('') || `<li class="muted">${tx('Noch keine Runden gespielt')}</li>`;
 }
 function renderStatus() {
-  $('#accSub').textContent = state.tok ? (state.me?.name ? 'Verbunden als ' + state.me.name : 'Verbunden') : 'Nicht verbunden – hier einrichten';
+  $('#accSub').textContent = state.tok ? (state.me?.name ? tx('Verbunden als {n}', { n: state.me.name }) : tx('Verbunden')) : tx('Nicht verbunden – hier einrichten');
   const s = state.settings;
   $('#modeInfo').textContent =
-    Player.mode === 'sdk' ? 'Spielt gerade direkt in diesem Browser.'
-    : Player.mode === 'connect' ? `Spielt über Spotify auf „${Player.connectDev?.name || 'deinem Gerät'}“. Achtung: Die Spotify-App zeigt den Titel an.`
-    : Player.mode === 'embed' ? 'Spielt nur kurze Vorschau-Ausschnitte. Für ganze Songs „Spotify-App / Box“ wählen.'
-    : s.mode === 'connect' ? 'Spotify-App öffnen, kurz etwas abspielen, dann das Gerät hier auswählen. Ganze Songs, braucht Premium.'
-    : s.mode === 'sdk' ? 'Spielt im Browser – klappt am PC in Chrome/Edge mit Premium, nicht am iPhone oder iPad.'
-    : s.mode === 'embed' ? 'Nur 30-Sekunden-Vorschau, funktioniert ohne Premium.'
-    : 'Am PC spielt der Browser selbst, am iPhone und iPad wird automatisch die Spotify-App (oder eine Box) gesteuert.';
+    Player.mode === 'sdk' ? tx('Spielt gerade direkt in diesem Browser.')
+    : Player.mode === 'connect' ? tx('Spielt über Spotify auf „{d}“. Achtung: Die Spotify-App zeigt den Titel an.', { d: Player.connectDev?.name || tx('deinem Gerät') })
+    : Player.mode === 'embed' ? tx('Spielt nur kurze Vorschau-Ausschnitte. Für ganze Songs „Spotify-App / Box“ wählen.')
+    : s.mode === 'connect' ? tx('Spotify-App öffnen, kurz etwas abspielen, dann das Gerät hier auswählen. Ganze Songs, braucht Premium.')
+    : s.mode === 'sdk' ? tx('Spielt im Browser – klappt am PC in Chrome/Edge mit Premium, nicht am iPhone oder iPad.')
+    : s.mode === 'embed' ? tx('Nur 30-Sekunden-Vorschau, funktioniert ohne Premium.')
+    : tx('Am PC spielt der Browser selbst, am iPhone und iPad wird automatisch die Spotify-App (oder eine Box) gesteuert.');
   renderVolume();
 }
 function renderVolume() {
@@ -142,7 +142,7 @@ function renderVolume() {
   $('#volMute').innerHTML = ic(v === 0 ? 'mute' : 'vol');
   $('#volBox').classList.toggle('off', off);
   r.disabled = off; $('#volMute').disabled = off;
-  $('#volBox').title = off ? 'Lautstärke lässt sich hier nicht steuern – bitte die Lautstärke am Gerät nutzen.' : '';
+  $('#volBox').title = off ? tx('Lautstärke lässt sich hier nicht steuern – bitte die Lautstärke am Gerät nutzen.') : '';
 }
 let lastVol = 80;
 function setVolume(v) {
@@ -157,19 +157,19 @@ function renderLib() {
   const years = state.tracks.map(yearOf).filter(Boolean);
   $('#libCount').textContent = n;
   $('#libSub').textContent = n
-    ? `Songs im Spiel · ${state.played.length} gespielt` + (years.length ? ` · ${Math.min(...years)}–${Math.max(...years)}` : '')
-    : 'Noch keine Songs – füge eine Playlist hinzu';
+    ? tx('Songs im Spiel · {n} gespielt', { n: state.played.length }) + (years.length ? ` · ${Math.min(...years)}–${Math.max(...years)}` : '')
+    : tx('Noch keine Songs – füge eine Playlist hinzu');
   const counts = new Map(); let legacy = 0;
   for (const t of state.tracks) {
     if (!t.srcs?.length) legacy++;
     else for (const s of t.srcs) counts.set(s, (counts.get(s) || 0) + 1);
   }
   const rows = state.sources.filter(s => counts.get(s.id)).map(s => `
-    <div class="cell">${plCover(s.cover)}<span class="grow">${esc(s.name)}<span class="sub">${counts.get(s.id)} Songs</span></span>
-      <button class="icon-btn del" data-src-del="${esc(s.id)}" aria-label="Entfernen">${ic('trash')}</button></div>`);
-  if (legacy) rows.push(`<div class="cell">${plCover('', '♫')}<span class="grow">Frühere Importe<span class="sub">${legacy} Songs</span></span>
-      <button class="icon-btn del" data-src-del="_legacy" aria-label="Entfernen">${ic('trash')}</button></div>`);
-  $('#srcList').innerHTML = rows.join('') || '<div class="cell muted">Noch keine Playlists im Spiel</div>';
+    <div class="cell">${plCover(s.cover)}<span class="grow">${esc(s.name)}<span class="sub">${tx('{n} Songs', { n: counts.get(s.id) })}</span></span>
+      <button class="icon-btn del" data-src-del="${esc(s.id)}" aria-label="${tx('Entfernen')}">${ic('trash')}</button></div>`);
+  if (legacy) rows.push(`<div class="cell">${plCover('', '♫')}<span class="grow">${tx('Frühere Importe')}<span class="sub">${tx('{n} Songs', { n: legacy })}</span></span>
+      <button class="icon-btn del" data-src-del="_legacy" aria-label="${tx('Entfernen')}">${ic('trash')}</button></div>`);
+  $('#srcList').innerHTML = rows.join('') || `<div class="cell muted">${tx('Noch keine Playlists im Spiel')}</div>`;
 }
 function renderAdd() {
   $('#addNeedLogin').classList.toggle('hidden', !!state.tok);
@@ -178,13 +178,13 @@ function renderAdd() {
 function renderMyPlaylists() {
   const el = $('#myPl');
   if (!state.tok) { el.innerHTML = ''; return; }
-  if (myPlLoading && !myPlaylists) { el.innerHTML = '<div class="cell muted"><span class="loader"></span>Lade deine Playlists …</div>'; return; }
-  if (!myPlaylists?.length) { el.innerHTML = '<div class="cell muted">Keine Playlists gefunden</div>'; return; }
+  if (myPlLoading && !myPlaylists) { el.innerHTML = `<div class="cell muted"><span class="loader"></span>${tx('Lade deine Playlists …')}</div>`; return; }
+  if (!myPlaylists?.length) { el.innerHTML = `<div class="cell muted">${tx('Keine Playlists gefunden')}</div>`; return; }
   const have = new Set(state.sources.map(s => s.id));
   el.innerHTML = myPlaylists.map(p => {
     const trail = loadingPl.has(p.id) ? '<span class="loader"></span>' : have.has(p.id) ? ic('check') : ic('plus');
     return `<button class="cell tap" data-add-pl="${esc(p.id)}">${plCover(p.cover)}
-      <span class="grow">${esc(p.name)}<span class="sub">${p.total != null ? p.total + ' Songs' : ''}${have.has(p.id) ? ' · im Spiel – tippen zum Aktualisieren' : ''}</span></span>
+      <span class="grow">${esc(p.name)}<span class="sub">${p.total != null ? tx('{n} Songs', { n: p.total }) : ''}${have.has(p.id) ? tx(' · im Spiel – tippen zum Aktualisieren') : ''}</span></span>
       <span class="trail ${have.has(p.id) ? 'ok' : ''}">${trail}</span></button>`;
   }).join('');
 }
@@ -200,7 +200,8 @@ function renderSettings() {
   $('#devRow').classList.toggle('hidden', !showDev);
   if (showDev) renderDevices();
   const on = state.cats.filter(c => c.enabled).length;
-  $('#catSub').textContent = `${on} von ${state.cats.length} aktiv`;
+  $('#catSub').textContent = tx('{a} von {b} aktiv', { a: on, b: state.cats.length });
+  renderLang();
   renderStatus();
 }
 function renderCats() {
@@ -208,8 +209,8 @@ function renderCats() {
   $('#catList').innerHTML = state.cats.map((c, i) => `
     <label class="cell">
       <span class="cell-ic" style="background:${catStyle(c)[1]}">${catStyle(c)[0]}</span>
-      <span class="grow">${esc(c.name)}<span class="sub">Auflösung: ${ANSWER_TYPES[c.answer]}${c.answer === 'range' ? ` (± ${c.tol} Jahre)` : ''}</span></span>
-      ${c.builtin ? '' : `<button class="icon-btn del" data-cat-del="${i}" aria-label="Löschen">${ic('trash')}</button>`}
+      <span class="grow">${esc(tx(c.name))}<span class="sub">${tx('Auflösung: {a}', { a: tx(ANSWER_TYPES[c.answer]) })}${c.answer === 'range' ? tx(' (± {n} Jahre)', { n: c.tol }) : ''}</span></span>
+      ${c.builtin ? '' : `<button class="icon-btn del" data-cat-del="${i}" aria-label="${tx('Löschen')}">${ic('trash')}</button>`}
       <span class="switch"><input type="checkbox" data-cat-toggle="${i}" ${c.enabled ? 'checked' : ''}><span></span></span>
     </label>`).join('');
 }
@@ -220,32 +221,32 @@ function renderAccount() {
   document.querySelectorAll('.redir').forEach(el => el.textContent = REDIRECT.startsWith('http') ? REDIRECT : 'http://127.0.0.1:8888/');
   const own = state.clientId !== DEFAULT_CLIENT_ID;
   $('#clientId').value = own ? state.clientId : '';
-  $('#cidShort').textContent = own ? 'Eigene App: ' + state.clientId.slice(0, 8) + '…' : 'Musik-Bingo (Standard)';
+  $('#cidShort').textContent = own ? tx('Eigene App: {id}…', { id: state.clientId.slice(0, 8) }) : tx('Musik-Bingo (Standard)');
   if (inn) {
     const me = state.me;
-    $('#meName').textContent = me?.name || 'Spotify-Konto';
+    $('#meName').textContent = me?.name || tx('Spotify-Konto');
     $('#meAvatar').innerHTML = me?.img ? `<img class="avatar" src="${esc(me.img)}" alt="">` : esc((me?.name || '?').slice(0, 1).toUpperCase());
     const prem = me?.product === 'premium';
-    $('#meProd').textContent = !me ? 'Verbunden' : prem ? '✓ Spotify Premium' : 'Spotify Free – ganze Songs brauchen Premium';
+    $('#meProd').textContent = !me ? tx('Verbunden') : prem ? '✓ Spotify Premium' : tx('Spotify Free – ganze Songs brauchen Premium');
     $('#meProd').classList.toggle('free', !!me && !prem);
   }
 }
 const DEV_ICON = { Smartphone: '📱', Computer: '💻', Speaker: '🔊', TV: '📺', Tablet: '📱', CastAudio: '🔊', CastVideo: '📺', AVR: '🔊', GameConsole: '🎮' };
 async function renderDevices() {
   const sel = $('#setDevice');
-  if (!state.tok) { sel.innerHTML = '<option value="">Erst verbinden</option>'; return; }
-  sel.innerHTML = '<option value="">Suche …</option>';
+  if (!state.tok) { sel.innerHTML = `<option value="">${tx('Erst verbinden')}</option>`; return; }
+  sel.innerHTML = `<option value="">${tx('Suche …')}</option>`;
   try {
     const devs = await getDevices();
     if (!devs.length) {
-      sel.innerHTML = '<option value="">Keins gefunden</option>';
-      $('#modeInfo').textContent = 'Kein Spotify-Gerät gefunden: Öffne die Spotify-App (oder schalte die Box ein), spiel kurz etwas ab und tippe dann auf ↻.';
+      sel.innerHTML = `<option value="">${tx('Keins gefunden')}</option>`;
+      $('#modeInfo').textContent = tx('Kein Spotify-Gerät gefunden: Öffne die Spotify-App (oder schalte die Box ein), spiel kurz etwas ab und tippe dann auf ↻.');
       return;
     }
     sel.innerHTML = devs.map(d => `<option value="${esc(d.id)}">${DEV_ICON[d.type] || '🎧'} ${esc(d.name)}</option>`).join('');
     const cur = devs.find(d => d.id === state.settings.device) || devs.find(d => d.is_active) || devs[0];
     sel.value = cur.id;
-  } catch (e) { sel.innerHTML = `<option value="">Fehler</option>`; toast(e.message); }
+  } catch (e) { sel.innerHTML = `<option value="">${tx('Fehler')}</option>`; toast(e.message); }
 }
 function renderAll() { render(); renderHist(); renderStatus(); renderLib(); renderVolume(); renderLobby(); renderMyCardBtn(); }
 
@@ -286,7 +287,7 @@ document.addEventListener('click', async e => {
   if (force) {
     const who = whoById(force.dataset.confirmForce);
     const why = force.closest('.check-block')?.querySelector('.check-res')?.textContent || '';
-    if (who && await ask(`Bingo für ${who.name} wirklich bestätigen?\n\nDie Prüfung meldet: ${why}\n\nDer Sieg wird trotzdem gezählt.`, { ok: 'Bestätigen', danger: true })) {
+    if (who && await ask(tx('Bingo für {n} wirklich bestätigen?\n\nDie Prüfung meldet: {w}\n\nDer Sieg wird trotzdem gezählt.', { n: who.name, w: why }), { ok: tx('Bestätigen'), danger: true })) {
       force.dataset.confirm = force.dataset.confirmForce;
       delete force.dataset.confirmForce;
     } else return;
@@ -296,22 +297,22 @@ document.addEventListener('click', async e => {
     Lobby.confirm(conf.dataset.confirm);
     const m = state.match;
     const open = pendingCallers(conf.dataset.confirm).length;
-    conf.outerHTML = '<span class="chip-btn on">✓ Bingo bestätigt</span>' +
-      (!m || !Lobby.code ? '' : open ? `<div class="small" style="width:100%;text-align:center;margin-top:8px">Noch ${open} weitere${open === 1 ? 'r' : ''} Bingo-Ruf${open === 1 ? '' : 'e'} offen</div>`
-        : m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : '<button class="big" data-next-game style="width:100%;margin-top:8px">Nächste Partie starten</button>');
+    conf.outerHTML = `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>` +
+      (!m || !Lobby.code ? '' : open ? `<div class="small" style="width:100%;text-align:center;margin-top:8px">${tx(open === 1 ? 'Noch 1 weiterer Bingo-Ruf offen' : 'Noch {n} weitere Bingo-Rufe offen', { n: open })}</div>`
+        : m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : `<button class="big" data-next-game style="width:100%;margin-top:8px">${tx('Nächste Partie starten')}</button>`);
   }
   if (t.closest('[data-next-game]')) { nextGame(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
   if (t.closest('[data-end-close]')) $('#endScreen').classList.add('hidden');
   if (t.closest('[data-end-stop]')) { $('#endScreen').classList.add('hidden'); $('#btnBingoOff').click(); }
   if (t.closest('[data-end-leave]')) { if (leaveLobby) leaveLobby(); else location.replace(location.pathname + '?join'); }
-  if (t.closest('[data-new-match]') && await ask('Nochmal spielen?\nAlle Siege werden auf 0 gesetzt, es geht mit Partie 1 los. Jeder kann seine Karte behalten oder eine neue wählen.', { ok: 'Nochmal spielen' })) {
+  if (t.closest('[data-new-match]') && await ask(tx('Nochmal spielen?\nAlle Siege werden auf 0 gesetzt, es geht mit Partie 1 los. Jeder kann seine Karte behalten oder eine neue wählen.'), { ok: tx('Nochmal spielen') })) {
     newMatch(state.match?.total); state.match.game = 0; state.match.over = false; nextGame();
     $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());
   }
   const pDel = t.closest('[data-player-del]');
   if (pDel) {
     const id = pDel.dataset.playerDel, p = Lobby.players[id];
-    if (p && await ask(`„${p.name}“ aus der Lobby entfernen?`, { ok: 'Entfernen', danger: true })) Lobby.kick(id);
+    if (p && await ask(tx('„{n}“ aus der Lobby entfernen?', { n: p.name }), { ok: tx('Entfernen'), danger: true })) Lobby.kick(id);
   } else {
     const lc = t.closest('[data-lobby-check]');
     if (lc) checkLobbyPlayer(lc.dataset.lobbyCheck);
@@ -322,14 +323,14 @@ document.addEventListener('click', async e => {
   const srcDel = t.closest('[data-src-del]');
   if (srcDel) {
     const id = srcDel.dataset.srcDel;
-    const name = id === '_legacy' ? 'Frühere Importe' : state.sources.find(s => s.id === id)?.name || 'Playlist';
-    if (await ask(`„${name}“ aus dem Spiel entfernen?`, { ok: 'Entfernen', danger: true })) removeSource(id);
+    const name = id === '_legacy' ? tx('Frühere Importe') : state.sources.find(s => s.id === id)?.name || 'Playlist';
+    if (await ask(tx('„{n}“ aus dem Spiel entfernen?', { n: name }), { ok: tx('Entfernen'), danger: true })) removeSource(id);
   }
   const catDel = t.closest('[data-cat-del]');
   if (catDel) {
     e.preventDefault();
     const i = +catDel.dataset.catDel;
-    if (await ask(`Kategorie „${state.cats[i].name}“ löschen?`, { ok: 'Löschen', danger: true })) { state.cats.splice(i, 1); saveCats(); }
+    if (await ask(tx('Kategorie „{n}“ löschen?', { n: state.cats[i].name }), { ok: tx('Löschen'), danger: true })) { state.cats.splice(i, 1); saveCats(); }
   }
 });
 document.addEventListener('change', e => {
@@ -357,7 +358,7 @@ $('#btnSettings').onclick = () => openSheet('sheetSettings');
 $('#btnLogin').onclick = () => login(DEFAULT_CLIENT_ID);
 const ownLogin = () => {
   const cid = $('#clientId').value.trim();
-  if (!/^[0-9a-f]{32}$/i.test(cid)) return toast('Eine Client ID hat 32 Zeichen (0–9, a–f)');
+  if (!/^[0-9a-f]{32}$/i.test(cid)) return toast(tx('Eine Client ID hat 32 Zeichen (0–9, a–f)'));
   login(cid);
 };
 $('#btnOwnLogin').onclick = ownLogin;
@@ -366,15 +367,15 @@ $('#btnRelogin').onclick = () => login(state.clientId);
 $('#btnLogout').onclick = logout;
 $('#btnEditCid').onclick = async () => {
   const own = state.clientId !== DEFAULT_CLIENT_ID;
-  const v = await ask('Client ID einer eigenen Spotify-App.\nLeer lassen für die Standard-App von Musik-Bingo.', { input: own ? state.clientId : '', ok: 'Speichern' });
+  const v = await ask(tx('Client ID einer eigenen Spotify-App.\nLeer lassen für die Standard-App von Musik-Bingo.'), { input: own ? state.clientId : '', ok: tx('Speichern') });
   if (v == null) return;
   const cid = v.trim() || DEFAULT_CLIENT_ID;
-  if (cid !== DEFAULT_CLIENT_ID && !/^[0-9a-f]{32}$/i.test(cid)) return toast('Eine Client ID hat 32 Zeichen (0–9, a–f)');
+  if (cid !== DEFAULT_CLIENT_ID && !/^[0-9a-f]{32}$/i.test(cid)) return toast(tx('Eine Client ID hat 32 Zeichen (0–9, a–f)'));
   if (cid === state.clientId) return;
   state.clientId = cid;
   if (cid === DEFAULT_CLIENT_ID) LS.del('clientId'); else LS.set('clientId', cid);
   renderAccount();
-  if (await ask('Client ID gespeichert.\nJetzt mit der neuen App neu verbinden?', { ok: 'Verbinden' })) login(state.clientId);
+  if (await ask(tx('Client ID gespeichert.\nJetzt mit der neuen App neu verbinden?'), { ok: tx('Verbinden') })) login(state.clientId);
 };
 $('#btnLoadPl').onclick = addFromLink;
 $('#plUrl').onkeydown = e => { if (e.key === 'Enter') addFromLink(); };
@@ -388,10 +389,10 @@ function resetGame() {
   if (state.match) { newMatch(state.match.total); saveMatch(); }
 }
 async function askNewGame() {
-  if (state.history.length && !await ask(`Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.${state.bingo ? Lobby.code ? '\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.' : '\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.' : ''}`, { ok: 'Neues Spiel' })) return;
+  if (state.history.length && !await ask(tx('Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.') + (state.bingo ? Lobby.code ? tx('\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.') : tx('\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.') : ''), { ok: tx('Neues Spiel') })) return;
   resetGame(); Player.pause();
   document.querySelectorAll('dialog[open]').forEach(d => d.close());
-  toast('Neues Spiel – tipp auf „Spiel starten“ 🎉');
+  toast(tx('Neues Spiel – tipp auf „Spiel starten“ 🎉'));
 }
 $('#btnNewGame').onclick = askNewGame;
 $('#btnGame').onclick = () => openSheet('sheetGame');
@@ -418,12 +419,12 @@ $('#btnBingoShare').onclick = copyBingoLink;
 $('#btnCheck').onclick = checkCard;
 $('#checkNo').onkeydown = e => { if (e.key === 'Enter') checkCard(); };
 $('#btnBingoNew').onclick = async () => {
-  if (!await ask(Lobby.code ? 'Neue Karten erstellen?\nAlle in der Lobby bekommen automatisch eine neue Karte, die Markierungen werden gelöscht.'
-    : 'Neue Karten erstellen?\nDie alten Karten werden ungültig – alle müssen den neuen QR-Code scannen.', { ok: 'Neu erstellen', danger: true })) return;
+  if (!await ask(Lobby.code ? tx('Neue Karten erstellen?\nAlle in der Lobby bekommen automatisch eine neue Karte, die Markierungen werden gelöscht.')
+    : tx('Neue Karten erstellen?\nDie alten Karten werden ungültig – alle müssen den neuen QR-Code scannen.'), { ok: tx('Neu erstellen'), danger: true })) return;
   bingoSize = state.bingo?.s || bingoSize; createBingo();
 };
 $('#btnBingoOff').onclick = async () => {
-  if (!await ask(Lobby.code ? 'Bingo beenden?\nDie Lobby wird geschlossen – alle Mitspieler kommen zurück zur Code-Eingabe.' : 'Bingo beenden?', { ok: 'Beenden', danger: true })) return;
+  if (!await ask(Lobby.code ? tx('Bingo beenden?\nDie Lobby wird geschlossen – alle Mitspieler kommen zurück zur Code-Eingabe.') : tx('Bingo beenden?'), { ok: tx('Beenden'), danger: true })) return;
   Lobby.close();
   state.bingo = null; LS.del('bingo'); renderBingo(); renderLobby(); renderMyCardBtn();
   goPage($('#sheetGame'), 'main', true);
@@ -438,7 +439,7 @@ function applyTheme() {
   document.querySelector('meta[name=theme-color]')?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 }
 function renderThemes() {
-  $('#themeRow').innerHTML = THEMES.map(([id, name, a, b]) => `<button class="theme-pick ${state.settings.theme === id ? 'on' : ''}" data-theme-pick="${id}"><i style="background:linear-gradient(135deg,${a},${b})"></i>${name}</button>`).join('');
+  $('#themeRow').innerHTML = THEMES.map(([id, name, a, b]) => `<button class="theme-pick ${state.settings.theme === id ? 'on' : ''}" data-theme-pick="${id}"><i style="background:linear-gradient(135deg,${a},${b})"></i>${tx(name)}</button>`).join('');
 }
 $('#themeRow').onclick = e => {
   const b = e.target.closest('[data-theme-pick]'); if (!b) return;
@@ -447,7 +448,7 @@ $('#themeRow').onclick = e => {
 };
 applyTheme();
 $('#btnClearLib').onclick = async () => {
-  if (!await ask('Alle Songs und Playlists aus dem Spiel entfernen?', { ok: 'Entfernen', danger: true })) return;
+  if (!await ask(tx('Alle Songs und Playlists aus dem Spiel entfernen?'), { ok: tx('Entfernen'), danger: true })) return;
   state.tracks = []; state.sources = []; state.played = []; saveLib();
   round = null; stopTimer(); Player.pause(); renderAll(); renderMyPlaylists(); Lobby.syncRound();
 };
@@ -474,16 +475,16 @@ $('#setPause').onchange = e => { state.settings.pauseOnReveal = e.target.checked
 // Eigene Kategorie anlegen – aus den Einstellungen und beim Bingo-Einrichten (gleiche Felder, andere IDs)
 function addCategory(nameEl, typeEl, tolEl) {
   const name = nameEl.value.trim();
-  if (!name) { nameEl.focus(); toast('Bitte eine Frage eingeben'); return false; }
+  if (!name) { nameEl.focus(); toast(tx('Bitte eine Frage eingeben')); return false; }
   const answer = typeEl.value;
   const cat = assignStyle({ id: 'c' + Date.now(), name, answer, enabled: true, builtin: false }, state.cats);
   if (answer === 'range') cat.tol = Math.max(1, parseInt(tolEl.value) || 5);
   state.cats.push(cat); nameEl.value = ''; nameEl.blur(); saveCats();
-  toast(`Kategorie „${cat.icon} ${cat.name}“ hinzugefügt`);
+  toast(tx('Kategorie „{n}“ hinzugefügt', { n: cat.icon + ' ' + cat.name }));
   return true;
 }
 for (const [type, tolRow] of [['#newCatType', '#tolRow'], ['#bcType', '#bcTolRow']]) {
-  $(type).innerHTML = Object.entries(ANSWER_TYPES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  $(type).innerHTML = Object.entries(ANSWER_TYPES).map(([k, v]) => `<option value="${k}">${tx(v)}</option>`).join('');
   $(type).value = 'none';
   $(type).onchange = e => $(tolRow).classList.toggle('hidden', e.target.value !== 'range');
 }
@@ -491,9 +492,13 @@ $('#btnBcAdd').onclick = () => { if (addCategory($('#bcName'), $('#bcType'), $('
 $('#bcName').onkeydown = e => { if (e.key === 'Enter') $('#btnBcAdd').click(); };
 $('#btnAddCat').onclick = () => addCategory($('#newCatName'), $('#newCatType'), $('#newCatTol'));
 $('#btnResetCats').onclick = async () => {
-  if (!await ask('Kategorien auf Standard zurücksetzen?\nEigene Kategorien werden gelöscht.', { ok: 'Zurücksetzen', danger: true })) return;
+  if (!await ask(tx('Kategorien auf Standard zurücksetzen?\nEigene Kategorien werden gelöscht.'), { ok: tx('Zurücksetzen'), danger: true })) return;
   state.cats = structuredClone(DEFAULT_CATS); saveCats();
 };
+
+// Sprache: Auswahl in den Einstellungen (Seite wird neu geladen, damit alle Texte passen)
+function renderLang() { document.querySelectorAll('#langSeg [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG)); }
+$('#langSeg').onclick = e => { const b = e.target.closest('[data-lang]'); if (b && b.dataset.lang !== LANG) setLang(b.dataset.lang); };
 
 /* ---------------- Start ---------------- */
 (async () => {
@@ -506,7 +511,7 @@ $('#btnResetCats').onclick = async () => {
   Lobby.watch();
   if (location.protocol === 'file:') $('#fileWarn').classList.remove('hidden');
   let justLoggedIn = false;
-  try { justLoggedIn = await handleCallback(); } catch (e) { toast('Login-Fehler: ' + e.message, 6000); }
+  try { justLoggedIn = await handleCallback(); } catch (e) { toast(tx('Login-Fehler: {e}', { e: e.message }), 6000); }
   renderAll();
   if (state.tok && !state.me) loadMe();
   if (!state.tok) openSheet('sheetSettings', 'account');

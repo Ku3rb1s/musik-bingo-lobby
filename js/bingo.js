@@ -12,6 +12,7 @@ const b64u = {
 function hashStr(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const SHORT = { title: 'Titel', artist: 'Interpret', year: 'Genaues Jahr', decade: 'Jahrzehnt', album: 'Album', country: 'Herkunftsland', kind: 'Band/Solo', gender: 'Sänger/in' };
+// Kurzname auf der Karte – immer deutsch gespeichert (gemeinsam für alle), angezeigt wird er übersetzt: tx(k.n)
 const shortCat = c => c.builtin && c.answer === 'range' ? `Jahr ± ${c.tol}`
   : c.builtin && SHORT[c.answer] ? SHORT[c.answer]
   : c.name.length > 22 ? c.name.slice(0, 21) + '…' : c.name;
@@ -46,17 +47,17 @@ function bingoLines(s) {
   return L;
 }
 function bcell(b, f, cls = '', attrs = '') {
-  if (f === '*') return `<div class="bcell free ${cls}" ${attrs}><span class="bi">★</span><span>Joker</span></div>`;
+  if (f === '*') return `<div class="bcell free ${cls}" ${attrs}><span class="bi">★</span><span>${tx('Joker')}</span></div>`;
   const k = b.k.find(x => x.i === f) || { a: 'none', n: '?' };
   const [icon, color] = kStyle(k);
-  return `<div class="bcell ${cls}" style="--c:${color}" ${attrs}><span class="bi">${icon}</span><span>${esc(k.n)}</span></div>`;
+  return `<div class="bcell ${cls}" style="--c:${color}" ${attrs}><span class="bi">${icon}</span><span>${esc(tx(k.n))}</span></div>`;
 }
-const catChip = c => `<span class="cat-chip" style="--c:${catStyle(c)[1]}">${catStyle(c)[0]} ${esc(shortCat(c))}</span>`;
+const catChip = c => `<span class="cat-chip" style="--c:${catStyle(c)[1]}">${catStyle(c)[0]} ${esc(tx(shortCat(c)))}</span>`;
 
 let bingoSize = 4;
 function createBingo() {
   const cats = state.cats.filter(c => c.enabled);
-  if (cats.length < 2) return toast('Für Bingo braucht es mindestens 2 aktive Kategorien (Einstellungen → Kategorien).', 6000);
+  if (cats.length < 2) return toast(tx('Für Bingo braucht es mindestens 2 aktive Kategorien (Einstellungen → Kategorien).'), 6000);
   state.bingo = { g: randStr(6), s: bingoSize, ...(state.settings.joker && bingoSize % 2 ? { f: 1 } : {}), k: cats.map(c => { const [e, col] = catStyle(c); return { i: c.id, c: col.slice(1), e, n: shortCat(c) }; }) };
   LS.set('bingo', state.bingo);
   renderLobby(); renderMyCardBtn();
@@ -65,8 +66,8 @@ function createBingo() {
   else if (hasFirebase() && state.settings.lobby !== false) {
     Lobby.opening = true;
     Lobby.open(state.bingo)
-      .then(code => toast('Lobby ' + code + ' ist offen'))
-      .catch(e => toast('Lobby konnte nicht geöffnet werden: ' + e.message + ' – die Karten laufen ohne Server weiter.', 8000))
+      .then(code => toast(tx('Lobby {c} ist offen', { c: code })))
+      .catch(e => toast(tx('Lobby konnte nicht geöffnet werden: {e} – die Karten laufen ohne Server weiter.', { e: tx(e.message) }), 8000))
       .finally(() => { Lobby.opening = false; renderBingo(); renderLobby(); });
   }
   renderBingo();
@@ -76,7 +77,7 @@ function loadQrLib() {
   qrLib ??= new Promise((res, rej) => {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
-    s.onload = () => res(window.qrcode); s.onerror = () => { qrLib = null; rej(new Error('QR-Code konnte nicht geladen werden')); };
+    s.onload = () => res(window.qrcode); s.onerror = () => { qrLib = null; rej(new Error(tx('QR-Code konnte nicht geladen werden'))); };
     document.head.appendChild(s);
   });
   return qrLib;
@@ -98,17 +99,17 @@ async function renderBingo() {
     document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
     // Alle Kategorien als Schalter: antippen = an/aus (gleiche Einstellung wie unter Einstellungen → Kategorien)
     const on = state.cats.filter(c => c.enabled).length;
-    $('#bingoCats').innerHTML = state.cats.map((c, i) => `<button class="cat-chip pick ${c.enabled ? '' : 'off'}" style="--c:${catStyle(c)[1]}" data-bcat="${i}" aria-pressed="${c.enabled}">${catStyle(c)[0]} ${esc(shortCat(c))}</button>`).join('');
-    $('#bingoCatsNote').textContent = on < 2 ? `Nur ${on} aktiv – für Bingo braucht es mindestens 2 Kategorien.` : `${on} von ${state.cats.length} aktiv – antippen schaltet eine Kategorie an oder aus.`;
+    $('#bingoCats').innerHTML = state.cats.map((c, i) => `<button class="cat-chip pick ${c.enabled ? '' : 'off'}" style="--c:${catStyle(c)[1]}" data-bcat="${i}" aria-pressed="${c.enabled}">${catStyle(c)[0]} ${esc(tx(shortCat(c)))}</button>`).join('');
+    $('#bingoCatsNote').textContent = on < 2 ? tx('Nur {n} aktiv – für Bingo braucht es mindestens 2 Kategorien.', { n: on }) : tx('{a} von {b} aktiv – antippen schaltet eine Kategorie an oder aus.', { a: on, b: state.cats.length });
     $('#bingoCatsNote').style.color = on < 2 ? 'var(--warn)' : '';
     return;
   }
-  $('#bingoInfo').innerHTML = `${b.s} × ${b.s}${hasJoker(b) ? ' mit Joker' : ''} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('')}`;
+  $('#bingoInfo').innerHTML = `${b.s} × ${b.s}${hasJoker(b) ? tx(' mit Joker') : ''} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(tx(k.n))}</span>`; }).join('')}`;
   renderCheckWho(); renderMatch();
   document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
   $('#myCardCell').classList.toggle('hidden', state.settings.hostPlays === false);
   $('#checkBox').innerHTML = '';
-  $('#qrNote').textContent = Lobby.code ? `Mit der Handy-Kamera scannen · Lobby ${Lobby.code}` : 'Mit der Handy-Kamera scannen';
+  $('#qrNote').textContent = Lobby.code ? tx('Mit der Handy-Kamera scannen · Lobby {c}', { c: Lobby.code }) : tx('Mit der Handy-Kamera scannen');
   // Beitreten ohne QR-Code: kurze Adresse + Code
   $('#joinCodeBox').classList.toggle('hidden', !Lobby.code);
   $('#joinUrlShort').textContent = (cardBase() + 'join').replace(/^https?:\/\//, '');
@@ -116,7 +117,7 @@ async function renderBingo() {
   $('#tvHint').classList.toggle('hidden', !Lobby.code);
   if (Lobby.code) $('#tvLink').href = cardBase() + '?tv=' + Lobby.code;
   $('#btnBingoOff .sub').classList.toggle('hidden', !Lobby.code);
-  $('#bingoNewSub').textContent = Lobby.code ? 'Alle in der Lobby bekommen automatisch eine neue Karte' : 'Alle müssen den neuen QR-Code scannen';
+  $('#bingoNewSub').textContent = Lobby.code ? tx('Alle in der Lobby bekommen automatisch eine neue Karte') : tx('Alle müssen den neuen QR-Code scannen');
   if (Lobby.opening) { $('#qr').innerHTML = '<span class="loader"></span>'; return; }
   try {
     const qrcode = await loadQrLib();
@@ -130,14 +131,14 @@ const HOST_ID = '__host';
 function hostCard() {
   if (Lobby.code) return null;   // mit Lobby steht der Spielleiter als normaler Mitspieler in der Liste
   const b = state.bingo, st = state.settings.hostPlays !== false && b && LS.get('card_' + b.g, null);
-  return st ? { name: 'Spielleiter', num: st.num, marks: st.marks, g: b.g, host: true, ok: !!state.match?.won?.includes(HOST_ID) } : null;
+  return st ? { name: tx('Spielleiter'), num: st.num, marks: st.marks, g: b.g, host: true, ok: !!state.match?.won?.includes(HOST_ID) } : null;
 }
 const whoById = id => id === HOST_ID ? hostCard() : Lobby.players[id];
 function renderCheckWho() {
   const list = lobbyList(), host = hostCard();
   if (checkPlayer && !whoById(checkPlayer)) checkPlayer = null;
   // Kein Chip gewählt = beliebige Kartennummer prüfen (Feld unten). Gewählten Chip nochmal antippen = abwählen.
-  $('#checkWho').innerHTML = (host ? `<button class="chip-btn ${checkPlayer === HOST_ID ? 'on' : ''}" data-check-who="${HOST_ID}">⭐ Spielleiter</button>` : '') +
+  $('#checkWho').innerHTML = (host ? `<button class="chip-btn ${checkPlayer === HOST_ID ? 'on' : ''}" data-check-who="${HOST_ID}">⭐ ${tx('Spielleiter')}</button>` : '') +
     list.map(p => `<button class="chip-btn ${checkPlayer === p.id ? 'on' : ''}" data-check-who="${esc(p.id)}">${p.bingo ? '🎉 ' : ''}${esc(p.name)}</button>`).join('');
   $('#checkWhoBox').classList.toggle('hidden', !list.length && !host);
 }
@@ -153,11 +154,11 @@ async function copyBingoLink() {
     try { ok = document.execCommand('copy'); } catch {}
     ta.remove();
   }
-  if (!ok) return toast('Kopieren nicht möglich – ' + url, 8000);
-  toast('Link kopiert'); beep(1320, .06);
+  if (!ok) return toast(tx('Kopieren nicht möglich – {u}', { u: url }), 8000);
+  toast(tx('Link kopiert')); beep(1320, .06);
   const lbl = $('#btnBingoShare .grow');
-  lbl.textContent = '✓ Kopiert'; clearTimeout(copyBingoLink.t);
-  copyBingoLink.t = setTimeout(() => { lbl.textContent = 'Link kopieren'; }, 1800);
+  lbl.textContent = tx('✓ Kopiert'); clearTimeout(copyBingoLink.t);
+  copyBingoLink.t = setTimeout(() => { lbl.textContent = tx('Link kopieren'); }, 1800);
 }
 // Prüft, ob eine Karte ein Bingo haben kann: Für jede Linie muss es genug Runden der jeweiligen
 // Kategorie gegeben haben. Mit gewähltem Lobby-Spieler (id) werden seine echten Markierungen geprüft.
@@ -183,29 +184,29 @@ function checkHtml(num, id) {
   const win = winLines.length > 0;
   const counts = b.k.map(k => `${kStyle(k)[0]} ${avail[k.i] || 0}×`).join(' · ');
   const head = marks
-    ? (win && !over.length ? `🎉 BINGO bestätigt für ${esc(who.name)}!`
-      : win ? `⚠️ Volle Linie – aber ${esc(who.name)} hat mehr markiert, als gespielt wurde`
-      : fullLines.length ? `⚠️ ${esc(who.name)} hat eine volle Linie, aber dafür wurden nicht genug passende Runden gespielt`
-      : `Kein Bingo – ${esc(who.name)} hat noch keine volle Linie`)
-    : win ? `🎉 BINGO ist möglich (Karte Nr. ${num})` : 'Noch kein Bingo möglich';
-  const note = (marks && over.length ? `Zu viele Markierungen bei: ${over.map(k => `${kStyle(k)[0]} ${esc(k.n)}`).join(', ')}<br>` : '')
-    + `Bisher gespielte Runden: ${counts}`
-    + (!marks && lobbyList().length ? '<br>Für eine genaue Prüfung oben den Spieler wählen.' : '');
+    ? (win && !over.length ? tx('🎉 BINGO bestätigt für {n}!', { n: esc(who.name) })
+      : win ? tx('⚠️ Volle Linie – aber {n} hat mehr markiert, als gespielt wurde', { n: esc(who.name) })
+      : fullLines.length ? tx('⚠️ {n} hat eine volle Linie, aber dafür wurden nicht genug passende Runden gespielt', { n: esc(who.name) })
+      : tx('Kein Bingo – {n} hat noch keine volle Linie', { n: esc(who.name) }))
+    : win ? tx('🎉 BINGO ist möglich (Karte Nr. {n})', { n: num }) : tx('Noch kein Bingo möglich');
+  const note = (marks && over.length ? tx('Zu viele Markierungen bei: {k}', { k: over.map(k => `${kStyle(k)[0]} ${esc(tx(k.n))}`).join(', ') }) + '<br>' : '')
+    + tx('Bisher gespielte Runden: {c}', { c: counts })
+    + (!marks && lobbyList().length ? '<br>' + tx('Für eine genaue Prüfung oben den Spieler wählen.') : '');
   const cls = i => `${marks?.has(i) ? 'on' : ''} ${inLine.has(i) ? 'line' : ''}`;
   const html = `<div class="check-block">
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
     ${marks && (!who.host || Lobby.code) ? `<div class="chips" style="margin-top:6px">${who.ok
-      ? '<span class="chip-btn on">✓ Bingo bestätigt</span>'
-      : win ? `<button class="chip-btn" data-confirm="${esc(id)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`
+      ? `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>`
+      : win ? `<button class="chip-btn" data-confirm="${esc(id)}">${tx('✓ Bingo für {n} bestätigen', { n: esc(who.name) })}</button>`
       // Die App hat Bedenken – der Spielleiter kann trotzdem bestätigen (mit Rückfrage)
-      : `<button class="chip-btn force" data-confirm-force="${esc(id)}">Trotzdem bestätigen</button>`}</div>` : ''}</div>`;
+      : `<button class="chip-btn force" data-confirm-force="${esc(id)}">${tx('Trotzdem bestätigen')}</button>`}</div>` : ''}</div>`;
   return { html, good: win && !over.length };
 }
 function checkCard() {
   const b = state.bingo, num = parseInt($('#checkNo').value);
-  if (!b || !(num >= 1 && num <= 9999)) return toast('Bitte die Kartennummer eingeben');
+  if (!b || !(num >= 1 && num <= 9999)) return toast(tx('Bitte die Kartennummer eingeben'));
   $('#checkNo').blur();
   const r = checkHtml(num, checkPlayer);
   $('#checkBox').innerHTML = r.html;
@@ -222,23 +223,23 @@ function checkCallers() {
   $('#checkNo').value = callers.length === 1 ? callers[0].num : '';
   renderCheckWho();
   const rs = callers.map(p => checkHtml(+p.num, p.id));
-  $('#checkBox').innerHTML = (callers.length > 1 ? `<div class="check-multi">🎉 ${callers.length} Bingo-Rufe gleichzeitig – alle werden hier geprüft</div>` : '')
-    + rs.map((r, i) => (callers.length > 1 ? `<div class="check-name">${esc(callers[i].name)} · Karte Nr. ${esc(callers[i].num)}</div>` : '') + r.html).join('');
+  $('#checkBox').innerHTML = (callers.length > 1 ? `<div class="check-multi">${tx('🎉 {n} Bingo-Rufe gleichzeitig – alle werden hier geprüft', { n: callers.length })}</div>` : '')
+    + rs.map((r, i) => (callers.length > 1 ? `<div class="check-name">${esc(callers[i].name)} · ${tx('Karte Nr. {n}', { n: esc(callers[i].num) })}</div>` : '') + r.html).join('');
   if (rs.some(r => r.good)) { confetti(); beep(1046, .3); }
 }
 // Spielende-Bildschirm (Spielleiter und Mitspieler): Sieger, Siege, Knöpfe
 // Kleine Statistik fürs Spielende
 function statsHtml(m) {
   const out = [];
-  if (m.rounds) out.push(`🎵 ${m.rounds} ${m.rounds === 1 ? 'Song' : 'Songs'} in ${m.game} ${m.game === 1 ? 'Partie' : 'Partien'}`);
-  if (m.fast) out.push(`⚡ Schnellstes Bingo: ${esc(m.fast.name)} nach ${m.fast.r} ${m.fast.r === 1 ? 'Runde' : 'Runden'}`);
+  if (m.rounds) out.push(tx(m.rounds === 1 ? '🎵 1 Song' : '🎵 {n} Songs', { n: m.rounds }) + ' ' + tx(m.game === 1 ? 'in 1 Partie' : 'in {n} Partien', { n: m.game }));
+  if (m.fast) out.push(tx(m.fast.r === 1 ? '⚡ Schnellstes Bingo: {n} nach 1 Runde' : '⚡ Schnellstes Bingo: {n} nach {r} Runden', { n: esc(m.fast.name), r: m.fast.r }));
   const tips = Object.entries(m.tips || {}).sort((a, b) => b[1] - a[1]);
   const most = tips.filter(t => t[1] === tips[0]?.[1]).map(t => esc(m.names?.[t[0]] || '?'));   // bei Gleichstand alle
-  if (tips.length) out.push(`💬 Meiste Tipps: ${nameList(most)} (${tips[0][1]})`);
+  if (tips.length) out.push(tx('💬 Meiste Tipps: {n} ({c})', { n: nameList(most), c: tips[0][1] }));
   return out.map(x => `<div>${x}</div>`).join('');
 }
 function showEnd(m, buttons) {
-  $('#endWinner').textContent = matchWinner(m) || 'Niemand hat gewonnen';
+  $('#endWinner').textContent = matchWinner(m) || tx('Niemand hat gewonnen');
   $('#endTable').innerHTML = winsHtml(m);
   $('#endStats').innerHTML = statsHtml(m);
   $('#endBtns').innerHTML = buttons;
@@ -250,8 +251,8 @@ function showEndHost() {
   if (!state.match?.over) return;
   // Beim ersten Mal: Song ausblenden, Menüs schließen. Danach (weiterer Sieger) nur die Anzeige aktualisieren.
   if (!endShown) { endShown = true; Player.fadeOut(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
-  showEnd(state.match, '<button class="big" data-new-match>Nochmal spielen (Siege auf 0)</button>' +
-    '<button class="ghost" data-end-stop>Bingo beenden</button><button class="ghost" data-end-close>Schließen</button>');
+  showEnd(state.match, `<button class="big" data-new-match>${tx('Nochmal spielen (Siege auf 0)')}</button>` +
+    `<button class="ghost" data-end-stop>${tx('Bingo beenden')}</button><button class="ghost" data-end-close>${tx('Schließen')}</button>`);
 }
 function confetti() {
   const c = document.createElement('div'); c.className = 'confetti';
@@ -279,7 +280,7 @@ function mountCard(b, el, onWin, sync = null) {
   const lines = bingoLines(b.s);
   let won = false, first = true, hot = null;
   el.no.textContent = st.num;
-  el.legend.innerHTML = b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('');
+  el.legend.innerHTML = b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(tx(k.n))}</span>`; }).join('');
   const draw = () => {
     const on = new Set(st.marks);
     const isOn = i => fields[i] === '*' || on.has(i);
@@ -287,7 +288,7 @@ function mountCard(b, el, onWin, sync = null) {
     const winning = lines.filter(l => l.every(isOn));
     const inLine = new Set(winning.flat());
     el.grid.innerHTML = fields.map((f, i) => bcell(b, f, `${on.has(i) ? 'on' : ''} ${inLine.has(i) ? 'line' : ''} ${hot && f === hot ? 'hot' : ''}`, `data-i="${i}"`)).join('');
-    el.hits.textContent = `${on.size} markiert`;
+    el.hits.textContent = tx('{n} markiert', { n: on.size });
     if (winning.length && !won) { won = true; onWin(st.num, first); }
     if (!winning.length && (won || first)) { won = false; onWin(null); }
     first = false;
@@ -306,7 +307,7 @@ function mountCard(b, el, onWin, sync = null) {
     sync?.onChange(st.marks, adding ? i : null, adding ? null : i); draw();
   };
   el.clear.onclick = async () => {
-    if (!await ask('Alle Markierungen löschen?', { ok: 'Löschen', danger: true })) return;
+    if (!await ask(tx('Alle Markierungen löschen?'), { ok: tx('Löschen'), danger: true })) return;
     st.marks = []; LS.set(key, st); sync?.onChange(st.marks, null, 'all'); draw();
   };
   draw();
@@ -326,7 +327,7 @@ function mountGuess(text, show, clear) {
   clear.onclick = () => { text.value = ''; LS.set('guess', ''); text.focus(); };
   show.onclick = () => {
     const v = text.value.trim();
-    if (!v) { text.focus(); return toast('Schreib zuerst deinen Tipp'); }
+    if (!v) { text.focus(); return toast(tx('Schreib zuerst deinen Tipp')); }
     text.blur();
     const d = $('#guessShow'), el = $('#gsText');
     // Der Text steht in einem Rahmen mit 90 % Breite – so bleibt Luft für die schräge Handschrift

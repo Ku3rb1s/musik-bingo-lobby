@@ -18,6 +18,7 @@ Einrichtung von Firebase: siehe [FIREBASE.md](FIREBASE.md). Ohne Firebase laufen
 |---|---|
 | `index.html` | Seitenaufbau (Markup) |
 | `css/app.css` | Aussehen |
+| `js/i18n.js` | Sprache Deutsch/Englisch: `tx()` und Wörterbuch (Texte stehen im Code auf Deutsch) |
 | `js/core.js` | Hilfsfunktionen, Konstanten, Spielzustand, Menüs |
 | `js/spotify.js` | Spotify-Anmeldung, Playlists/CSV, Wiedergabe |
 | `js/game.js` | Runden, Countdown, Auflösung, Originaljahr, Tipps |

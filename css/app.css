@@ -428,6 +428,10 @@ body.card-mode>header,body.card-mode>main{display:none}
 #cardApp{max-width:560px;margin:0 auto;padding:calc(var(--sat) + 14px) 14px calc(30px + var(--sab))}
 #cardApp .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 #cardApp .card-head .pill:has(#cardNo:empty){display:none}
+/* Sprachumschalter für Mitspieler (DE | EN) */
+.card-head-r{display:flex;align-items:center;gap:8px}
+.lang-pill{background:var(--g-bg);color:var(--muted);border:1px solid var(--g-brd);box-shadow:var(--g-hi);border-radius:99px;padding:.35em .8em;font-size:.8rem;font-weight:600;gap:0}
+.lang-pill b{color:var(--text)}
 #cardApp .card-wrap{padding:16px}
 .card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .mycard-btn{width:100%;margin-top:16px;padding:.95em;border-radius:20px;font-size:1rem}

@@ -24,7 +24,7 @@ function roundCats() {
 async function nextRound() {
   if (needSongs()) return;
   const cats = roundCats();
-  if (!cats.length) return toast('Keine Kategorie aktiv – siehe Einstellungen');
+  if (!cats.length) return toast(tx('Keine Kategorie aktiv – siehe Einstellungen'));
   Player.unlock(); keepScreenOn();
   stopTimer(); clearTimeout(snippetT);
   // Für „Rückgängig“: vorherige Runde merken
@@ -42,9 +42,9 @@ async function nextRound() {
   spinCategory(cat);
   render(); Lobby.syncRound();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (reshuffled) toast('Alle Songs wurden gespielt – die Liste wird neu gemischt');
+  if (reshuffled) toast(tx('Alle Songs wurden gespielt – die Liste wird neu gemischt'));
   // Rückgängig nur beim Überspringen (Song lief noch, Runde war nicht aufgelöst)
-  else if (prev && prev.round.phase !== 'revealed') toast('Song übersprungen', 5000, { label: 'Rückgängig', fn: () => undoNext(prev) });
+  else if (prev && prev.round.phase !== 'revealed') toast(tx('Song übersprungen'), 5000, { label: tx('Rückgängig'), fn: () => undoNext(prev) });
   await playSnippet();
 }
 // Zurück zur vorherigen Runde (versehentlich „Nächster Song“ oder „Überspringen“ getippt)
@@ -65,7 +65,7 @@ async function playSnippet() {
   try { await Player.play(r.track, r.pos); }
   catch (e) {
     if (e.wake) return offerSpotifyWake(e.message);
-    return toast('Wiedergabe-Fehler: ' + e.message, 7000);
+    return toast(tx('Wiedergabe-Fehler: {e}', { e: e.message }), 7000);
   }
   const lim = +state.settings.limit;
   if (lim) snippetT = setTimeout(() => {
@@ -76,7 +76,7 @@ async function playSnippet() {
 
 function showCat(c) {
   const [icon, color] = catStyle(c);
-  $('#catName').textContent = c.name; $('#catIcon').textContent = icon;
+  $('#catName').textContent = tx(c.name); $('#catIcon').textContent = icon;
   document.documentElement.style.setProperty('--cat', color);
 }
 let spinTimers = null;
@@ -155,23 +155,23 @@ function answerFor(cat, t) {
     case 'artist': return esc(t.artists);
     case 'year': return y ?? '?';
     case 'decade': return decadeOf(y);
-    case 'range': return y ? `${y} <span class="small">(richtig: ${y - cat.tol}–${y + cat.tol})</span>` : '?';
+    case 'range': return y ? `${y} <span class="small">${tx('(richtig: {a}–{b})', { a: y - cat.tol, b: y + cat.tol })}</span>` : '?';
     case 'album': return esc(t.album || '?');
     case 'country': case 'kind': case 'gender': {   // kommt von MusicBrainz
       const v = artistFact(t, cat.answer);
-      return v ? esc(v) : v === null ? '🔎 Wird nachgeschlagen …' : '🤔 Unbekannt – ihr entscheidet selbst';
+      return v ? esc(v) : v === null ? tx('🔎 Wird nachgeschlagen …') : tx('🤔 Unbekannt – ihr entscheidet selbst');
     }
     // Eigene Frage ohne Daten (z. B. „Aus welchem Film?“): die App kennt die Antwort nicht – der Song steht darunter
-    default: return '🤔 Ihr entscheidet selbst';
+    default: return tx('🤔 Ihr entscheidet selbst');
   }
 }
 
 async function fixYear() {
   const t = round?.track; if (!t) return;
-  const v = await ask(`Richtiges Erscheinungsjahr für „${t.title}“?\nSpotify liefert das Datum des Albums – bei Best-of oder Remaster oft falsch.`, { input: String(yearOf(t) ?? ''), ok: 'Speichern' });
+  const v = await ask(tx('Richtiges Erscheinungsjahr für „{t}“?\nSpotify liefert das Datum des Albums – bei Best-of oder Remaster oft falsch.', { t: t.title }), { input: String(yearOf(t) ?? ''), ok: tx('Speichern') });
   if (v == null) return;
   const y = parseInt(v);
-  if (!y || y < 1000 || y > 2100) return toast('Ungültiges Jahr');
+  if (!y || y < 1000 || y > 2100) return toast(tx('Ungültiges Jahr'));
   state.yearFix[t.id] = y; LS.set('yearFix', state.yearFix);
   if (state.history[0]?.id === t.id) { state.history[0].year = y; LS.set('history', state.history); }
   render(); renderHist(); Lobby.syncRound();
@@ -241,11 +241,11 @@ function mbLookup(t) {
 // Dann den Künstler nachschlagen. Ergebnis je Künstler gespeichert ({} = MusicBrainz kennt ihn nicht).
 const ARTIST_FACTS = ['country', 'kind', 'gender'];
 const artistOf = t => (t.artists.split(',')[0] || '').trim();
-const REGION_DE = (() => { try { return new Intl.DisplayNames(['de'], { type: 'region' }); } catch { return null; } })();
+const REGION_NAMES = (() => { try { return new Intl.DisplayNames([LANG], { type: 'region' }); } catch { return null; } })();
 function regionName(code) {
-  if (code === 'XE') return 'Europa';
-  if (code === 'XW') return 'Weltweit';
-  try { return REGION_DE?.of(code) || code; } catch { return code; }
+  if (code === 'XE') return tx('Europa');
+  if (code === 'XW') return tx('Weltweit');
+  try { return REGION_NAMES?.of(code) || code; } catch { return code; }
 }
 const KIND_DE = { Person: 'Solo', Group: 'Band', Orchestra: 'Orchester', Choir: 'Chor' };
 const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-binär' };
@@ -253,11 +253,11 @@ const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-b
 function artistFact(t, what) {
   const a = state.mbArtist[normStr(artistOf(t))];
   if (a === undefined) return null;
-  const guest = t.artists.includes(',') ? ' · mit Gast' : '';   // Spotify nennt Gastkünstler als weitere Interpreten
+  const guest = t.artists.includes(',') ? tx(' · mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
   if (what === 'country') return a.c ? regionName(a.c) : '';
-  if (what === 'kind') return KIND_DE[a.t] ? KIND_DE[a.t] + guest : '';
+  if (what === 'kind') return KIND_DE[a.t] ? tx(KIND_DE[a.t]) + guest : '';
   // Geschlecht gibt es nur bei Einzelpersonen – bei Bands, Orchestern, Chören entscheidet die Runde (z. B. nach der Stimme)
-  if (what === 'gender') return a.t && a.t !== 'Person' ? `🤔 ${KIND_DE[a.t] || 'Gruppe'} – ihr entscheidet selbst` : GENDER_DE[a.g] ? GENDER_DE[a.g] + guest : '';
+  if (what === 'gender') return a.t && a.t !== 'Person' ? tx('🤔 {k} – ihr entscheidet selbst', { k: tx(KIND_DE[a.t] || 'Gruppe') }) : GENDER_DE[a.g] ? tx(GENDER_DE[a.g]) + guest : '';
   return '';
 }
 async function mbJson(url) {
@@ -307,20 +307,21 @@ function hintsFor(cat, t) {
   const y = yearOf(t), dec = y ? decLabel(Math.floor(y / 10) * 10) : null;
   const first = s => (baseTitle(s).replace(/^(the|die|der|das)\s+/i, '').match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase();
   const words = baseTitle(t.title).split(/\s+/).filter(Boolean).length;
-  const part = y ? ['Anfang', 'Anfang', 'Anfang', 'Mitte', 'Mitte', 'Mitte', 'Mitte', 'Ende', 'Ende', 'Ende'][y % 10] : null;
+  const part = y ? tx(['Anfang', 'Anfang', 'Anfang', 'Mitte', 'Mitte', 'Mitte', 'Mitte', 'Ende', 'Ende', 'Ende'][y % 10]) : null;
+  const H = (s, v) => tx(s, v);
   const artist0 = t.artists.split(',')[0];
   const cover = t.cover ? { cover: t.cover } : null;
   const list = {
-    title: [`Der Titel beginnt mit „${first(t.title)}“`, `Der Titel hat ${words} ${words === 1 ? 'Wort' : 'Wörter'}`, cover],
-    artist: [`Der Interpret beginnt mit „${first(artist0)}“`, dec && `Erschienen in den ${dec}`, cover],
-    year: [dec && `Erschienen in den ${dec}`, part && `${part} der ${dec}`],
-    range: [dec && `Erschienen in den ${dec}`, part && `${part} der ${dec}`],
-    decade: [y && (y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), `Der Interpret beginnt mit „${first(artist0)}“`],
-    album: [`Das Album beginnt mit „${first(t.album)}“`, dec && `Erschienen in den ${dec}`, cover],
-    none: [dec && `Erschienen in den ${dec}`, `Der Interpret beginnt mit „${first(artist0)}“`, cover],
-    country: [artistFact(t, 'country') && `Das Land beginnt mit „${artistFact(t, 'country')[0]}“`, `Der Interpret beginnt mit „${first(artist0)}“`],
-    kind: [`Der Interpret beginnt mit „${first(artist0)}“`, dec && `Erschienen in den ${dec}`],
-    gender: [`Der Interpret beginnt mit „${first(artist0)}“`, dec && `Erschienen in den ${dec}`],
+    title: [H('Der Titel beginnt mit „{c}“', { c: first(t.title) }), H(words === 1 ? 'Der Titel hat {n} Wort' : 'Der Titel hat {n} Wörter', { n: words }), cover],
+    artist: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec }), cover],
+    year: [dec && H('Erschienen in den {d}', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
+    range: [dec && H('Erschienen in den {d}', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
+    decade: [y && H(y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) })],
+    album: [H('Das Album beginnt mit „{c}“', { c: first(t.album) }), dec && H('Erschienen in den {d}', { d: dec }), cover],
+    none: [dec && H('Erschienen in den {d}', { d: dec }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), cover],
+    country: [artistFact(t, 'country') && H('Das Land beginnt mit „{c}“', { c: artistFact(t, 'country')[0] }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) })],
+    kind: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec })],
+    gender: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec })],
   }[cat.answer] || [];
   return list.filter(Boolean).slice(0, 2);   // immer (höchstens) 2 Tipps pro Runde
 }
@@ -330,12 +331,12 @@ function renderHints() {
   box.classList.toggle('hidden', !show);
   if (!show) return;
   box.innerHTML = hintsFor(round.cat, round.track).slice(0, round.hints).map(h =>
-    h.cover ? `<img src="${esc(h.cover)}" alt="Unscharfes Cover">` : `<div class="hint-item">${ic('bulb')}${esc(h)}</div>`).join('');
+    h.cover ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : `<div class="hint-item">${ic('bulb')}${esc(h)}</div>`).join('');
 }
 function giveHint() {
   if (!round || round.phase === 'revealed') return;
   const max = hintsFor(round.cat, round.track).length;
-  if ((round.hints || 0) >= max) return toast('Keine weiteren Tipps');
+  if ((round.hints || 0) >= max) return toast(tx('Keine weiteren Tipps'));
   round.hints = (round.hints || 0) + 1;
   beep(990, .1);
   render();

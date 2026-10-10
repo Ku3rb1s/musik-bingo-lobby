@@ -11,7 +11,7 @@ async function pkceChallenge(v) {
   return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 async function login(cid = state.clientId || DEFAULT_CLIENT_ID) {
-  if (!cid) return toast('Bitte zuerst die Client ID eintragen');
+  if (!cid) return toast(tx('Bitte zuerst die Client ID eintragen'));
   state.clientId = cid;
   if (cid === DEFAULT_CLIENT_ID) LS.del('clientId'); else LS.set('clientId', cid);
   const verifier = randStr(64); LS.set('verifier', verifier);
@@ -29,17 +29,17 @@ async function handleCallback() {
   const q = new URLSearchParams(location.search);
   if (!q.has('code') && !q.has('error')) return false;
   history.replaceState(null, '', REDIRECT);
-  if (q.get('error')) { toast('Spotify-Login abgebrochen: ' + q.get('error')); return false; }
+  if (q.get('error')) { toast(tx('Spotify-Login abgebrochen: {e}', { e: q.get('error') })); return false; }
   const r = await fetch(TOKEN_URL, {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ grant_type: 'authorization_code', code: q.get('code'), redirect_uri: REDIRECT, client_id: state.clientId, code_verifier: LS.get('verifier', '') }),
   });
   const j = await r.json();
-  if (!r.ok) { toast('Login fehlgeschlagen: ' + (j.error_description || j.error), 6000); return false; }
+  if (!r.ok) { toast(tx('Login fehlgeschlagen: {e}', { e: j.error_description || j.error }), 6000); return false; }
   setTok(j); LS.del('verifier');
   await loadMe();
   if (!state.tok) return false;
-  toast('Mit Spotify verbunden ✓');
+  toast(tx('Mit Spotify verbunden ✓'));
   return true;
 }
 async function loadMe() {
@@ -51,23 +51,23 @@ async function loadMe() {
     // Im Spotify-Entwicklermodus bekommen nicht freigeschaltete Konten hier 403
     if (e.status === 403) {
       state.tok = null; LS.del('tok'); renderAll(); renderAccount();
-      toast('Dein Spotify-Konto ist für Musik-Bingo noch nicht freigeschaltet. Bitte den Ersteller, dich hinzuzufügen.', 10000);
+      toast(tx('Dein Spotify-Konto ist für Musik-Bingo noch nicht freigeschaltet. Bitte den Ersteller, dich hinzuzufügen.'), 10000);
     }
   }
 }
 async function logout() {
-  if (!await ask('Von Spotify abmelden?\nDeine Songs bleiben gespeichert.', { ok: 'Abmelden', danger: true })) return;
+  if (!await ask(tx('Von Spotify abmelden?\nDeine Songs bleiben gespeichert.'), { ok: tx('Abmelden'), danger: true })) return;
   await Player.reset();
   try { Player.sdk?.disconnect(); } catch {}
   Player.sdk = null; Player.sdkReady = null; Player.deviceId = null;
   state.tok = null; state.me = null; LS.del('tok'); LS.del('me');
   myPlaylists = null;
   renderAll(); renderAccount();
-  toast('Abgemeldet');
+  toast(tx('Abgemeldet'));
 }
 let refreshing = null;
 async function ensureToken() {
-  if (!state.tok) throw new Error('Nicht mit Spotify verbunden');
+  if (!state.tok) throw new Error(tx('Nicht mit Spotify verbunden'));
   if (Date.now() < state.tok.exp) return;
   refreshing ??= (async () => {
     const r = await fetch(TOKEN_URL, {
@@ -75,7 +75,7 @@ async function ensureToken() {
       body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: state.tok.refresh_token, client_id: state.clientId }),
     });
     const j = await r.json();
-    if (!r.ok) { state.tok = null; LS.del('tok'); renderStatus(); throw new Error('Sitzung abgelaufen – bitte neu verbinden'); }
+    if (!r.ok) { state.tok = null; LS.del('tok'); renderStatus(); throw new Error(tx('Sitzung abgelaufen – bitte neu verbinden')); }
     setTok(j);
   })().finally(() => refreshing = null);
   return refreshing;
@@ -147,7 +147,7 @@ function parsePlaylistId(s) {
 }
 const loadingPl = new Set();
 async function loadPlaylist(id) {
-  if (!state.tok) { openSheet('sheetSettings', 'account'); return toast('Bitte zuerst mit Spotify verbinden'); }
+  if (!state.tok) { openSheet('sheetSettings', 'account'); return toast(tx('Bitte zuerst mit Spotify verbinden')); }
   if (loadingPl.has(id)) return;
   loadingPl.add(id); renderMyPlaylists();
   const btn = $('#btnLoadPl');
@@ -166,14 +166,14 @@ async function loadPlaylist(id) {
       }
       page = page.next ? await api(page.next) : null;
     }
-    if (!out.length) throw new Error('Keine abspielbaren Songs gefunden');
+    if (!out.length) throw new Error(tx('Keine abspielbaren Songs gefunden'));
     upsertSource({ id, name: name || 'Playlist', cover: cover || out[0].cover || '' });
     const added = mergeTracks(out, id);
-    toast(`„${name || 'Playlist'}“: ${added} neue Songs (${out.length} insgesamt)`);
+    toast(tx('„{n}“: {a} neue Songs ({t} insgesamt)', { n: name || 'Playlist', a: added, t: out.length }));
     return true;
   } catch (e) {
-    toast('Playlist konnte nicht geladen werden: ' + e.message +
-      (e.status === 403 || e.status === 404 ? ' – Spotify erlaubt Entwickler-Apps teils nur eigene Playlists. Tipp: Playlist in deine Bibliothek kopieren oder CSV-Import nutzen.' : ''), 9000);
+    toast(tx('Playlist konnte nicht geladen werden: {e}', { e: e.message }) +
+      (e.status === 403 || e.status === 404 ? tx(' – Spotify erlaubt Entwickler-Apps teils nur eigene Playlists. Tipp: Playlist in deine Bibliothek kopieren oder CSV-Import nutzen.') : ''), 9000);
     return false;
   } finally {
     loadingPl.delete(id); renderMyPlaylists(); renderLib();
@@ -182,7 +182,7 @@ async function loadPlaylist(id) {
 }
 async function addFromLink() {
   const id = parsePlaylistId($('#plUrl').value);
-  if (!id) return toast('Das sieht nicht nach einem Playlist-Link aus');
+  if (!id) return toast(tx('Das sieht nicht nach einem Playlist-Link aus'));
   $('#plUrl').blur();
   const btn = $('#btnLoadPl'); btn.disabled = true; btn.innerHTML = '<span class="loader"></span>';
   if (await loadPlaylist(id)) $('#plUrl').value = '';
@@ -202,7 +202,7 @@ async function loadMyPlaylists(force) {
       page = page.next ? await api(page.next) : null;
     }
     myPlaylists = out;
-  } catch (e) { myPlaylists = []; toast('Deine Playlists konnten nicht geladen werden: ' + e.message, 6000); }
+  } catch (e) { myPlaylists = []; toast(tx('Deine Playlists konnten nicht geladen werden: {e}', { e: e.message }), 6000); }
   finally { myPlLoading = false; renderMyPlaylists(); }
 }
 
@@ -228,7 +228,7 @@ function parseCSV(text) {
 }
 function importCSV(text, fileName) {
   const rows = parseCSV(text);
-  if (rows.length < 2) return toast('CSV ist leer');
+  if (rows.length < 2) return toast(tx('CSV ist leer'));
   const h = rows[0].map(x => x.trim().toLowerCase());
   const find = (...tests) => {
     for (const t of tests) {
@@ -244,7 +244,7 @@ function importCSV(text, fileName) {
   const iAlbum = find(/^album name/, 'album');
   const iDur = find(/duration/);
   const iImg = find(/image url/, 'cover');
-  if (iUri < 0 || iTitle < 0) return toast('CSV braucht mindestens die Spalten Titel und Spotify-Link/URI', 6000);
+  if (iUri < 0 || iTitle < 0) return toast(tx('CSV braucht mindestens die Spalten Titel und Spotify-Link/URI'), 6000);
   const out = [];
   for (const r of rows.slice(1)) {
     const m = (r[iUri] || '').match(/track[/:]([A-Za-z0-9]{22})/);
@@ -258,11 +258,11 @@ function importCSV(text, fileName) {
       cover: iImg >= 0 ? (r[iImg] || '').trim() : '', duration: iDur >= 0 ? (parseInt(r[iDur]) || 0) : 0,
     });
   }
-  if (!out.length) return toast('Keine Songs mit Spotify-Link in der Datei gefunden', 6000);
+  if (!out.length) return toast(tx('Keine Songs mit Spotify-Link in der Datei gefunden'), 6000);
   const id = 'csv-' + Date.now();
   upsertSource({ id, name: (fileName || 'CSV-Import').replace(/\.(csv|txt)$/i, ''), cover: out.find(t => t.cover)?.cover || '' });
   const added = mergeTracks(out, id);
-  toast(`${added} Songs aus der Datei importiert`);
+  toast(tx('{n} Songs aus der Datei importiert', { n: added }));
   openSheet('sheetLib', 'main');
 }
 
@@ -301,7 +301,7 @@ const Player = {
       try {
         const me = await api('/me');
         if (me.product !== 'premium') {
-          if (want === 'sdk') toast('Der Browser-Player braucht Spotify Premium – nutze Vorschau');
+          if (want === 'sdk') toast(tx('Der Browser-Player braucht Spotify Premium – nutze Vorschau'));
         } else {
           const drm = await hasWidevine();
           try {
@@ -315,22 +315,22 @@ const Player = {
                 this.mode = 'connect';
                 this.connectDev = devs.find(x => x.id === state.settings.device) || devs.find(x => x.is_active) || devs[0];
                 renderStatus();
-                toast('Musik läuft über die Spotify-App (Gerät in den Einstellungen wählbar).', 6000);
+                toast(tx('Musik läuft über die Spotify-App (Gerät in den Einstellungen wählbar).'), 6000);
                 return;
               }
               // iPhone ohne aktive Spotify-App: lieber Spotify aufwecken als nur Vorschau spielen
-              if (!drm) throw wakeError('Die Spotify-App ist gerade nicht aktiv.');
+              if (!drm) throw wakeError(tx('Die Spotify-App ist gerade nicht aktiv.'));
             }
             if (want === 'auto') this.fallbackAt = Date.now();
             toast(drm
-              ? 'Der Browser-Player konnte nicht starten (' + e.message + ') – es gibt nur Vorschau-Ausschnitte.'
-              : 'Öffne die Spotify-App, spiel kurz etwas ab und wähle in den Einstellungen „Spotify-App / Box“ – sonst gibt es nur Vorschau-Ausschnitte.', 11000);
+              ? tx('Der Browser-Player konnte nicht starten ({e}) – es gibt nur Vorschau-Ausschnitte.', { e: e.message })
+              : tx('Öffne die Spotify-App, spiel kurz etwas ab und wähle in den Einstellungen „Spotify-App / Box“ – sonst gibt es nur Vorschau-Ausschnitte.'), 11000);
           }
         }
       } catch (e) {
         if (e.wake) throw e;
         console.warn(e);
-        if (want === 'sdk') toast('Browser-Player konnte nicht starten: ' + e.message, 6000);
+        if (want === 'sdk') toast(tx('Browser-Player konnte nicht starten: {e}', { e: e.message }), 6000);
       }
     }
     await this.initEmbed();
@@ -340,7 +340,7 @@ const Player = {
   initSdk() {
     if (this.sdkReady) return this.sdkReady;
     this.sdkReady = new Promise((res, rej) => {
-      const to = setTimeout(() => rej(new Error('Zeitüberschreitung')), 15000);
+      const to = setTimeout(() => rej(new Error(tx('Zeitüberschreitung'))), 15000);
       window.onSpotifyWebPlaybackSDKReady = () => {
         const p = new Spotify.Player({
           name: 'Musik-Bingo', volume: state.settings.volume / 100,
@@ -350,7 +350,7 @@ const Player = {
         // Gerät geht verloren (Standby, Netzwechsel) → beim nächsten Abspielen neu verbinden
         p.addListener('not_ready', () => { this.deviceId = null; });
         p.addListener('playback_error', ({ message }) => console.warn('Spotify:', message));
-        p.addListener('autoplay_failed', () => toast('Der Browser hat die Wiedergabe blockiert – tippe auf die Platte.', 6000));
+        p.addListener('autoplay_failed', () => toast(tx('Der Browser hat die Wiedergabe blockiert – tippe auf die Platte.'), 6000));
         p.addListener('initialization_error', ({ message }) => rej(new Error(message)));
         p.addListener('authentication_error', ({ message }) => rej(new Error(message)));
         p.addListener('account_error', ({ message }) => rej(new Error(message)));
@@ -360,7 +360,7 @@ const Player = {
       };
       const s = document.createElement('script');
       s.src = 'https://sdk.scdn.co/spotify-player.js';
-      s.onerror = () => rej(new Error('SDK nicht ladbar'));
+      s.onerror = () => rej(new Error(tx('SDK nicht ladbar')));
       document.head.appendChild(s);
     }).catch(e => { this.sdkReady = null; throw e; });
     return this.sdkReady;
@@ -369,7 +369,7 @@ const Player = {
   initEmbed() {
     if (this.embedReady) return this.embedReady;
     this.embedReady = new Promise((res, rej) => {
-      const to = setTimeout(() => rej(new Error('Spotify-Embed lädt nicht')), 15000);
+      const to = setTimeout(() => rej(new Error(tx('Spotify-Embed lädt nicht'))), 15000);
       window.onSpotifyIframeApiReady = API => {
         const uri = state.tracks[0]?.uri || 'spotify:track:4uLU6hMCjMI75M1A2tKUQC';
         API.createController($('#embedHost'), { uri, width: 320, height: 152 }, c => {
@@ -380,7 +380,7 @@ const Player = {
       };
       const s = document.createElement('script');
       s.src = 'https://open.spotify.com/embed/iframe-api/v1';
-      s.onerror = () => rej(new Error('Spotify-Embed nicht ladbar'));
+      s.onerror = () => rej(new Error(tx('Spotify-Embed nicht ladbar')));
       document.head.appendChild(s);
     }).catch(e => { this.embedReady = null; throw e; });
     return this.embedReady;
@@ -426,7 +426,7 @@ const Player = {
         this.connectDev = null;
         d = await this.connectDevice();
         try { await api(`/me/player/play?device_id=${d.id}`, { method: 'PUT', body }); }
-        catch (e2) { this.connectDev = null; if (e2.status === 404) throw wakeError(`„${d.name}“ ist gerade nicht erreichbar.`); throw e2; }
+        catch (e2) { this.connectDev = null; if (e2.status === 404) throw wakeError(tx('„{d}“ ist gerade nicht erreichbar.', { d: d.name })); throw e2; }
       }
       this.startSync();
     } else {
@@ -446,7 +446,7 @@ const Player = {
         const d = this.lastUpdate?.duration || 0;
         this.preview = d > 0 && d < 35000;
         if (this.preview) {
-          if (!this.previewWarned) { this.previewWarned = true; toast('Nur Vorschau-Ausschnitte – die Startposition wird ignoriert.', 7000); }
+          if (!this.previewWarned) { this.previewWarned = true; toast(tx('Nur Vorschau-Ausschnitte – die Startposition wird ignoriert.'), 7000); }
           renderStatus();
         } else if (d) this.embed.seek(Math.min(pos, d - 15000) / 1000);
       }
@@ -470,13 +470,13 @@ const Player = {
     this.deviceId = null;
     try { await this.sdk.connect(); } catch {}
     for (let i = 0; i < 25 && !this.deviceId; i++) await sleep(200);
-    if (!this.deviceId) throw new Error('Browser-Player nicht bereit – lade die Seite neu');
+    if (!this.deviceId) throw new Error(tx('Browser-Player nicht bereit – lade die Seite neu'));
   },
   async connectDevice() {
     if (this.connectDev) return this.connectDev;
     const devs = await getDevices();
     const d = devs.find(x => x.id === state.settings.device) || devs.find(x => x.is_active) || devs[0];
-    if (!d) throw wakeError('Kein aktives Spotify-Gerät gefunden.');
+    if (!d) throw wakeError(tx('Kein aktives Spotify-Gerät gefunden.'));
     this.connectDev = d; renderStatus();
     return d;
   },
@@ -523,8 +523,8 @@ const Player = {
         this.playing = play;
       } else { this.embed?.togglePlay(); this.playing = !this.playing; }
     } catch (e) {
-      if (this.mode === 'connect' && e.status === 404) return offerSpotifyWake('Spotify ist gerade nicht erreichbar.');
-      toast('Wiedergabe-Fehler: ' + e.message);
+      if (this.mode === 'connect' && e.status === 404) return offerSpotifyWake(tx('Spotify ist gerade nicht erreichbar.'));
+      toast(tx('Wiedergabe-Fehler: {e}', { e: e.message }));
     }
     renderPlayState();
   },
@@ -548,8 +548,8 @@ const Player = {
     try {
       await api('/me/player', { method: 'PUT', body: JSON.stringify({ device_ids: [id], play: was }) });
       await this.connectDevice();
-      toast(`Spielt jetzt auf „${this.connectDev.name}“`);
-    } catch (e) { toast('Gerätewechsel fehlgeschlagen: ' + e.message, 6000); }
+      toast(tx('Spielt jetzt auf „{d}“', { d: this.connectDev.name }));
+    } catch (e) { toast(tx('Gerätewechsel fehlgeschlagen: {e}', { e: e.message }), 6000); }
   },
   setVolume(v) {
     // Der Spotify-Embed bietet keine Lautstärke-Steuerung – nur Browser-Player und Connect.
