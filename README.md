@@ -18,7 +18,8 @@ Einrichtung von Firebase: siehe [FIREBASE.md](FIREBASE.md). Ohne Firebase laufen
 |---|---|
 | `index.html` | Seitenaufbau (Markup) |
 | `css/app.css` | Aussehen |
-| `js/i18n.js` | Sprache Deutsch/Englisch: `tx()` und Wörterbuch (Texte stehen im Code auf Deutsch) |
+| `js/lang/en.js` | Sprachdatei Englisch (weitere Sprachen: gleiche Form, z. B. `fr.js`) |
+| `js/i18n.js` | Sprachen: Auswahl, `tx()`, Übersetzen der Seite (Texte stehen im Code auf Deutsch) |
 | `js/core.js` | Hilfsfunktionen, Konstanten, Spielzustand, Menüs |
 | `js/spotify.js` | Spotify-Anmeldung, Playlists/CSV, Wiedergabe |
 | `js/game.js` | Runden, Countdown, Auflösung, Originaljahr, Tipps |
@@ -35,3 +36,15 @@ Die GitHub Action `.github/workflows/cleanup-lobbies.yml` löscht täglich (03:1
 Sie nutzt das Firebase-Konto `lobby-cleanup` (nur Rolle „Realtime Database Admin“), dessen Schlüssel im Repo-Secret
 `FIREBASE_CLEANUP_KEY` liegt. Per Hand starten: Actions → „Alte Lobbys aufräumen“ → Run workflow.
 Hinweis: GitHub pausiert zeitgesteuerte Jobs in öffentlichen Repos nach 60 Tagen ohne Änderungen – dann dort wieder einschalten.
+
+## Sprachen
+
+Die App ist auf Deutsch geschrieben; jede weitere Sprache ist eine Datei in `js/lang/`. Jedes Gerät wählt seine Sprache selbst (Einstellungen bzw. 🌐-Knopf bei den Mitspielern), Voreinstellung ist die Sprache des Geräts.
+
+Neue Sprache hinzufügen:
+
+1. `js/lang/en.js` kopieren, z. B. nach `js/lang/fr.js`; oben `.en` → `.fr`, Name und Flagge ändern und die rechte Seite übersetzen (Platzhalter wie `{n}` stehen lassen).
+2. In `index.html` vor `js/i18n.js` eine Zeile `<script src="js/lang/fr.js?v=…"></script>` ergänzen.
+3. `node scripts/check-lang.js` zeigt, was noch fehlt oder wo Platzhalter nicht passen. Fehlende Texte erscheinen in der App auf Deutsch.
+
+Neue Texte im Code immer mit `tx('Deutscher Text')` schreiben und in allen Sprachdateien ergänzen.

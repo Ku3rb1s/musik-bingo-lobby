@@ -430,8 +430,10 @@ body.card-mode>header,body.card-mode>main{display:none}
 #cardApp .card-head .pill:has(#cardNo:empty){display:none}
 /* Sprachumschalter für Mitspieler (DE | EN) */
 .card-head-r{display:flex;align-items:center;gap:8px}
-.lang-pill{background:var(--g-bg);color:var(--muted);border:1px solid var(--g-brd);box-shadow:var(--g-hi);border-radius:99px;padding:.35em .8em;font-size:.8rem;font-weight:600;gap:0}
-.lang-pill b{color:var(--text)}
+.lang-pill{position:relative;display:inline-flex;align-items:center;gap:4px;background:var(--g-bg);color:var(--text);border:1px solid var(--g-brd);box-shadow:var(--g-hi);
+  border-radius:99px;padding:.35em .8em;font-size:.8rem;font-weight:700;cursor:pointer}
+/* Die echte Auswahlliste liegt unsichtbar darüber – Antippen öffnet die Liste des Handys */
+.lang-pill select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
 #cardApp .card-wrap{padding:16px}
 .card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .mycard-btn{width:100%;margin-top:16px;padding:.95em;border-radius:20px;font-size:1rem}

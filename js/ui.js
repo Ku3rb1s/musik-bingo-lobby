@@ -497,8 +497,8 @@ $('#btnResetCats').onclick = async () => {
 };
 
 // Sprache: Auswahl in den Einstellungen (Seite wird neu geladen, damit alle Texte passen)
-function renderLang() { document.querySelectorAll('#langSeg [data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === LANG)); }
-$('#langSeg').onclick = e => { const b = e.target.closest('[data-lang]'); if (b && b.dataset.lang !== LANG) setLang(b.dataset.lang); };
+function renderLang() { $('#langSel').innerHTML = langOptions(); $('#langSub').textContent = Object.values(LANGS).map(l => l.name).join(' · '); }
+$('#langSel').onchange = e => setLang(e.target.value);
 
 /* ---------------- Start ---------------- */
 (async () => {

@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.6.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.7.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -129,9 +129,9 @@ let spinning = false;
 // Reihenfolge: eigene Korrektur > Originaljahr (MusicBrainz) > Spotify-Albumjahr
 const mbYear = t => state.settings.mb && state.mb[t.id] > 0 ? state.mb[t.id] : null;
 const yearOf = t => state.yearFix[t.id] ?? mbYear(t) ?? t.year ?? null;
-// Jahrzehnt: „80er“ / „80s“
-const decLabel = d => (d < 2000 ? String(d).slice(2) : d) + (LANG === 'en' ? 's' : 'er');
-const decadeOf = y => y ? Math.floor(y / 10) * 10 + (LANG === 'en' ? 's' : 'er') : '?';
+// Jahrzehnt: „80er“ / „80s“ / … (Endung aus der Sprachdatei: '{d}er')
+const decLabel = d => tx('{d}er', { d: d < 2000 ? String(d).slice(2) : d });
+const decadeOf = y => y ? tx('{d}er', { d: Math.floor(y / 10) * 10 }) : '?';
 
 /* ---------------- UI-Helfer ---------------- */
 let toastT;

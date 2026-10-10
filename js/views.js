@@ -1,12 +1,26 @@
 // Musik-Bingo – Ansichten: Mitspieler (QR/Lobby/Code), Fernseher, Karte des Spielleiters
 'use strict';
 
-/* Sprachumschalter oben bei den Mitspielern: zeigt „DE | EN“, die aktive Sprache fett; Antippen wechselt (Seite lädt neu) */
-$('#langPill').innerHTML = LANG === 'de' ? '<b>DE</b>&nbsp;|&nbsp;EN' : 'DE&nbsp;|&nbsp;<b>EN</b>';
-$('#langPill').onclick = () => setLang(LANG === 'de' ? 'en' : 'de');
+/* Sprachwahl oben bei den Mitspielern: „🌐 DE“ – darunter liegt die (unsichtbare) Auswahlliste des Handys */
+$('#langCode').textContent = LANG.toUpperCase();
+$('#langSelP').innerHTML = langOptions();
+$('#langSelP').onchange = e => setLang(e.target.value);
 
-// Lösung vom Spielleiter in der eigenen Sprache: feste Sätze übersetzen, Jahrzehnt „1980er“ ↔ „1980s“
-const locAnswer = a => (LANG === 'de' ? untx(a) : tx(a)).replace(/^(\d{2,4})(er|s)$/, (m, d) => d + (LANG === 'en' ? 's' : 'er'));
+// Lösung vom Spielleiter (kommt immer auf Deutsch, siehe Lobby.syncRound) in der eigenen Sprache anzeigen.
+// Titel/Interpret/Album/Jahr bleiben, Land kommt als Code, feste Sätze und Jahrzehnte werden übersetzt.
+function locAnswer(r) {
+  if (r.cc) return regionName(r.cc);
+  if (['title', 'artist', 'album', 'year'].includes(r.at)) return r.a;
+  const one = p => {
+    let m;
+    if (hasTx(p)) return tx(p);
+    if ((m = p.match(/^(\d{2,4})er$/))) return tx('{d}er', { d: m[1] });
+    if ((m = p.match(/^🤔 (.+) – ihr entscheidet selbst$/))) return tx('🤔 {k} – ihr entscheidet selbst', { k: tx(m[1]) });
+    if ((m = p.match(/^(\d{4}) \(richtig: (\d+)–(\d+)\)$/))) return m[1] + ' ' + tx('(richtig: {a}–{b})', { a: m[2], b: m[3] });
+    return p;
+  };
+  return String(r.a ?? '').split(' · ').map(one).join(' · ');
+}
 
 /* Karten-Ansicht für Mitspieler: läuft komplett auf deren Handy, ohne Spotify */
 function cardMode(param) {
@@ -351,7 +365,7 @@ async function lobbyMode(code, autoName = null) {
       box.style.borderColor = r.c;
       const cd = r.ph === 'c' && r.end;
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · noch {s} s', { s: '<b class="rl-cd"></b>' }) : tx(' · läuft')}</div>
-        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(locAnswer(r.a))}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>`;
+        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(locAnswer(r))}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>`;
       if (cd) {
         const tick = () => { const sec = Math.max(0, Math.ceil((r.end - Date.now()) / 1000)), el = box.querySelector('.rl-cd'); if (el) el.textContent = sec; if (!sec) { clearInterval(cdIv); cdIv = null; } };
         tick(); cdIv = setInterval(tick, 250);
@@ -416,7 +430,7 @@ async function tvMode(code) {
     if (!r) return show(`<div class="tv-idle">${tx('Gleich geht’s los …')}</div><div class="tv-k">${tx('Jetzt beitreten – QR-Code scannen')}</div>`);
     const head = `<div class="tv-k">${tx('Runde {n}', { n: esc(r.n) })}</div><div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span>${esc(tx(r.q))}</div>`;
     if (r.ph === 'r') return show(head + (r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '') +
-      `<div class="tv-answer">${esc(locAnswer(r.a))}</div><div class="tv-song">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>`);
+      `<div class="tv-answer">${esc(locAnswer(r))}</div><div class="tv-song">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>`);
     if (r.ph === 'c' && r.end) {
       const tick = () => { const sec = Math.max(0, Math.ceil((r.end - Date.now()) / 1000)); const el = $('#tvCount'); if (el) el.textContent = sec; if (!sec) { clearInterval(cdIv); cdIv = null; } };
       show(head + '<div class="tv-count" id="tvCount"></div>'); tick(); cdIv = setInterval(tick, 250); return;

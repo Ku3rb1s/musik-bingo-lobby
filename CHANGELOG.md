@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.7.0 – 10.10.2026
+- Sprachauswahl besser eingebunden: in den Einstellungen als Zeile „🌐 Sprache“ ganz oben (Auswahlliste), bei Mitspielern als Knopf „🌐 DE“ oben, der die Sprachliste öffnet
+- Weitere Sprachen lassen sich einfach hinzufügen: jede Sprache ist eine Datei in js/lang/ (Vorlage en.js) und erscheint automatisch in beiden Auswahllisten; scripts/check-lang.js zeigt fehlende Texte und falsche Platzhalter. Anleitung im README
+- Lösungen gehen sprachneutral an Handys und Fernseher (Land als Code, feste Antworten auf Deutsch) – jedes Gerät zeigt sie in seiner Sprache, auch Ländernamen
+- Behoben: „und“ zwischen Namen („Anna und Ben“) wurde auf Englisch nicht übersetzt
+
 ## 4.6.0 – 10.10.2026
 - Sprachauswahl Deutsch / English: in den Einstellungen („Sprache · Language“), bei Mitspielern oben der Umschalter „DE | EN“. Voreinstellung ist die Sprache des Geräts. Jedes Gerät hat seine eigene Sprache – Spielleiter, Mitspieler und Fernseher können unterschiedlich eingestellt sein; Standard-Kategorien, Kartenfelder und feste Antworten (z. B. „Band“, Jahrzehnt) erscheinen jeweils übersetzt. Eigene Kategorien bleiben, wie sie eingegeben wurden; Ländernamen kommen in der Sprache des Spielleiters
 - Neue Datei js/i18n.js (Wörterbuch mit ~500 Texten)

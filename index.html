@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.6.0">
+<link rel="stylesheet" href="css/app.css?v=4.7.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -176,16 +176,16 @@
           <span class="grow">Spotify-Konto<span class="sub" id="accSub"></span></span>
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
+        <label class="cell">
+          <span class="cell-ic" style="background:#0ea5e9">🌐</span>
+          <span class="grow">Sprache<span class="sub" id="langSub"></span></span>
+          <select id="langSel" aria-label="Sprache"></select>
+        </label>
       </div>
 
       <div class="group-h">Design</div>
       <div class="theme-row" id="themeRow"></div>
 
-      <div class="group-h">Sprache · Language</div>
-      <div class="seg" id="langSeg">
-        <button data-lang="de">Deutsch</button>
-        <button data-lang="en">English</button>
-      </div>
 
       <div class="group-h">Spiel</div>
       <div class="group">
@@ -503,7 +503,7 @@
   <div class="card-head">
     <div class="logo"><img src="icon-192.png?v=5" alt=""><span>Musik-Bingo</span></div>
     <div class="card-head-r">
-      <button class="lang-pill" id="langPill" aria-label="Sprache · Language"></button>
+      <label class="lang-pill" title="Sprache · Language">🌐 <span id="langCode"></span><select id="langSelP" aria-label="Sprache"></select></label>
       <span class="pill">Karte Nr. <b id="cardNo"></b></span>
     </div>
   </div>
@@ -594,13 +594,15 @@
 <div id="toast" role="status" popover="manual"><span id="toastMsg"></span><button id="toastBtn" class="mini hidden"></button></div>
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
-<script src="js/i18n.js?v=4.6.0"></script>
-<script src="js/core.js?v=4.6.0"></script>
-<script src="js/spotify.js?v=4.6.0"></script>
-<script src="js/game.js?v=4.6.0"></script>
-<script src="js/lobby.js?v=4.6.0"></script>
-<script src="js/bingo.js?v=4.6.0"></script>
-<script src="js/views.js?v=4.6.0"></script>
-<script src="js/ui.js?v=4.6.0"></script>
+<!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
+<script src="js/lang/en.js?v=4.7.0"></script>
+<script src="js/i18n.js?v=4.7.0"></script>
+<script src="js/core.js?v=4.7.0"></script>
+<script src="js/spotify.js?v=4.7.0"></script>
+<script src="js/game.js?v=4.7.0"></script>
+<script src="js/lobby.js?v=4.7.0"></script>
+<script src="js/bingo.js?v=4.7.0"></script>
+<script src="js/views.js?v=4.7.0"></script>
+<script src="js/ui.js?v=4.7.0"></script>
 </body>
 </html>

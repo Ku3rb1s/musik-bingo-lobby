@@ -247,13 +247,14 @@ function regionName(code) {
   if (code === 'XW') return tx('Weltweit');
   try { return REGION_NAMES?.of(code) || code; } catch { return code; }
 }
+const artistCountry = t => state.mbArtist[normStr(artistOf(t))]?.c || '';   // ISO-Code für die Handys (übersetzen selbst)
 const KIND_DE = { Person: 'Solo', Group: 'Band', Orchestra: 'Orchester', Choir: 'Chor' };
 const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-binär' };
 // Antwort für country/kind/gender: null = noch nicht nachgeschlagen, '' = unbekannt, sonst Text
 function artistFact(t, what) {
   const a = state.mbArtist[normStr(artistOf(t))];
   if (a === undefined) return null;
-  const guest = t.artists.includes(',') ? tx(' · mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
+  const guest = t.artists.includes(',') ? ' · ' + tx('mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
   if (what === 'country') return a.c ? regionName(a.c) : '';
   if (what === 'kind') return KIND_DE[a.t] ? tx(KIND_DE[a.t]) + guest : '';
   // Geschlecht gibt es nur bei Einzelpersonen – bei Bands, Orchestern, Chören entscheidet die Runde (z. B. nach der Stimme)
