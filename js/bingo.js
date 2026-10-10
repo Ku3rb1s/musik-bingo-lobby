@@ -83,6 +83,7 @@ async function renderBingo() {
   const b = state.bingo;
   $('#bingoStart').classList.toggle('hidden', !!b);
   $('#bingoActive').classList.toggle('hidden', !b);
+  $('#bingoEndBox').classList.toggle('hidden', !b);
   if (!b) {
     document.querySelectorAll('#bingoSizeSeg button').forEach(x => x.classList.toggle('on', +x.dataset.size === bingoSize));
     $('#bingoLobbyBox').classList.toggle('hidden', !hasFirebase());
@@ -106,6 +107,7 @@ async function renderBingo() {
   $('#joinCodeBig').textContent = Lobby.code || '';
   $('#tvHint').classList.toggle('hidden', !Lobby.code);
   if (Lobby.code) $('#tvLink').href = cardBase() + '?tv=' + Lobby.code;
+  $('#btnBingoOff .sub').classList.toggle('hidden', !Lobby.code);
   $('#bingoNewSub').textContent = Lobby.code ? 'Alle in der Lobby bekommen automatisch eine neue Karte' : 'Alle müssen den neuen QR-Code scannen';
   if (Lobby.opening) { $('#qr').innerHTML = '<span class="loader"></span>'; return; }
   try {

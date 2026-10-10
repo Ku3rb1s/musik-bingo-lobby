@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.0.5 – 10.10.2026
+- „Bingo beenden“ steht jetzt ganz unten in der Bingo-Übersicht (statt versteckt in den Bingo-Einstellungen)
+- Lobby-Code-Feld und Profilbild in den Logo-Farben (Orange → Pink) statt Grün → Pink
+
 ## 4.0.4 – 10.10.2026
 - Neue Partie (Mitspieler): statt Vorschau-Karte plus eigener Karte (zwei Bingo-Felder untereinander) erst nur „Karte Nr. … behalten“ oder „Neue Karte aussuchen“; beim Aussuchen ersetzt die Vorschau die eigene Karte – es ist immer nur eine Karte zu sehen
 
