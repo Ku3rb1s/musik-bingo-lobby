@@ -511,9 +511,9 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
   #toast.show{transform:translateX(-50%) translateY(0)}
 }
 @keyframes sheetUp{from{transform:translateY(100%)}}
-/* Touch: keine Tastatur-Hinweise. Lautstärke nur am Handy ausblenden – am iPad steuert sie z. B. die Box */
-@media (pointer:coarse){.hint{display:none}}
-@media (pointer:coarse) and (max-width:640px){.volume{display:none}}
+/* Lautstärke-Regler und Tastatur-Hinweise nur am PC/Laptop – auf Handy und iPad (auch mit Tastatur) ausblenden */
+@media (pointer:coarse){.volume,.hint{display:none}}
+html.ios .volume,html.ios .hint{display:none}
 
 /* ---------- iPad / Tablet ---------- */
 @media (min-width:641px) and (pointer:coarse){
@@ -521,7 +521,6 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
   .controls .big{font-size:1.22rem;padding:1.05em 2.1em;border-radius:22px}
   .controls .ghost{padding:.95em 1.4em}
   .pill-btn{font-size:1rem;padding:.65em 1.15em}
-  .volume input[type=range]{height:34px}
   .cell{min-height:52px}
   .bcell{font-size:clamp(.8rem,1.9vw,1.1rem)}
   #cardApp{max-width:680px}
@@ -983,13 +982,15 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
 
 <script>
 'use strict';
+// iPhone/iPad erkennen – iPadOS meldet sich als Mac, verrät sich aber über den Touchscreen
+if (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) document.documentElement.classList.add('ios');
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '2.2.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '2.2.1', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },

@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 2.2.1 – 10.10.2026
+- Lautstärke-Regler und Tastatur-Hinweise auf iPhone und iPad ausgeblendet (auch iPad mit Tastatur), nur noch am PC/Laptop
+
 ## 2.2.0 – 10.10.2026
 - „Link teilen“ heißt jetzt „Link kopieren“ und kopiert den Lobby-Link direkt in die Zwischenablage
 - Symbole getauscht: Genaues Jahr 🎯, Jahr ± 3 📅
