@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.0.1 – 10.10.2026
+- Hinweise (z. B. „In dieser Runde zählt nur …“) erscheinen jetzt über geöffneten Menüs statt dahinter – und ihre Knöpfe (z. B. „Prüfen“) lassen sich auch bei offenem Menü antippen
+- Fernseher-Ansicht: Text zum Beitreten steht unter dem QR-Code statt über den weißen Rand hinaus
+
 ## 4.0.0 – 10.10.2026
 - Markieren nach Regeln (Lobby): pro Runde genau ein Feld, und nur eines der aktuellen Kategorie; falsches Feld wackelt mit Hinweis, eigenes Feld lässt sich durch nochmal Antippen korrigieren
 - Fernseher-Ansicht (…/?tv=CODE) für einen großen Bildschirm: Runde, Countdown, Auflösung mit Cover, Tipps, Siege, QR-Code zum Beitreten, Spielende – nur anzeigen, nichts steuern. Dezenter Link unten in den Bingo-Einstellungen

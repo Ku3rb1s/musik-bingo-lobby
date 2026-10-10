@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.0.0', APP_DATE = '10.10.2026';
+const APP_VERSION = '4.0.1', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -106,13 +106,24 @@ const decadeOf = y => y ? Math.floor(y / 10) * 10 + 'er' : '?';
 /* ---------------- UI-Helfer ---------------- */
 let toastT;
 // Hinweis unten/oben; optional mit Knopf: action = { label, fn }
+// Hinweis über geöffneten Menüs: ins offene Menü einhängen (sonst ist sein Knopf bei offenem Menü nicht antippbar)
+// und als Popover in die oberste Ebene holen (sonst läge er hinter dem Menü). Ohne Popover-Unterstützung reicht das Einhängen.
+function placeToast() {
+  // Oberstes offenes Fenster: Rückfrage bzw. Tipp-Vollbild liegen über den Menüs
+  const open = [...document.querySelectorAll('dialog[open]')];
+  const el = $('#toast'), host = open.find(d => d.id === 'dlgAsk') || open.find(d => d.id === 'guessShow') || open[0] || document.body;
+  if (el.parentElement !== host) host.appendChild(el);
+  if (el.showPopover) { try { if (el.matches(':popover-open')) el.hidePopover(); el.showPopover(); } catch {} }
+}
 function toast(msg, ms = 3500, action = null) {
   const el = $('#toast'), btn = $('#toastBtn');
   $('#toastMsg').textContent = msg;
   btn.classList.toggle('hidden', !action);
   if (action) { btn.textContent = action.label; btn.onclick = () => { el.classList.remove('show'); action.fn(); }; }
-  el.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), ms);
+  placeToast();
+  requestAnimationFrame(() => el.classList.add('show'));
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { el.classList.remove('show'); toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} }, 300); }, ms);
 }
 
 /* ---------------- Bildschirm an lassen & Spotify aufwecken ---------------- */
@@ -209,7 +220,10 @@ function onPage(id, page) {
   }
 }
 document.querySelectorAll('dialog').forEach(d => {
-  d.addEventListener('close', () => { if (!document.querySelector('dialog.sheet[open]')) document.body.classList.remove('locked'); });
+  d.addEventListener('close', () => {
+    if (!document.querySelector('dialog.sheet[open]')) document.body.classList.remove('locked');
+    if (d.contains($('#toast')) && $('#toast').classList.contains('show')) placeToast();
+  });
   // Tippen neben das Sheet schließt es
   d.addEventListener('click', e => { if (e.target === d && d.classList.contains('sheet')) d.close(); });
 });

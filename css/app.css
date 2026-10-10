@@ -259,7 +259,8 @@ button.cell{transform:none!important;filter:none!important}
 .alert-btns button:first-child{font-weight:500;border-right:1px solid var(--line)}
 .alert-btns button.danger{color:var(--danger)}
 
-#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:rgba(var(--surf),.96);border:1px solid var(--line);
+/* Hinweis liegt als Popover in der obersten Ebene – auch über geöffneten Menüs */
+#toast{position:fixed;inset:auto;margin:0;color:var(--text);overflow:visible;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:rgba(var(--surf),.96);border:1px solid var(--line);
   padding:12px 18px;border-radius:16px;width:max-content;max-width:calc(100vw - 32px);z-index:99;box-shadow:0 14px 40px rgba(0,0,0,.6);
   opacity:0;visibility:hidden;transition:transform .35s cubic-bezier(.3,1.3,.5,1),opacity .25s,visibility .25s;line-height:1.4;text-align:center;display:flex;align-items:center;justify-content:center;gap:12px}
 #toast .mini{flex:none;padding:.5em .9em;border-radius:99px;font-size:.88rem}
@@ -325,8 +326,8 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .tv-cover{width:16vw;height:16vw;border-radius:1.5vw;object-fit:cover;margin:0 auto;box-shadow:0 2vw 4vw -1vw #000}
 .tv-idle{font-size:3vw;font-weight:800;color:var(--muted)}
 .tv-side{display:flex;flex-direction:column;gap:1.4vw;align-items:stretch}
-.tv-qr{width:auto;margin:0}
-.tv-qr .small{font-size:1.1vw}
+.tv-qr{width:min(20vw,340px);margin:0 auto;padding:1vw}
+.tv-join{text-align:center;font-size:1.2vw;color:var(--muted);overflow-wrap:anywhere}
 #tvCode{font-size:4vw;margin:0;text-align:center}
 .tv-players{padding:1.4vw;font-size:1.4vw;display:flex;flex-direction:column;gap:.5vw}
 .tv-players .tvp{display:flex;justify-content:space-between;gap:1vw;padding:.4vw .2vw;border-bottom:1px solid var(--line)}
