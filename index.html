@@ -320,6 +320,22 @@ button.cell{transform:none!important;filter:none!important}
 .join-box{padding:22px 18px;text-align:center}
 .join-box h3{margin:6px 0 4px;font-size:1.35rem}
 /* Kartenauswahl beim Beitreten: kleine Vorschau nur mit Symbolen */
+/* Spielende-Bildschirm */
+.win.end{z-index:160}
+.end-box{max-width:460px;width:100%}
+.end-word{font-size:clamp(3rem,15vw,5.5rem)!important}
+.end-winner{font-size:1.5rem;font-weight:800;margin:6px 0 12px}
+.end-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.end-btns button{width:100%}
+/* Neue Partie: Karte behalten oder neu wählen */
+.repick{padding:14px 16px;margin-bottom:12px;text-align:center}
+.repick .rp-h{font-weight:800;margin-bottom:2px}
+.pick-keep{width:100%;margin-bottom:10px}
+/* Jahr immer klein neben dem Interpreten */
+.rv-year{opacity:.75;font-weight:600;font-size:.9em;white-space:nowrap}
+/* Mehrere Bingo-Rufe gleichzeitig */
+.check-multi{text-align:center;font-weight:800;margin:12px 0 4px;color:var(--warn)}
+.check-name{font-weight:800;font-size:1.05rem;margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line)}
 /* Kartenwahl: eine Karte groß, „Andere Karte zeigen“ würfelt neu */
 .pick-box{margin-top:12px;text-align:center}
 .pick-box .bgrid{margin:10px 0 14px}
@@ -354,7 +370,7 @@ button.cell{transform:none!important;filter:none!important}
 .qr-box .small{color:#555;margin-top:6px}
 .bgrid{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:6px;margin:12px 0}
 .bcell{--c:#888;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;
-  background:color-mix(in srgb,var(--c) 17%,rgba(255,255,255,.02));border:1.5px solid color-mix(in srgb,var(--c) 55%,transparent);
+  background:color-mix(in srgb,var(--c) 26%,rgba(255,255,255,.02));border:2px solid color-mix(in srgb,var(--c) 80%,transparent);
   padding:4px;font-weight:700;font-size:clamp(.62rem,2.9vw,.9rem);line-height:1.12;overflow-wrap:anywhere;hyphens:auto;color:var(--text);
   position:relative;transition:background .2s,transform .1s;cursor:pointer;-webkit-user-select:none;user-select:none}
 .bcell .bi{font-size:1.5em;line-height:1}
@@ -365,6 +381,10 @@ button.cell{transform:none!important;filter:none!important}
 .bcell.on{background:var(--c);color:#0b0816;border-color:transparent;box-shadow:0 6px 18px -8px var(--c)}
 .bcell.on::after{content:'✓';position:absolute;top:4px;right:7px;font-size:.95em;font-weight:900}
 .bcell.free{background:linear-gradient(135deg,var(--accent2),#8b6cff);color:#fff;border-color:transparent}
+/* Felder der aktuellen Kategorie leuchten, die anderen treten zurück – so sieht man sofort, was man abhaken darf */
+.bgrid.has-hot .bcell:not(.hot):not(.on){opacity:.38;filter:saturate(.55)}
+.bcell.hot:not(.on){box-shadow:0 0 0 3px var(--c),0 0 22px -2px var(--c);animation:hotPulse 1.6s ease-in-out infinite}
+@keyframes hotPulse{50%{box-shadow:0 0 0 3px var(--c),0 0 6px -2px var(--c)}}
 .bcell.line{box-shadow:0 0 0 2.5px #fff inset}
 .cat-chip{display:inline-flex;align-items:center;gap:6px;padding:.38em .85em;border-radius:99px;font-weight:600;font-size:.86rem;white-space:nowrap;
   background:color-mix(in srgb,var(--c) 20%,transparent);border:1px solid color-mix(in srgb,var(--c) 55%,transparent)}
@@ -386,7 +406,7 @@ body.card-mode>header,body.card-mode>main{display:none}
 .mycard-btn{width:100%;margin-top:16px;padding:.95em;border-radius:20px;font-size:1rem}
 #cardApp p{line-height:1.45}
 .win{position:fixed;inset:0;z-index:150;display:grid;place-items:center;background:rgba(var(--deep),.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-align:center;padding:20px}
-.win .big-word{font-size:clamp(3.5rem,18vw,7rem);font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;animation:land .6s cubic-bezier(.3,1.6,.5,1)}
+.win .big-word{font-size:clamp(3.5rem,18vw,7rem);font-weight:900;background:linear-gradient(135deg,#ffc94d,#ffa03c 40%,#ff3878);-webkit-background-clip:text;background-clip:text;color:transparent;animation:land .6s cubic-bezier(.3,1.6,.5,1)}
 .win p{font-size:1.15rem;margin:6px 0 20px}
 
 /* Tipp-Zettel in Handschrift */
@@ -1099,7 +1119,7 @@ html.ios .volume,html.ios .hint{display:none}
       </div>
       <div id="myCardOn">
         <div id="myCardPick" class="hidden">
-          <p class="group-f" style="text-align:center;margin-top:12px">Such dir deine Karte aus – du spielst in der Lobby wie alle anderen mit.</p>
+          <p class="group-f" id="myPickText" style="text-align:center;margin-top:12px">Such dir deine Karte aus – du spielst in der Lobby wie alle anderen mit.</p>
           <div class="pick-box" id="myPickBox"></div>
         </div>
         <div id="myCardPlay">
@@ -1139,6 +1159,7 @@ html.ios .volume,html.ios .hint{display:none}
   </div>
   <div id="cardLive">
   <div id="matchLive" class="glass match-live hidden"></div>
+  <div id="repickBox" class="glass repick hidden"></div>
   <div id="roundLive" class="glass round-live hidden"></div>
   <div id="guessLive" class="guess-live hidden"></div>
   <div class="guess-wrap glass">
@@ -1155,6 +1176,14 @@ html.ios .volume,html.ios .hint{display:none}
     <div class="chip-scroll" id="cardLegend"></div>
     <div class="small muted" id="cardLobbyInfo" style="text-align:center;margin-top:8px"></div>
   </div>
+  </div>
+</div>
+<div id="endScreen" class="win end hidden">
+  <div class="end-box">
+    <div class="big-word end-word">Spielende!</div>
+    <div class="end-winner" id="endWinner"></div>
+    <div id="endTable"></div>
+    <div class="end-btns" id="endBtns"></div>
   </div>
 </div>
 <div id="bingoWin" class="win hidden">
@@ -1199,7 +1228,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '3.2.2', APP_DATE = '10.10.2026';
+const APP_VERSION = '3.3.0', APP_DATE = '10.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -1970,6 +1999,17 @@ const Player = {
     }
     renderPlayState();
   },
+  // Spielende: Lautstärke in ~3 s herunterfahren, pausieren, Lautstärke für später zurücksetzen
+  async fadeOut(ms = 3000) {
+    if (!this.playing) return;
+    const v0 = state.settings.volume, steps = this.mode === 'connect' ? 6 : 12;
+    const canFade = this.mode === 'sdk' || (this.mode === 'connect' && this.connectDev?.supports_volume);
+    const set = v => this.mode === 'sdk' ? this.sdk.setVolume(Math.max(v, 0.0001) / 100)
+      : api(`/me/player/volume?volume_percent=${v}&device_id=${this.connectDev.id}`, { method: 'PUT' });
+    if (canFade) for (let i = steps - 1; i >= 0; i--) { try { await set(Math.round(v0 * i / steps)); } catch {} await sleep(ms / steps); }
+    await this.pause();
+    if (canFade) try { await set(v0); } catch {}
+  },
   async reset() { await this.pause(); this.mode = null; this.connectDev = null; this.fallbackAt = 0; renderStatus(); },
   // Anderes Gerät gewählt: laufende Musik direkt dorthin übergeben
   async switchDevice(id) {
@@ -2219,7 +2259,7 @@ function hintsFor(cat, t) {
     album: [`Das Album beginnt mit „${first(t.album)}“`, dec && `Erschienen in den ${dec}`, cover],
     none: [dec && `Erschienen in den ${dec}`, `Der Interpret beginnt mit „${first(artist0)}“`, cover],
   }[cat.answer] || [];
-  return list.filter(Boolean);
+  return list.filter(Boolean).slice(0, 2);   // immer (höchstens) 2 Tipps pro Runde
 }
 function renderHints() {
   const box = $('#hintBox');
@@ -2296,11 +2336,11 @@ const Lobby = {
       this.unsub = f.onValue(f.at(`lobbies/${code}/players`), s => {
         const prev = this.players;
         this.players = s.val() || {};
-        if (!first) for (const [id, p] of Object.entries(this.players)) if (p.bingo && !prev[id]?.bingo && id !== this.uid) this.onBingo(id, p);
+        if (!first && Object.entries(this.players).some(([id, p]) => p.bingo && !prev[id]?.bingo && id !== this.uid)) this.onBingo();
         first = false;
         renderLobby();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'check') renderCheckWho();
-        if (round) round.phase === 'revealed' ? renderGuessList() : renderGuessPill();   // Tipps der Mitspieler
+        if (round?.phase === 'revealed') renderGuessList();   // Tipps der Mitspieler
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
       }, e => toast('Lobby: ' + e.message, 6000));
       this.syncRound();
@@ -2337,8 +2377,8 @@ const Lobby = {
     }
     if (!round) return this.write('round', null);
     const [e, c] = catStyle(round.cat), rev = round.phase === 'revealed', t = round.track;
-    this.write('round', { n: round.n, id: round.id, q: round.cat.name, e, c, ph: rev ? 'r' : 'p',
-      ...(rev ? { a: plainText(answerFor(round.cat, t)), s: `${t.artists} – ${t.title}` } : {}) });
+    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : 'p',
+      ...(rev ? { a: plainText(answerFor(round.cat, t)), s: `${t.artists} – ${t.title}`, ...(yearOf(t) ? { y: yearOf(t) } : {}) } : {}) });
   },
   close() {
     const code = this.code; this.stop();
@@ -2355,6 +2395,7 @@ const Lobby = {
     if (!m.won.includes(id)) { m.won.push(id); m.wins[id] = (m.wins[id] || 0) + 1; m.names[id] = p.name; }
     if (m.total && m.game >= m.total) m.over = true;
     saveMatch();
+    if (m.over && !pendingCallers(id).length) showEndHost();
   },
   kick(id) { this.write(`players/${id}`, null); },
   // Spielleiter spielt mit: tritt mit eigener Karte der Lobby bei („⭐ Name“)
@@ -2364,15 +2405,18 @@ const Lobby = {
   },
   leaveHost() { if (this.uid && this.players[this.uid]) this.kick(this.uid); },
   me() { return this.code && this.uid ? this.players[this.uid] || null : null; },
-  onBingo(id, p) {
+  onBingo() {
     confetti(); beep(1046, .3);
-    toast(`🎉 BINGO von ${p.name} – Karte Nr. ${p.num}`, 12000, { label: 'Prüfen', fn: () => checkLobbyPlayer(id) });
+    const callers = pendingCallers();
+    if (!callers.length) return;
+    toast(`🎉 BINGO von ${callers.map(c => c.name).join(' und ')}`, 12000, { label: 'Prüfen', fn: checkCallers });
   },
 };
 /* ---------------- Partien & Siege (nur mit Lobby) ---------------- */
 // state.match = { total: Anzahl Partien (0 = endlos), game: aktuelle Partie, wins: { id: Siege }, names: { id: Name },
 //                 won: [ids, die die aktuelle Partie gewonnen haben], over: Spiel vorbei }
 function newMatch() {
+  endShown = false;
   state.match = { total: state.settings.games ?? 0, game: 1, wins: {}, names: {}, won: [], over: false };
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   LS.set('match', state.match);
@@ -2386,12 +2430,12 @@ function saveMatch() {
 function nextGame() {
   const m = state.match; if (!m || m.over || !state.bingo) return;
   m.game++; m.won = [];
-  state.bingo = { ...state.bingo, g: randStr(6) }; LS.set('bingo', state.bingo);
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
-  Lobby.setBingo(state.bingo);
+  Lobby.clearMarks();
+  myRepick = !!Lobby.me();   // auch der Spielleiter darf seine Karte behalten oder neu wählen
   saveMatch(); renderBingo(); renderMyCardBtn();
   $('#checkBox').innerHTML = '';
-  toast(`Partie ${m.game}${m.total ? ' von ' + m.total : ''} – alle haben eine neue Karte 🎲`, 6000);
+  toast(`Partie ${m.game}${m.total ? ' von ' + m.total : ''} – alle können ihre Karte behalten oder neu wählen 🎲`, 6000);
 }
 // Siegertabelle als Chips; lead = wer vorne liegt
 function winsHtml(m) {
@@ -2450,12 +2494,17 @@ function renderLobby() {
     : b ? 'Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.'
     : 'Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.';
   $('#bingoSub').textContent = b ? `${b.s} × ${b.s} Karten · ${b.k.length} Kategorien${code ? ' · antippen zum Einladen' : ''}` : '';
-  // Leiste auf dem Hauptbildschirm: nur die Mitspieler und wie viel sie markiert haben (der Code steht im Bingo-Menü)
-  const bar = $('#scorebar');
+  renderScorebar(); renderMatch();
+}
+// Leiste auf dem Hauptbildschirm: Mitspieler mit Siegen und ✓, wer für diese Runde fertig getippt hat
+function renderScorebar() {
+  const list = lobbyList(), code = Lobby.code, bar = $('#scorebar');
   bar.classList.toggle('hidden', !code || !list.length);
-  bar.innerHTML = code ? list.map(p =>
-    `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${state.match?.wins?.[p.id] ? ` 🏆${state.match?.wins?.[p.id]}` : ''} <b>${marksOf(p)}</b></span>`).join('') : '';
-  renderMatch();
+  const done = p => round && p.guess?.n === round.id && p.guess.t;
+  bar.innerHTML = code ? list.map(p => {
+    const wins = state.match?.wins?.[p.id];
+    return `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${wins ? ` 🏆${wins}` : ''}${done(p) ? ' <b>✓</b>' : ''}</span>`;
+  }).join('') : '';
 }
 
 /* ---------------- Bingo ---------------- */
@@ -2605,11 +2654,10 @@ async function copyBingoLink() {
   copyBingoLink.t = setTimeout(() => { lbl.textContent = 'Link kopieren'; }, 1800);
 }
 // Prüft, ob eine Karte ein Bingo haben kann: Für jede Linie muss es genug Runden der jeweiligen
-// Kategorie gegeben haben. Mit gewähltem Lobby-Spieler werden seine echten Markierungen geprüft.
-function checkCard() {
-  const b = state.bingo, num = parseInt($('#checkNo').value);
-  if (!b || !(num >= 1 && num <= 9999)) return toast('Bitte die Kartennummer eingeben');
-  $('#checkNo').blur();
+// Kategorie gegeben haben. Mit gewähltem Lobby-Spieler (id) werden seine echten Markierungen geprüft.
+// Liefert das HTML eines Prüf-Ergebnisses; good = eindeutiges Bingo.
+function checkHtml(num, id) {
+  const b = state.bingo;
   const fields = cardFields(b, num);
   const avail = {};
   for (const h of state.history) if (h.catId && h.n > (state.partieFrom || 0)) avail[h.catId] = (avail[h.catId] || 0) + 1;
@@ -2618,7 +2666,7 @@ function checkCard() {
     for (const i of l) if (fields[i] !== '*') need[fields[i]] = (need[fields[i]] || 0) + 1;
     return Object.entries(need).every(([c, n]) => (avail[c] || 0) >= n);
   };
-  const who = checkPlayer ? whoById(checkPlayer) : null;
+  const who = id ? whoById(id) : null;
   const marks = who && +who.num === num ? new Set(who.g === b.g ? who.marks || [] : []) : null;
   // Mit Lobby: nur die Linien, die der Spieler wirklich voll markiert hat
   const fullLines = marks ? bingoLines(b.s).filter(l => l.every(i => fields[i] === '*' || marks.has(i))) : bingoLines(b.s);
@@ -2638,16 +2686,56 @@ function checkCard() {
     + `Bisher gespielte Runden: ${counts}`
     + (!marks && lobbyList().length ? '<br>Für eine genaue Prüfung oben den Spieler wählen.' : '');
   const cls = i => `${marks?.has(i) ? 'on' : ''} ${inLine.has(i) ? 'line' : ''}`;
-  $('#checkBox').innerHTML = `
+  const html = `<div class="check-block">
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
     ${marks && (!who.host || Lobby.code) ? `<div class="chips" style="margin-top:6px">${who.ok
       ? '<span class="chip-btn on">✓ Bingo bestätigt</span>'
-      : win ? `<button class="chip-btn" data-confirm="${esc(checkPlayer)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`
+      : win ? `<button class="chip-btn" data-confirm="${esc(id)}">✓ Bingo für ${esc(who.name)} bestätigen</button>`
       // Die App hat Bedenken – der Spielleiter kann trotzdem bestätigen (mit Rückfrage)
-      : `<button class="chip-btn force" data-confirm-force="${esc(checkPlayer)}">Trotzdem bestätigen</button>`}</div>` : ''}`;
-  if (win && !over.length) { confetti(); beep(1046, .3); }
+      : `<button class="chip-btn force" data-confirm-force="${esc(id)}">Trotzdem bestätigen</button>`}</div>` : ''}</div>`;
+  return { html, good: win && !over.length };
+}
+function checkCard() {
+  const b = state.bingo, num = parseInt($('#checkNo').value);
+  if (!b || !(num >= 1 && num <= 9999)) return toast('Bitte die Kartennummer eingeben');
+  $('#checkNo').blur();
+  const r = checkHtml(num, checkPlayer);
+  $('#checkBox').innerHTML = r.html;
+  if (r.good) { confetti(); beep(1046, .3); }
+}
+// Wer hat Bingo gerufen und ist noch nicht bestätigt? (except = gerade bestätigte ID)
+const pendingCallers = (except = null) => lobbyList().filter(p => p.bingo && !p.ok && p.id !== except && !state.match?.won?.includes(p.id));
+// Alle offenen Bingo-Rufe auf einmal prüfen – rufen zwei gleichzeitig, werden beide angezeigt
+function checkCallers() {
+  const callers = pendingCallers();
+  openSheet('sheetGame', 'check');
+  if (!callers.length) return;
+  checkPlayer = callers.length === 1 ? callers[0].id : null;
+  $('#checkNo').value = callers.length === 1 ? callers[0].num : '';
+  renderCheckWho();
+  const rs = callers.map(p => checkHtml(+p.num, p.id));
+  $('#checkBox').innerHTML = (callers.length > 1 ? `<div class="check-multi">🎉 ${callers.length} Bingo-Rufe gleichzeitig – alle werden hier geprüft</div>` : '')
+    + rs.map((r, i) => (callers.length > 1 ? `<div class="check-name">${esc(callers[i].name)} · Karte Nr. ${esc(callers[i].num)}</div>` : '') + r.html).join('');
+  if (rs.some(r => r.good)) { confetti(); beep(1046, .3); }
+}
+// Spielende-Bildschirm (Spielleiter und Mitspieler): Sieger, Siege, Knöpfe
+function showEnd(m, buttons) {
+  $('#endWinner').textContent = matchWinner(m) || 'Niemand hat gewonnen';
+  $('#endTable').innerHTML = winsHtml(m);
+  $('#endBtns').innerHTML = buttons;
+  const el = $('#endScreen');
+  if (el.classList.contains('hidden')) { el.classList.remove('hidden'); confetti(); beep(1046, .4); }
+}
+let endShown = false;
+function showEndHost() {
+  if (endShown || !state.match?.over) return;
+  endShown = true;
+  Player.fadeOut();   // Song sanft ausblenden
+  document.querySelectorAll('dialog[open]').forEach(d => d.close());
+  showEnd(state.match, '<button class="big" data-new-match>Neues Spiel (Siege zurücksetzen)</button>' +
+    '<button class="ghost" data-end-stop>Bingo beenden</button><button class="ghost" data-end-close>Schließen</button>');
 }
 function confetti() {
   const c = document.createElement('div'); c.className = 'confetti';
@@ -2673,19 +2761,19 @@ function mountCard(b, el, onWin, sync = null) {
   LS.set(key, st);
   const fields = cardFields(b, st.num);
   const lines = bingoLines(b.s);
-  let won = false, first = true;
+  let won = false, first = true, hot = null;
   el.no.textContent = st.num;
   el.legend.innerHTML = b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(k.n)}</span>`; }).join('');
   const draw = () => {
     const on = new Set(st.marks);
     const isOn = i => fields[i] === '*' || on.has(i);
-    el.grid.className = 'bgrid n' + b.s; el.grid.style.setProperty('--n', b.s);
+    el.grid.className = 'bgrid n' + b.s + (hot ? ' has-hot' : ''); el.grid.style.setProperty('--n', b.s);
     const winning = lines.filter(l => l.every(isOn));
     const inLine = new Set(winning.flat());
-    el.grid.innerHTML = fields.map((f, i) => bcell(b, f, `${on.has(i) ? 'on' : ''} ${inLine.has(i) ? 'line' : ''}`, `data-i="${i}"`)).join('');
+    el.grid.innerHTML = fields.map((f, i) => bcell(b, f, `${on.has(i) ? 'on' : ''} ${inLine.has(i) ? 'line' : ''} ${hot && f === hot ? 'hot' : ''}`, `data-i="${i}"`)).join('');
     el.hits.textContent = `${on.size} markiert`;
     if (winning.length && !won) { won = true; onWin(st.num, first); }
-    if (!winning.length) { won = false; onWin(null); }
+    if (!winning.length && (won || first)) { won = false; onWin(null); }
     first = false;
   };
   el.grid.onclick = e => {
@@ -2703,7 +2791,11 @@ function mountCard(b, el, onWin, sync = null) {
   };
   draw();
   // Markierungen von außen setzen (z. B. der Spielleiter startet ein neues Spiel)
-  return { setMarks(m) { if (JSON.stringify(m) === JSON.stringify(st.marks)) return; st.marks = m; LS.set(key, st); draw(); } };
+  return {
+    setMarks(m) { if (JSON.stringify(m) === JSON.stringify(st.marks)) return; st.marks = m; LS.set(key, st); draw(); },
+    // Kategorie der aktuellen Runde (null = keine) – diese Felder leuchten, die anderen treten zurück
+    setHot(id) { const h = fields.includes(id) ? id : null; if (h === hot) return; hot = h; draw(); },
+  };
 }
 
 /* Tipp-Zettel: Text eintippen und bei der Auflösung im Vollbild den anderen zeigen */
@@ -2753,17 +2845,21 @@ function cardMode(param) {
 /* Lobby-Ansicht für Mitspieler (?l=CODE): Namen eingeben, Karte kommt vom Server, Markierungen und
    „Bingo!“ gehen live an den Spielleiter, die aktuelle Runde wird oben angezeigt. */
 // Kleine Anzeige neben „Dein Tipp“: wurde der Tipp schon abgegeben?
-function guessState(el, r, g) {
+function guessState(el, r, g, text = null) {
   const has = r && g?.n === r.n && g.t;
-  el.className = 'guess-state' + (has ? ' ok' : '');
-  el.textContent = !r ? '' : r.ph === 'r' ? (has ? '· für alle sichtbar' : '· Runde aufgelöst') : has ? '✓ abgegeben' : '· wird beim Tippen abgegeben';
+  const synced = has && (text == null || text.trim() === g.t);   // Feld noch geändert, aber nicht abgegeben?
+  el.className = 'guess-state' + (synced ? ' ok' : '');
+  el.textContent = !r ? '' : r.ph === 'r' ? (has ? '· für alle sichtbar' : '· Runde aufgelöst')
+    : synced ? '✓ abgegeben' : text?.trim() ? '· mit „Fertig“ abgeben' : '· Tipp eingeben, dann „Fertig“';
 }
 
-/* Kartenwahl: zeigt eine Karte; „Andere Karte zeigen“ würfelt eine neue Nummer, die in der Lobby noch frei ist */
-function cardPicker(box, b, used, onPick) {
+/* Kartenwahl: zeigt eine Karte; „Andere Karte zeigen“ würfelt eine neue Nummer, die in der Lobby noch frei ist.
+   keep = { num, onKeep }: zusätzlich „Meine Karte behalten“ (neue Partie) */
+function cardPicker(box, b, used, onPick, keep = null) {
   let num;
-  box.innerHTML = `<span class="pill">Karte Nr. <b class="pick-no"></b></span><div class="pick-card"></div>
-    <button class="big full pick-take">${ic('check')} Diese Karte nehmen</button>
+  box.innerHTML = (keep ? `<button class="big pick-keep">${ic('check')} Meine Karte behalten (Nr. ${esc(keep.num)})</button>` : '') +
+    `<span class="pill">${keep ? 'Oder neue Karte' : 'Karte'} Nr. <b class="pick-no"></b></span><div class="pick-card"></div>
+    <button class="${keep ? 'ghost' : 'big'} full pick-take" style="width:100%">${keep ? '' : ic('check')} ${keep ? 'Diese neue Karte nehmen' : 'Diese Karte nehmen'}</button>
     <button class="ghost full pick-more" style="margin-top:10px;width:100%">${ic('refresh')} Andere Karte zeigen</button>`;
   const roll = () => {
     do num = 1000 + Math.floor(Math.random() * 9000); while (used.has(num));
@@ -2772,20 +2868,25 @@ function cardPicker(box, b, used, onPick) {
   };
   box.querySelector('.pick-more').onclick = roll;
   box.querySelector('.pick-take').onclick = e => { e.currentTarget.disabled = true; onPick(num); };
+  if (keep) box.querySelector('.pick-keep').onclick = keep.onKeep;
   roll();
 }
 
-/* Beitreten ohne QR-Code (…/join/ bzw. ?join): Lobby-Code und Name eingeben */
-async function codeMode() {
+/* Beitreten ohne QR-Code (…/join/ bzw. ?join): Lobby-Code und Name eingeben.
+   Nach Spielende oder wenn eine Lobby geschlossen wurde, landen die Mitspieler wieder hier. */
+async function codeMode(note = null) {
+  note ??= LS.get('joinMsg', null); LS.del('joinMsg');
   document.body.classList.add('card-mode');
   $('#cardApp').classList.remove('hidden');
   $('#cardLive').classList.add('hidden');
   $('#joinBox').classList.remove('hidden');
+  $('#pickBox').classList.add('hidden');
   $('#joinCode').textContent = 'beitreten';
   const inp = $('#joinCodeInput'), btn = $('#btnJoin');
-  inp.classList.remove('hidden');
+  for (const el of [inp, $('#joinName'), btn]) el.classList.remove('hidden');
+  inp.value = '';
   $('#joinName').value = LS.get('name', '');
-  $('#joinMsg').textContent = 'Gib den Lobby-Code vom Spielleiter und deinen Namen ein.';
+  $('#joinMsg').textContent = note || 'Gib den Lobby-Code vom Spielleiter und deinen Namen ein.';
   inp.oninput = () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); };
   const go = async () => {
     const code = inp.value.trim(), name = $('#joinName').value.trim();
@@ -2809,7 +2910,8 @@ async function codeMode() {
   inp.focus();
 }
 
-// autoName: kommt von der Code-Seite – dann direkt mit diesem Namen beitreten
+/* Lobby-Ansicht für Mitspieler (?l=CODE): Name + Karte wählen, Markierungen und „Bingo!“ gehen live an den
+   Spielleiter, die aktuelle Runde wird oben angezeigt. autoName: kommt von der Code-Seite. */
 async function lobbyMode(code, autoName = null) {
   code = code.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
   document.body.classList.add('card-mode', 'lobby-mode');
@@ -2826,9 +2928,17 @@ async function lobbyMode(code, autoName = null) {
   const base = `lobbies/${code}`, meRef = f.at(`${base}/players/${f.uid}`);
   let me;
   try {
-    if (!(await f.get(f.at(`${base}/bingo`))).exists()) return msg('Diese Lobby gibt es nicht (mehr). Scanne den aktuellen QR-Code.');
+    if (!(await f.get(f.at(`${base}/bingo`))).exists()) {
+      history.replaceState(null, '', location.pathname + '?join');
+      return codeMode(`Die Lobby „${code}“ gibt es nicht mehr – gib den neuen Lobby-Code ein.`);
+    }
     me = (await f.get(meRef)).val();
   } catch (e) { return msg('Fehler: ' + e.message); }
+  // Zurück zur Code-Eingabe (Lobby geschlossen oder Spiel vorbei)
+  const leave = note => {
+    LS.set('joinMsg', note);
+    f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).cancel().catch(() => {}).finally(() => location.replace(location.pathname + '?join'));
+  };
 
   let started = false;
   const start = () => {
@@ -2842,72 +2952,113 @@ async function lobbyMode(code, autoName = null) {
       f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).set(false);
       f.set(f.at(`${base}/players/${f.uid}/on`), true).catch(() => {});
     });
-    let curG = null, card = null, wonSent = null;
-    f.onValue(f.at(`${base}/bingo`), s => {
-      const b = s.val();
-      if (!b) { $('#cardLive').classList.add('hidden'); $('#joinBox').classList.remove('hidden'); btn.classList.add('hidden'); $('#joinName').classList.add('hidden');
-        return msg('Der Spielleiter hat das Bingo beendet.'); }
-      if (b.g === curG) return;
-      const fresh = curG !== null;      // neue Karten während des Spiels
-      curG = b.g; wonSent = null;
+    // Karte: wird neu aufgebaut, wenn der Spielleiter neue Karten erstellt oder man selbst eine neue Karte wählt
+    let curB = null, card = null, mounted = null, wonSent = null, hot = null;
+    const mountMine = () => {
+      const b = curB; wonSent = null;
       card = mountCard(b, { grid: $('#cardGrid'), no: $('#cardNo'), hits: $('#cardHits'), legend: $('#cardLegend'), clear: $('#btnCardClear') }, (num, initial) => {
         const won = num != null;
         if (won) $('#winNo').textContent = num;
         if (won && !initial) { confetti(); $('#winLobby').textContent = 'Der Spielleiter hat dein Bingo gesehen und prüft es gleich.'; $('#bingoWin').classList.remove('hidden'); }
+        if (!won) $('#bingoWin').classList.add('hidden');   // Markierungen weg (neue Partie) → Bingo-Bildschirm zu
         if (wonSent !== won) { wonSent = won; f.update(meRef, { bingo: won ? f.serverTimestamp() : null, ...(won ? {} : { ok: null }) }).catch(() => {}); }
       }, {
         num: me.num,
         marks: me.g === b.g ? me.marks || [] : [],
         onChange: marks => f.update(meRef, { marks, g: b.g }).catch(e => toast('Sync-Fehler: ' + e.message)),
       });
+      mounted = { g: b.g, num: me.num };
+      card.setHot(hot);
+    };
+    f.onValue(f.at(`${base}/bingo`), s => {
+      const b = s.val();
+      if (!b) return leave('Der Spielleiter hat das Bingo beendet. Für ein neues Spiel den neuen Lobby-Code eingeben.');
+      if (curB && b.g === curB.g) return;
+      const fresh = !!curB;      // neue Karten während des Spiels
+      curB = b; mountMine();
       f.update(meRef, { g: b.g, ...(me.g === b.g ? {} : { marks: null }) }).catch(() => {});
       if (fresh) toast('Neue Karten – deine Karte wurde neu gemischt', 6000);
     });
     // Eigener Eintrag: Spielleiter setzt Markierungen zurück, bestätigt das Bingo oder entfernt einen
     let wasOk = !!me?.ok;   // schon bestätigt → nach dem Neuladen nicht nochmal melden
-    f.onValue(meRef, s => {
+    f.onValue(meRef, async s => {
       const p = s.val();
-      if (!p) {      // entfernt → wieder zum Beitreten
-        f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).cancel().finally(() => location.reload());
+      if (!p) {      // entfernt: Lobby noch da → neu beitreten, sonst zurück zur Code-Eingabe
+        const still = await f.get(f.at(`${base}/bingo`)).then(x => x.exists()).catch(() => false);
+        if (still) f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).cancel().finally(() => location.reload());
+        else leave('Die Lobby wurde geschlossen. Für ein neues Spiel den neuen Lobby-Code eingeben.');
         return;
       }
       me = p;
-      if (card && p.g === curG) card.setMarks(p.marks || []);
-      if (p.ok && !wasOk) { toast('✅ Der Spielleiter hat dein Bingo bestätigt!', 8000); confetti(); }
+      if (curB && p.num !== mounted?.num) mountMine();                 // neue Karte gewählt
+      else if (card && p.g === curB?.g) card.setMarks(p.marks || []);
+      if (p.ok && !wasOk) { toast('✅ Der Spielleiter hat dein Bingo bestätigt!', 8000); confetti(); $('#winLobby').textContent = '✅ Der Spielleiter hat dein Bingo bestätigt!'; }
       wasOk = !!p.ok;
+      renderGuesses();
     });
-    // Tipps: werden beim Tippen automatisch abgegeben (nur solange die Runde läuft).
-    // Die anderen sehen erst nach dem Auflösen, was getippt wurde – vorher nur, wer schon getippt hat.
-    let curRound = null, lastKey = null, allPlayers = {}, guessT;
+    // Tipps: werden mit „Fertig“ auf der Tastatur (oder beim Verlassen des Felds) abgegeben – nur solange die Runde läuft.
+    // Die anderen sehen erst nach dem Auflösen, was getippt wurde – vorher nur, wer schon fertig ist.
+    let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true;
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const sendGuess = () => {
       if (!curRound || curRound.ph !== 'p') return;
       const t = $('#guessText').value.trim().slice(0, 80);
+      const cur = me?.guess;
+      if ((cur?.n === keyOf(curRound) ? cur.t : '') === t) return;   // nichts geändert
       f.update(meRef, { guess: t ? { t, n: keyOf(curRound) } : null }).catch(() => {});
     };
-    $('#guessText').addEventListener('input', () => { clearTimeout(guessT); guessT = setTimeout(sendGuess, 600); });
-    $('#btnGuessClear').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
-    $('#btnGuessShow').addEventListener('click', () => { clearTimeout(guessT); sendGuess(); });
-    const renderGuesses = () => {
+    $('#guessText').addEventListener('blur', sendGuess);
+    $('#guessText').addEventListener('keydown', e => { if (e.key === 'Enter') sendGuess(); });   // „Fertig“ auf der Tastatur
+    $('#guessText').addEventListener('input', () => renderGuesses());
+    $('#btnGuessClear').addEventListener('click', () => { sendGuess(); renderGuesses(); });
+    $('#btnGuessShow').addEventListener('click', sendGuess);
+    function renderGuesses() {
       const box = $('#guessLive'), r = curRound;
-      guessState($('#plGuessState'), r && { n: keyOf(r), ph: r.ph }, allPlayers[f.uid]?.guess);
+      guessState($('#plGuessState'), r && { n: keyOf(r), ph: r.ph }, me?.guess, $('#guessText').value);
       const list = Object.entries(allPlayers).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
       box.classList.toggle('hidden', !r || list.length < 2);
       if (!r || list.length < 2) return;
       const has = p => p.guess?.n === keyOf(r) && p.guess.t;
       box.innerHTML = r.ph === 'r'
         ? list.map(p => `<span class="${has(p) ? 'ok' : ''}"><b>${esc(p.name)}${p.id === f.uid ? ' (du)' : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
-        : `<span>💬 Tipps: ${list.filter(has).length} / ${list.length}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
-    };
-    f.onValue(f.at(`${base}/players`), s => { allPlayers = s.val() || {}; renderGuesses(); });
-    // Partie-Stand und Siege
+        : `<span>💬 Fertig: ${list.filter(has).length} / ${list.length}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
+    }
+    // Alle Mitspieler: Tipps, und wer Bingo ruft oder gewonnen hat
+    f.onValue(f.at(`${base}/players`), s => {
+      const prev = allPlayers;
+      allPlayers = s.val() || {};
+      if (!firstPlayers) for (const [id, p] of Object.entries(allPlayers)) {
+        if (id === f.uid || !p?.name) continue;
+        if (p.ok && !prev[id]?.ok) { toast(`🏆 ${p.name} hat Bingo und gewinnt die Partie!`, 7000); confetti(); }
+        else if (p.bingo && !prev[id]?.bingo) toast(`🎉 ${p.name} ruft BINGO!`, 6000);
+      }
+      firstPlayers = false;
+      renderGuesses();
+    });
+    // Partie-Stand und Siege; neue Partie → Karte behalten oder neu wählen; Spiel vorbei → Spielende-Bildschirm
+    let lastGame = null, lastOver = false;
     f.onValue(f.at(`${base}/match`), s => {
       const m = s.val(), box = $('#matchLive');
       box.classList.toggle('hidden', !m);
       if (!m) return;
       m.wins ??= {}; m.names ??= {}; m.won ??= [];
       box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
+      if (lastGame !== null && !m.over && (m.game !== lastGame || lastOver)) showRepick(m);
+      if (m.over) showEnd(m, '<button class="big" data-end-leave>Zurück zur Lobby-Auswahl</button><button class="ghost" data-end-close>Hier bleiben</button>');
+      else $('#endScreen').classList.add('hidden');
+      lastGame = m.game; lastOver = !!m.over;
     });
+    // Neue Partie: Karte behalten oder eine neue (freie) Nummer wählen
+    const showRepick = m => {
+      if (!curB) return;
+      const box = $('#repickBox');
+      const used = new Set(Object.entries(allPlayers).filter(([id]) => id !== f.uid).map(([, p]) => +p?.num));
+      box.classList.remove('hidden');
+      box.innerHTML = `<div class="rp-h">Partie ${esc(m.game)}${m.total ? ' von ' + esc(m.total) : ''} beginnt</div><div class="small muted" style="margin-bottom:10px">Behalte deine Karte oder such dir eine neue aus.</div><div class="rp-pick"></div>`;
+      const done = () => { box.classList.add('hidden'); box.innerHTML = ''; };
+      cardPicker(box.querySelector('.rp-pick'), curB, used, num => { f.update(meRef, { num, marks: null }).catch(e => toast('Fehler: ' + e.message)); done(); }, { num: me.num, onKeep: done });
+      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
     // Aktuelle Runde
     f.onValue(f.at(`${base}/round`), s => {
       const r = s.val(), box = $('#roundLive');
@@ -2920,12 +3071,14 @@ async function lobbyMode(code, autoName = null) {
         else if (mine?.t && mine.n === keyOf(r) && $('#guessText').value.trim() !== mine.t) { $('#guessText').value = mine.t; LS.set('guess', mine.t); }
         lastKey = keyOf(r);
       }
+      // Karte: Felder der aktuellen Kategorie hervorheben
+      hot = r?.i ?? null; card?.setHot(hot);
       renderGuesses();
       box.classList.toggle('hidden', !r);
       if (!r) return;
       box.style.borderColor = r.c;
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div><div class="rl-k">Runde ${esc(r.n)}${r.ph === 'r' ? ' · aufgelöst' : ' · läuft'}</div>
-        <div class="rl-n">${esc(r.q)}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(r.a)}</div><div class="small muted">${esc(r.s)}</div>` : ''}</div>`;
+        <div class="rl-n">${esc(r.q)}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(r.a)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>`;
     });
   };
 
@@ -2963,9 +3116,10 @@ async function lobbyMode(code, autoName = null) {
   if (autoName) { $('#joinName').value = autoName; join(); }
 }
 
-/* Eigene Karte des Spielleiters (im Menü „Bingo“) */
-// Mit Lobby ist die Spielleiter-Karte ein normaler Lobby-Eintrag: erst aussuchen, dann live synchronisiert
-let myMount = null;   // { g, num, ctl } der gerade angezeigten Karte
+/* Eigene Karte des Spielleiters (im Menü „Bingo“)
+   Mit Lobby ist die Spielleiter-Karte ein normaler Lobby-Eintrag: erst aussuchen, dann live synchronisiert */
+let myMount = null;    // { g, num, ctl } der gerade angezeigten Karte
+let myRepick = false;  // neue Partie: Karte behalten oder neu wählen
 function renderMyCard() {
   const b = state.bingo;
   $('#myCardOff').classList.toggle('hidden', !!b);
@@ -2973,11 +3127,21 @@ function renderMyCard() {
   myMount = null;
   if (!b) return;
   const me = Lobby.me();
-  const pick = !!Lobby.code && !me?.name;
+  const pick = !!Lobby.code && (!me?.name || myRepick);
   $('#myCardPick').classList.toggle('hidden', !pick);
   $('#myCardPlay').classList.toggle('hidden', pick);
   if (pick) {
     if (!Lobby.uid) { $('#myPickBox').innerHTML = '<span class="loader"></span>'; return; }
+    if (me?.name) {   // neue Partie
+      $('#myPickText').textContent = `Partie ${state.match?.game || ''} beginnt – behalte deine Karte oder such dir eine neue aus.`;
+      const used = new Set(lobbyList().filter(p => p.id !== Lobby.uid).map(p => +p.num));
+      return cardPicker($('#myPickBox'), b, used, num => {
+        myRepick = false;
+        Lobby.write(`players/${Lobby.uid}/marks`, null);
+        Lobby.write(`players/${Lobby.uid}/num`, num);
+      }, { num: me.num, onKeep: () => { myRepick = false; renderMyCard(); } });
+    }
+    $('#myPickText').textContent = 'Such dir deine Karte aus – du spielst in der Lobby wie alle anderen mit.';
     return cardPicker($('#myPickBox'), b, new Set(lobbyList().map(p => +p.num)), num => Lobby.joinHost(num));
   }
   mountGuess($('#myGuessText'), $('#btnMyGuessShow'), $('#btnMyGuessClear'));
@@ -2994,26 +3158,31 @@ function renderMyCard() {
     onChange: marks => { Lobby.write(`players/${Lobby.uid}/marks`, marks); Lobby.write(`players/${Lobby.uid}/g`, b.g); },
   } : null);
   myMount = { g: b.g, num: me?.num, ctl };
-  guessState($('#myGuessState'), Lobby.code && round ? { n: round.id, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me?.guess);
+  ctl.setHot(round ? round.cat.id : null);
+  renderMyGuessState();
 }
 // Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
 function syncMyCard() {
   const me = Lobby.me(), b = state.bingo;
+  if (myRepick && me) return;   // Kartenwahl der neuen Partie ist offen – nicht neu würfeln
   if (!b || !myMount || !me || myMount.g !== b.g || myMount.num !== me.num) return renderMyCard();
   myMount.ctl.setMarks(me.g === b.g ? me.marks || [] : []);
-  guessState($('#myGuessState'), round ? { n: round.id, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, me.guess);
+  renderMyGuessState();
 }
-// Tipp des Spielleiters in die Lobby (nur solange die Runde läuft)
-let myGuessT;
-$('#btnMyGuessClear').addEventListener('click', () => $('#myGuessText').dispatchEvent(new Event('input')));
-$('#myGuessText').addEventListener('input', () => {
-  clearTimeout(myGuessT);
-  myGuessT = setTimeout(() => {
-    if (!Lobby.me() || !round || round.phase === 'revealed') return;
-    const t = $('#myGuessText').value.trim().slice(0, 80);
-    Lobby.write(`players/${Lobby.uid}/guess`, t ? { t, n: round.id } : null);
-  }, 600);
-});
+const renderMyGuessState = () => guessState($('#myGuessState'), Lobby.code && round ? { n: round.id, ph: round.phase === 'revealed' ? 'r' : 'p' } : null, Lobby.me()?.guess, $('#myGuessText').value);
+// Tipp des Spielleiters in die Lobby – mit „Fertig“ bzw. beim Verlassen des Felds, nur solange die Runde läuft
+function sendMyGuess() {
+  const me = Lobby.me();
+  if (!me || !round || round.phase === 'revealed') return;
+  const t = $('#myGuessText').value.trim().slice(0, 80);
+  if ((me.guess?.n === round.id ? me.guess.t : '') === t) return;
+  Lobby.write(`players/${Lobby.uid}/guess`, t ? { t, n: round.id } : null);
+}
+$('#myGuessText').addEventListener('blur', sendMyGuess);
+$('#myGuessText').addEventListener('keydown', e => { if (e.key === 'Enter') sendMyGuess(); });
+$('#myGuessText').addEventListener('input', renderMyGuessState);
+$('#btnMyGuessClear').addEventListener('click', () => { sendMyGuess(); renderMyGuessState(); });
+$('#btnMyGuessShow').addEventListener('click', sendMyGuess);
 const renderMyCardBtn = () => $('#myCardBtn').classList.toggle('hidden', !state.bingo || state.settings.hostPlays === false);
 
 /* ---------------- Rendering ---------------- */
@@ -3065,13 +3234,11 @@ function render() {
       acts.push(`<button class="pill-btn" data-act="hint" ${left > 0 ? '' : 'disabled'}>${ic('bulb')}Tipp${left > 0 ? ` · ${left}` : ''}</button>`);
     }
     acts.push(`<button class="pill-btn" data-act="next">${ic('skip')}Überspringen</button>`);
-    // Lobby: wie viele Mitspieler schon einen Tipp abgegeben haben (Inhalt erst nach dem Auflösen)
-    const pl = Lobby.code ? lobbyList().length : 0;
-    if (pl) acts.push(`<span class="pill" id="guessPill">💬 ${guessesFor(round.id).length} / ${pl} Tipps</span>`);
   }
   if (ph === 'revealed') acts.push(`<button class="pill-btn" data-act="fixYear">${ic('pen')}Jahr korrigieren</button>`);
   $('#actionRow').innerHTML = acts.join('');
-  renderPlayState();
+  renderPlayState(); renderScorebar();
+  myMount?.ctl.setHot(round ? round.cat.id : null);   // eigene Karte: aktuelle Kategorie hervorheben
 }
 function renderPlayState() {
   const dw = $('#discWrap');
@@ -3101,11 +3268,7 @@ function discTap() {
 }
 // Tipps, die Mitspieler in der Lobby für diese Runde (round.id) abgegeben haben
 const guessesFor = id => lobbyList().filter(p => p.guess?.n === id && p.guess.t);
-// Nur die Tipp-Anzeige aktualisieren (nicht die ganze Knopfleiste – sonst gehen Klicks verloren)
-function renderGuessPill() {
-  const el = $('#guessPill'); if (!el || !round) return;
-  el.textContent = `💬 ${guessesFor(round.id).length} / ${lobbyList().length} Tipps`;
-}
+
 function renderGuessList() {
   const el = $('#guessHost'); if (!el || !round) return;
   const list = Lobby.code ? lobbyList() : [], got = guessesFor(round.id);
@@ -3126,7 +3289,7 @@ function renderReveal() {
     </div>
     <div class="rv-song">
       <div class="rv-title">${esc(t.title)}</div>
-      <div class="rv-artist">${esc(t.artists)}</div>
+      <div class="rv-artist">${esc(t.artists)} <span class="rv-year">· ${y ?? '?'}</span></div>
       <div class="rv-meta">${[t.album, t.date].filter(Boolean).map(esc).join(' · ')}</div>
       <div class="tags">
         <span>Jahr ${y ?? '?'}${fixed ? ' (korrigiert)' : fromMb ? ' · Original' : ''}</span>
@@ -3307,7 +3470,7 @@ document.addEventListener('click', async e => {
   const force = t.closest('[data-confirm-force]');
   if (force) {
     const who = whoById(force.dataset.confirmForce);
-    const why = $('#checkBox .check-res')?.textContent || '';
+    const why = force.closest('.check-block')?.querySelector('.check-res')?.textContent || '';
     if (who && await ask(`Bingo für ${who.name} wirklich bestätigen?\n\nDie Prüfung meldet: ${why}\n\nDer Sieg wird trotzdem gezählt.`, { ok: 'Bestätigen', danger: true })) {
       force.dataset.confirm = force.dataset.confirmForce;
       delete force.dataset.confirmForce;
@@ -3317,12 +3480,18 @@ document.addEventListener('click', async e => {
   if (conf) {
     Lobby.confirm(conf.dataset.confirm);
     const m = state.match;
+    const open = pendingCallers(conf.dataset.confirm).length;
     conf.outerHTML = '<span class="chip-btn on">✓ Bingo bestätigt</span>' +
-      (m && Lobby.code ? (m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : '<button class="big" data-next-game style="width:100%;margin-top:8px">Nächste Partie starten</button>') : '');
+      (!m || !Lobby.code ? '' : open ? `<div class="small" style="width:100%;text-align:center;margin-top:8px">Noch ${open} weitere${open === 1 ? 'r' : ''} Bingo-Ruf${open === 1 ? '' : 'e'} offen – siehe unten</div>`
+        : m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : '<button class="big" data-next-game style="width:100%;margin-top:8px">Nächste Partie starten</button>');
   }
-  if (t.closest('[data-next-game]')) nextGame();
+  if (t.closest('[data-next-game]')) { nextGame(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
+  if (t.closest('[data-end-close]')) $('#endScreen').classList.add('hidden');
+  if (t.closest('[data-end-stop]')) { $('#endScreen').classList.add('hidden'); $('#btnBingoOff').click(); }
+  if (t.closest('[data-end-leave]')) location.replace(location.pathname + '?join');
   if (t.closest('[data-new-match]') && await ask('Neues Spiel?\nAlle Siege werden zurückgesetzt, alle bekommen neue Karten.', { ok: 'Neues Spiel' })) {
     newMatch(); state.match.game = 0; state.match.over = false; nextGame();
+    $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());
   }
   const pDel = t.closest('[data-player-del]');
   if (pDel) {
@@ -3397,6 +3566,7 @@ $('#plUrl').onkeydown = e => { if (e.key === 'Enter') addFromLink(); };
 $('#btnMyPlRefresh').onclick = () => loadMyPlaylists(true);
 $('#csvFile').onchange = async e => { const f = e.target.files[0]; if (f) importCSV(await f.text(), f.name); e.target.value = ''; };
 function resetGame() {
+  $('#endScreen').classList.add('hidden');
   state.played = []; state.history = []; LS.set('played', []); LS.set('history', []);
   round = null; stopTimer(); clearTimeout(snippetT); renderAll();
   Lobby.syncRound(); Lobby.clearMarks();

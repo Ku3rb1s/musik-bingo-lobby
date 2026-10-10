@@ -2,6 +2,20 @@
 
 Die Versionsnummer steht in `index.html` (`APP_VERSION`) und unten in den Einstellungen.
 
+## 3.3.0 – 10.10.2026
+- Spielfläche: keine Tipp-Zählung mehr neben „Tipp/Überspringen“; die Leiste unten zeigt nur noch Namen, 🏆 Siege und ✓ für „fertig getippt“ (keine Feldanzahl)
+- Tipp gilt erst als abgegeben, wenn man „Fertig“ auf der Tastatur drückt oder das Feld verlässt (Anzeige „mit ‚Fertig‘ abgeben“ → „✓ abgegeben“)
+- Neue Partie: jeder (auch der Spielleiter) kann seine Karte behalten oder eine neue wählen; die Karten bleiben gleich, nur die Markierungen werden gelöscht
+- „Nächste Partie starten“ schließt das Menü
+- Jahr wird immer klein neben dem Interpreten angezeigt – beim Spielleiter und auf den Handys der Mitspieler
+- Immer genau 2 Tipps pro Runde
+- Bingo-Karten: kräftigere Farben, die Felder der aktuellen Kategorie leuchten, die anderen treten zurück
+- Spielende-Bildschirm mit Sieger und Siegen bei allen; der Song wird sanft ausgeblendet
+- Mitspieler sehen, wenn jemand Bingo ruft oder gewinnt
+- Nach „Bingo beenden“ (oder per Knopf nach Spielende) kommen die Mitspieler zurück zur Eingabe von Lobby-Code und Name
+- Mehrere gleichzeitige Bingo-Rufe werden gemeinsam geprüft und können alle bestätigt werden
+- „BINGO!“- und „Spielende!“-Schriftzug in den Logo-Farben
+
 ## 3.2.2 – 10.10.2026
 Fehlerbehebungen nach kompletter Code-Durchsicht:
 - Übersprungene Runden: Tipps werden jetzt über eine eindeutige Runden-ID zugeordnet – ein Tipp aus einer übersprungenen Runde gilt nicht mehr für die nächste, das Tipp-Feld wird geleert; bei „Rückgängig“ kommt der Tipp zurück
