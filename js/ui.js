@@ -74,7 +74,7 @@ let peekT;
 // Platte antippen: Musik pausieren/fortsetzen bzw. Ausschnitt nochmal spielen
 function discTap() {
   // Keine Runde aktiv (z. B. nach dem Neuladen): weiterspielen – nur ganz am Anfang ein frisches Spiel
-  if (!round) { if (state.tracks.length) { if (!state.history.length) resetGame(); nextRound(); } return; }
+  if (!round) { if (state.tracks.length) { if (!state.history.length) startGame(); else nextRound(); } return; }
   // Ausschnitt vorbei oder noch nie erfolgreich gestartet (z. B. Spotify schlief) → neu abspielen
   if ((round.snippetDone && round.phase !== 'revealed') || !Player.mode) playSnippet();
   else Player.toggle();
@@ -259,7 +259,7 @@ document.addEventListener('click', async e => {
   const a = t.closest('[data-act]')?.dataset.act;
   if (t.closest('#discWrap')) discTap();
   if (a === 'newgame') askNewGame();
-  else if (a === 'start') { resetGame(); nextRound(); }
+  else if (a === 'start') startGame();
   else if (a === 'next') nextRound();
   else if (a === 'countdown') startCountdown();
   else if (a === 'reveal') reveal();
@@ -348,6 +348,7 @@ document.addEventListener('keydown', e => {
   const ph = round?.phase || 'idle';
   if (ph === 'playing') startCountdown();
   else if (ph === 'countdown') reveal();
+  else if (!round && !state.history.length) startGame();
   else nextRound();
 });
 
@@ -387,6 +388,16 @@ function resetGame() {
   round = null; stopTimer(); clearTimeout(snippetT); renderAll();
   Lobby.syncRound(); Lobby.clearMarks();
   if (state.match) { newMatch(state.match.total); saveMatch(); }
+}
+// „Spiel starten“: Ist noch kein Bingo eingerichtet, erst fragen – ohne Bingo einfach los, sonst zu „Bingo einrichten“
+async function startGame() {
+  if (!state.bingo) {
+    const c = await ask(tx('Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.'),
+      { ok: tx('Ohne Bingo starten'), cancel: tx('Bingo einrichten'), choice: true });
+    if (c === 'no') return openSheet('sheetGame', 'setup');
+    if (c !== 'yes') return;   // Frage weggeklickt
+  }
+  resetGame(); nextRound();
 }
 async function askNewGame() {
   if (state.history.length && !await ask(tx('Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.') + (state.bingo ? Lobby.code ? tx('\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.') : tx('\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.') : ''), { ok: tx('Neues Spiel') })) return;

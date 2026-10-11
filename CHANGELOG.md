@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.0 – 11.10.2026
+- „Spiel starten“ ohne eingerichtetes Bingo fragt jetzt: „Ohne Bingo starten“ oder „Bingo einrichten“ (öffnet direkt die Einrichtung)
+- „Meine Karte“ (Spielleiter spielt mit): oben Partie-Stand mit Siegen und wer schon getippt hat – nach der Auflösung die Tipps selbst, wie bei den Mitspielern
+- „Markierungen löschen“ nur noch als runder Papierkorb, beim Spielleiter und bei den Mitspielern
+- Hinweise lassen sich wegwischen (in jede Richtung, auch mit der Maus); ihr Knopf (z. B. „Rückgängig“) bleibt antippbar
+
 ## 4.8.0 – 11.10.2026
 - Neue Sprachen: Französisch 🇫🇷 und Spanisch 🇪🇸 (je alle 500 Texte). Geräte mit französischer bzw. spanischer Systemsprache starten automatisch darin
 

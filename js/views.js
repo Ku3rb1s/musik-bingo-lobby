@@ -506,6 +506,20 @@ function renderMyCard() {
   myMount = { g: b.g, num: me?.num, ctl };
   updHostMark();
   renderMyGuessState();
+  renderMyLive();
+}
+// Spielleiter spielt mit: oben auf „Meine Karte“ Partie-Stand und wer schon getippt hat (nach der Auflösung: was)
+function renderMyLive() {
+  const box = $('#myLive'), gl = $('#myGuessLive'), m = state.match, on = !!(Lobby.code && Lobby.me());
+  box.classList.toggle('hidden', !on || !m);
+  if (on && m) box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins || {}).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
+  const list = on ? lobbyList() : [], r = round, show = on && r && list.length >= 2;
+  gl.classList.toggle('hidden', !show);
+  if (!show) return;
+  const has = p => p.guess?.n === r.id && p.guess.t;
+  gl.innerHTML = r.phase === 'revealed'
+    ? list.map(p => `<span class="${has(p) ? 'ok' : ''}"><b>${esc(p.name)}${p.id === Lobby.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
+    : `<span>${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
 }
 // Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
 function syncMyCard() {
@@ -515,6 +529,7 @@ function syncMyCard() {
   myMount.ctl.setMarks(me.g === b.g ? me.marks || [] : []);
   updHostMark();
   renderMyGuessState();
+  renderMyLive();
 }
 // Spielleiter: wie bei den Mitspielern – die zuletzt aufgelöste Runde (state.lastRev) darf nachgetragen werden
 function hostMark() {

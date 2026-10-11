@@ -255,6 +255,7 @@ function renderLobby() {
 }
 // Leiste auf dem Hauptbildschirm: Mitspieler mit Siegen und ✓, wer für diese Runde fertig getippt hat
 function renderScorebar() {
+  if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') renderMyLive();   // Tipps/Partie auf „Meine Karte“ mitziehen
   const list = lobbyList(), code = Lobby.code, bar = $('#scorebar');
   bar.classList.toggle('hidden', !code || !list.length);
   const done = p => round && p.guess?.n === round.id && p.guess.t;

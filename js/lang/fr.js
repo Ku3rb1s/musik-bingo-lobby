@@ -5,6 +5,8 @@
   name: 'Français',
   flag: '🇫🇷',
   dict: {
+    "Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.": "Jouer sans bingo ?\nAucun bingo n'est encore configuré. Vous pouvez simplement deviner des titres ou créer d'abord des cartes de bingo pour tout le monde.",
+    "Ohne Bingo starten": "Commencer sans bingo",
     "\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.": "\nLes cartes de bingo restent valables – tout le monde doit effacer ses marques.",
     "\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.": "\nLes cartes de bingo restent valables – les marques du salon sont effacées, les victoires et les parties repartent de 0.",
     " – Spotify erlaubt Entwickler-Apps teils nur eigene Playlists. Tipp: Playlist in deine Bibliothek kopieren oder CSV-Import nutzen.": " – Spotify n'autorise parfois les applis de développeur qu'à charger tes propres playlists. Astuce : copie la playlist dans ta bibliothèque ou utilise l'import CSV.",

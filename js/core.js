@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.8.0', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.9.0', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -149,6 +149,7 @@ function placeToast() {
 const raiseToast = () => { if ($('#toast').classList.contains('show')) placeToast(); };
 function toast(msg, ms = 3500, action = null) {
   const el = $('#toast'), btn = $('#toastBtn');
+  el.style.translate = ''; el.style.opacity = '';   // war der vorige weggewischt
   $('#toastMsg').textContent = msg;
   btn.classList.toggle('hidden', !action);
   if (action) { btn.textContent = action.label; btn.onclick = () => { el.classList.remove('show'); action.fn(); }; }
@@ -157,6 +158,34 @@ function toast(msg, ms = 3500, action = null) {
   clearTimeout(toastT);
   toastT = setTimeout(() => { el.classList.remove('show'); toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} }, 300); }, ms);
 }
+// Hinweise wegwischen: in eine beliebige Richtung ziehen (Finger oder Maus). Kurzes Antippen bleibt ein Antippen.
+(() => {
+  const el = $('#toast');
+  let x0 = null, y0 = 0, dx = 0, dy = 0;
+  el.addEventListener('pointerdown', e => {
+    if (e.target.closest('button')) return;   // der Knopf im Hinweis (z. B. „Rückgängig“) bleibt antippbar
+    x0 = e.clientX; y0 = e.clientY; dx = dy = 0;
+    el.style.transition = 'none';
+    try { el.setPointerCapture(e.pointerId); } catch {}
+  });
+  el.addEventListener('pointermove', e => {
+    if (x0 == null) return;
+    dx = e.clientX - x0; dy = e.clientY - y0;
+    el.style.translate = `${dx}px ${dy}px`;
+    el.style.opacity = String(Math.max(.25, 1 - Math.hypot(dx, dy) / 220));
+  });
+  const end = () => {
+    if (x0 == null) return;
+    x0 = null; el.style.transition = '';
+    if (Math.hypot(dx, dy) > 45) {          // weit genug gezogen → wegfliegen lassen und schließen
+      el.style.translate = `${dx * 3}px ${dy * 3}px`; el.style.opacity = '0';
+      clearTimeout(toastT); el.classList.remove('show');
+      toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} el.style.translate = ''; el.style.opacity = ''; }, 300);
+    } else { el.style.translate = ''; el.style.opacity = ''; }
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+})();
 
 /* ---------------- Bildschirm an lassen & Spotify aufwecken ---------------- */
 let wakeLock = null;
@@ -189,17 +218,18 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 // Eigener Ersatz für confirm()/prompt() – manche Browser blockieren die nativen Dialoge.
-function ask(msg, { input = null, ok = tx('OK'), danger = false } = {}) {
+// choice: true → liefert 'yes' / 'no' / '' (weggeklickt) statt true/false; cancel = Text des linken Knopfs
+function ask(msg, { input = null, ok = tx('OK'), cancel = tx('Abbrechen'), danger = false, choice = false } = {}) {
   const d = $('#dlgAsk'), inp = $('#askInput');
   if (d.open) d.close();   // eine noch offene Frage gilt als „Abbrechen“
-  $('#askMsg').textContent = msg; $('#askOk').textContent = ok;
+  $('#askMsg').textContent = msg; $('#askOk').textContent = ok; $('#askNo').textContent = cancel;
   $('#askOk').classList.toggle('danger', danger);
   inp.classList.toggle('hidden', input == null); inp.value = input ?? '';
   d.returnValue = '';
   d.showModal(); raiseToast(); if (input != null) inp.select();
   return new Promise(res => d.addEventListener('close', () => {
     const yes = d.returnValue === 'yes';
-    res(input == null ? yes : (yes ? inp.value : null));
+    res(choice ? d.returnValue : input == null ? yes : (yes ? inp.value : null));
   }, { once: true }));
 }
 let actx;
@@ -268,7 +298,7 @@ document.querySelectorAll('dialog.sheet').forEach(d => {
   let y0 = null, dy = 0, t0 = 0, dragging = false;
   const reset = () => { d.style.transform = ''; d.style.transition = ''; };
   d.addEventListener('touchstart', e => {
-    if (e.touches.length !== 1 || e.target.closest('input, select, textarea')) return;
+    if (e.touches.length !== 1 || e.target.closest('input, select, textarea, #toast')) return;   // Hinweis wegwischen ≠ Menü schließen
     if (!e.target.closest('.sheet-head') && body.scrollTop > 0) return;
     y0 = e.touches[0].clientY; t0 = Date.now(); dy = 0; dragging = false;
   }, { passive: true });
