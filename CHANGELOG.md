@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.15.4 – 11.10.2026
+- Fehler behoben: Kam am Handy genau beim Antippen des Buzzers ein Update (z. B. ein Tipp), konnte der Druck verloren gehen; die Runden-Box wird jetzt nur bei sichtbaren Änderungen neu aufgebaut – auch der laufende Countdown-Ring startet dadurch nicht mehr neu
+- Fehler behoben: Beim Spielleiter konnte ein Tipp auf „Nächste Partie starten“ oder auf einen Spieler-Chip beim Prüfen verloren gehen, wenn gerade ein Mitspieler markierte – beides wird nur noch bei Änderungen neu gezeichnet
+- Tipp-Feld: Schriftgröße wird per Textmessung angepasst (zuverlässig auch in Safari, eine Messung statt vieler)
+- Aufgeräumt: nicht mehr genutzte Bild-Funktion der Hinweise entfernt
+
 ## 4.15.3 – 11.10.2026
 - OLED: Der Schalter „Leuchteffekte“ bringt jetzt auch Lichtkanten, Glanz und Leucht-Schatten der Knöpfe, der Kategorie und der Felder zurück – wie bei den anderen Designs (Hintergrund bleibt schwarz). Gilt beim Spielleiter und bei den Mitspielern
 

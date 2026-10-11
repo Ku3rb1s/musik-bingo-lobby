@@ -944,7 +944,6 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .guess-big.eye-mini .ic{width:18px;height:18px}
 .guess-big:disabled{opacity:.5;box-shadow:none}
 .rl-buzz .ic{width:25px;height:25px;stroke-width:2.2}
-#toastImg{width:44px;height:44px;border-radius:10px;object-fit:cover;filter:blur(6px) saturate(1.2);flex:none}
 .tv-hints{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--u) * .6);margin-top:calc(var(--u) * .9)}
 .tv-hints span{font-size:calc(var(--u) * 1.5);font-weight:700;color:#ffd27a;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.35);border-radius:99px;padding:.2em .8em}
 .tv-hints img{width:calc(var(--u) * 5);height:calc(var(--u) * 5);border-radius:calc(var(--u) * .6);object-fit:cover;filter:blur(calc(var(--u) * .5))}

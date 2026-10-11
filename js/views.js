@@ -462,22 +462,25 @@ async function lobbyMode(code, autoName = null) {
     // den Buzzer (solange der Song läuft) bzw. den Countdown-Ring – so kommt nichts Zusätzliches auf den Bildschirm.
     function drawRound() {
       const r = curRound, box = $('#roundLive');
-      clearInterval(cdIv); cdIv = null;
       box.classList.toggle('hidden', !r);
-      if (!r) return;
-      box.style.borderColor = r.c;
+      if (!r) { clearInterval(cdIv); cdIv = null; box._html = ''; return; }
       const cd = r.ph === 'c' && r.end, canBuzz = r.ph === 'p' && hasBuzz(curB), sent = buzzSent === keyOf(r);
       const st = r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · Countdown') : tx(' · läuft');
       const cover = r.ph === 'r' && r.cv;   // nach der Auflösung: Cover auf dem Platz des Countdowns
-      box.classList.toggle('has-cover', !!cover);
       const side = cd ? `<div class="rl-timer" style="--c:${esc(r.c)}" role="timer"><b class="rl-cd"></b></div>`
         : cover ? `<img class="rl-cover" src="${esc(r.cv)}" alt="">`
         : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">${ic('bell')}<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
-      box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
+      const html = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
         <div class="rl-n">${esc(tx(r.q))}</div>${hintsHtml(r)}${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
-      if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
-      if (hintNew) { box.querySelector('.hints-line')?.classList.add('new'); hintNew = false; }
       drawHintBtn();
+      const isNew = hintNew; hintNew = false;
+      if (box._html === html && (!cd || cdIv)) return;   // unverändert: Knopf und laufender Ring bleiben, wie sie sind
+      clearInterval(cdIv); cdIv = null;
+      box._html = html; box.innerHTML = html;
+      box.style.borderColor = r.c;
+      box.classList.toggle('has-cover', !!cover);
+      if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
+      if (isNew) box.querySelector('.hints-line')?.classList.add('new');
     }
     // Tipp-Knopf (neben dem Tipp-Feld): holt den nächsten Tipp für alle – der Spielleiter deckt ihn auf.
     // Kommt nichts zurück (Spielleiter offline), wird er nach ein paar Sekunden wieder frei.

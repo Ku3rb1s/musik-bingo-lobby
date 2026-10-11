@@ -231,7 +231,8 @@ function renderMatch() {
     : m.won.length
       ? `<div class="small" style="margin:4px 0 8px">${tx('Gewonnen: {n}', { n: m.won.map(id => esc(m.names[id] || '?')).join(', ') })}</div><button class="big" data-next-game>${tx('Nächste Partie starten')}</button>`
       : `<div class="group-f" style="margin:4px 0 0;text-align:center">${tx('Ruft jemand Bingo, prüfst du es unter „Bingo prüfen“ – nach dem Bestätigen geht es mit der nächsten Partie weiter.')}</div>`;
-  $('#matchMain').innerHTML = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${action}</div>`;
+  const html = `<div class="match-card"><div class="mc-h">${matchTitle(m)}</div>${winsHtml(m)}${action}</div>`, el = $('#matchMain');
+  if (el._html !== html) { el._html = html; el.innerHTML = html; }   // nur bei Änderung (Knöpfe bleiben antippbar)
 }
 
 function checkLobbyPlayer(id) {

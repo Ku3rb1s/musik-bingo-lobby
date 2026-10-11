@@ -171,8 +171,10 @@ function renderCheckWho() {
   const list = lobbyList(), host = hostCard();
   if (checkPlayer && !whoById(checkPlayer)) checkPlayer = null;
   // Kein Chip gewählt = beliebige Kartennummer prüfen (Feld unten). Gewählten Chip nochmal antippen = abwählen.
-  $('#checkWho').innerHTML = (host ? `<button class="chip-btn ${checkPlayer === HOST_ID ? 'on' : ''}" data-check-who="${HOST_ID}">⭐ ${tx('Spielleiter')}</button>` : '') +
+  const html = (host ? `<button class="chip-btn ${checkPlayer === HOST_ID ? 'on' : ''}" data-check-who="${HOST_ID}">⭐ ${tx('Spielleiter')}</button>` : '') +
     list.map(p => `<button class="chip-btn ${checkPlayer === p.id ? 'on' : ''}" data-check-who="${esc(p.id)}">${p.bingo ? '🎉 ' : ''}${esc(p.name)}</button>`).join('');
+  const el = $('#checkWho');
+  if (el._html !== html) { el._html = html; el.innerHTML = html; }
   $('#checkWhoBox').classList.toggle('hidden', !list.length && !host);
 }
 // Link direkt in die Zwischenablage (Fallback für Browser ohne Clipboard-API)
@@ -357,11 +359,16 @@ function mountCard(b, el, onWin, sync = null) {
 
 // Tipp-Feld bleibt einzeilig: Bei langem Text wird die Schrift kleiner (nicht unter 19 px – gut lesbar; unter 16 px würde das iPhone hineinzoomen),
 // erst danach scrollt der Text wie in jedem Eingabefeld zur Seite
+let fitCtx = null;
 function fitGuess(el) {
   el.style.fontSize = '';
   if (!el.value || !el.clientWidth) return;
-  let s = parseFloat(getComputedStyle(el).fontSize);
-  while (s > 19 && el.scrollWidth > el.clientWidth) { s -= 1; el.style.fontSize = s + 'px'; }
+  const cs = getComputedStyle(el), base = parseFloat(cs.fontSize);
+  const avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;
+  fitCtx ??= document.createElement('canvas').getContext('2d');
+  fitCtx.font = `${cs.fontWeight} ${base}px ${cs.fontFamily}`;
+  const w = fitCtx.measureText(el.value).width;
+  if (w > avail) el.style.fontSize = Math.max(19, Math.floor(base * avail / w)) + 'px';
 }
 // „Groß zeigen“: ohne Lobby großer Knopf neben dem Tipp, in der Lobby nur ein kleines Auge oben rechts
 // (die anderen sehen die Tipps dort ohnehin live)

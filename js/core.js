@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.15.3', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.15.4', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -166,10 +166,8 @@ function placeToast() {
 }
 // Ist gerade ein Hinweis zu sehen und öffnet sich ein Fenster, holt ihn das wieder nach vorn
 const raiseToast = () => { if ($('#toast').classList.contains('show')) placeToast(); };
-function toast(msg, ms = 3500, action = null, img = null) {
+function toast(msg, ms = 3500, action = null) {
   const el = $('#toast'), btn = $('#toastBtn');
-  $('#toastImg').classList.toggle('hidden', !img);
-  if (img) $('#toastImg').src = img;
   el.style.translate = ''; el.style.opacity = '';   // war der vorige weggewischt
   $('#toastMsg').textContent = msg;
   btn.classList.toggle('hidden', !action);
