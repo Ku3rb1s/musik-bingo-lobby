@@ -232,6 +232,7 @@ function renderSettings() {
   const r = $('#setSec'); r.value = s.seconds; fillRange(r); $('#secVal').textContent = s.seconds + ' s';
   $('#setStart').value = s.start; $('#setMode').value = s.mode;
   $('#setBeep').checked = s.beep; $('#setBuzzVol').value = String(s.buzzVol || 0); $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
+  $('#rowVibe').classList.toggle('hidden', !('vibrate' in navigator)); $('#setVibeHost').checked = vibeOn();
   $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setMb').checked = s.mb;
   renderThemes();
   $('#appVersion').textContent = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}`;
@@ -582,6 +583,7 @@ $('#setDevice').onchange = e => {
   Player.switchDevice(e.target.value).then(renderStatus);
 };
 $('#btnDevRefresh').onclick = e => { e.preventDefault(); renderDevices(); };
+$('#setVibeHost').onchange = e => { LS.set('vibe', e.target.checked); vib(40); };
 $('#setBeep').onchange = e => { state.settings.beep = e.target.checked; saveSettings(); };
 $('#setBuzzVol').onchange = e => { state.settings.buzzVol = +e.target.value; saveSettings(); buzzSound(); };   // zum Probehören
 $('#setAuto').onchange = e => { state.settings.autoReveal = e.target.checked; saveSettings(); };

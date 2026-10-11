@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.14.2 – 11.10.2026
+- Tipps noch knapper: In der Zeile unter der Frage (Handys, Fernseher) stehen Kurzformen wie „Titel: Q… · 80er · 3 Wörter“ – der Hinweis oben zeigt weiterhin den ganzen Satz
+- Spielleiter spielt mit: Die Tipps der Runde stehen jetzt auch auf „Meine Karte“
+- Spielleiter: Vibrieren in den Einstellungen unter Töne abschaltbar (nur Android)
+
 ## 4.14.1 – 11.10.2026
 - Tipps ruhiger: Der Tipp-Knopf am Handy ist nur noch eine kleine Glühbirne mit der Anzahl im Eck; die aufgedeckten Tipps stehen als eine schlichte Zeile unter der Frage statt als Kästchen
 - Tipp-Feld wieder einzeilig mit fester Höhe: Bei langem Text wird die Schrift kleiner, danach scrollt der Text zur Seite (statt dass das Feld wächst)

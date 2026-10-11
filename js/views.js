@@ -62,8 +62,8 @@ function answerHtml(r) {
 function hintsHtml(r, tv = false) {
   if (r.ph === 'r' || !r.h?.length) return '';
   const img = h => `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">`;
-  return tv ? `<div class="tv-hints">${r.h.map(h => h.cover ? img(h) : `<span>💡 ${esc(hintText(h))}</span>`).join('')}</div>`
-    : `<div class="rl-hints">💡 ${r.h.map(h => h.cover ? img(h) : esc(hintText(h))).join(' · ')}</div>`;
+  return tv ? `<div class="tv-hints">${r.h.map(h => h.cover ? img(h) : `<span>💡 ${esc(hintShort(h))}</span>`).join('')}</div>`
+    : hintsLine(r.h);
 }
 // Ein anderer Mitspieler hat Bingo: großer Bildschirm (schließt sich nach ein paar Sekunden von selbst)
 function showOtherWin(text, won = false) {
@@ -711,6 +711,8 @@ function renderMyLive() {
   const box = $('#myLive'), gl = $('#myGuessLive'), m = state.match, on = !!(Lobby.code && Lobby.me());
   box.classList.toggle('hidden', !on || !m);
   if (on && m) box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins || {}).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
+  const hl = on && round && round.phase !== 'revealed' ? hintsLine(hintsFor(round.cat, round.track).slice(0, round.hints || 0)) : '';
+  $('#myHints').innerHTML = hl; $('#myHints').classList.toggle('hidden', !hl);
   const list = on ? lobbyList() : [], r = round, show = on && r && list.length >= 2;
   gl.classList.toggle('hidden', !show);
   if (!show) return;

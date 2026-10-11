@@ -962,7 +962,12 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .hint-req.wait{opacity:1!important}
 .hint-req.wait .ic{animation:hintPulse .7s ease-in-out infinite alternate}
 @keyframes hintPulse{to{opacity:.35;transform:scale(.85)}}
-.round-live .rl-hints{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;margin-top:4px;
-  font-size:.8rem;font-weight:600;line-height:1.35;color:#ffd27a}
-.round-live .rl-hints img{width:18px;height:18px;border-radius:4px;object-fit:cover;vertical-align:-4px;filter:blur(2px)}
 .guess-row input.guess-input{height:58px;line-height:normal;padding:4px 46px 0 14px;overflow:hidden;text-overflow:clip}
+/* 4.14.2: Tipps als eine ruhige Zeile (Kurzform) – Handys und „Meine Karte“ */
+.hints-line{display:flex;align-items:flex-start;gap:6px;margin-top:5px;font-size:.8rem;font-weight:600;line-height:1.35;color:#ffd27a}
+.hints-line .ic{width:15px;height:15px;margin-top:1px;color:#ffb020}
+.hints-line span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;min-width:0}
+.hints-line i{font-style:normal;opacity:.45;margin:0 .45em}
+.hints-line img{width:18px;height:18px;border-radius:4px;object-fit:cover;vertical-align:-4px;filter:blur(2px)}
+#myHints{margin:10px 4px 0}
+#myHints .hints-line{margin:0;font-size:.85rem}

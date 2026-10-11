@@ -373,6 +373,19 @@ function hintText(h) {
   if (h.cc) v.c = (regionName(h.cc) || '?')[0].toUpperCase();
   return tx(h.s, v);
 }
+// Kurzform für die Zeile unter der Frage (Handys, Fernseher, „Meine Karte“) – der Hinweis oben zeigt den ganzen Satz
+const HINT_SHORT = {
+  'Der Titel beginnt mit „{c}“': 'Titel: {c}…', 'Der Titel hat {n} Wort': '1 Wort', 'Der Titel hat {n} Wörter': '{n} Wörter',
+  'Der Interpret beginnt mit „{c}“': 'Interpret: {c}…', 'Das Album beginnt mit „{c}“': 'Album: {c}…', 'Das Land beginnt mit „{c}“': 'Land: {c}…',
+  'Vor 2000 erschienen': 'vor 2000', 'Ab 2000 erschienen': 'ab 2000',
+};
+function hintShort(h) {
+  if (h.s === 'Erschienen in den {d}n') return locPart(String(h.v?.d ?? ''));   // einfach „80er“
+  return hintText(HINT_SHORT[h.s] ? { ...h, s: HINT_SHORT[h.s] } : h);
+}
+// Eine ruhige Zeile: Glühbirne, dann die Tipps mit Punkten getrennt (Cover als winziges unscharfes Bild)
+const hintsLine = list => list?.length ? `<div class="hints-line">${ic('bulb')}<span>${list.map(h => h.cover
+  ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : esc(hintShort(h))).join('<i>·</i>')}</span></div>` : '';
 const hintHtml = h => h.cover ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : `<div class="hint-item">${ic('bulb')}${esc(hintText(h))}</div>`;
 function renderHints() {
   const box = $('#hintBox');
