@@ -9,11 +9,19 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.12.8', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.12.9', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('mb_' + k, JSON.stringify(v)); } catch {} },
+  set(k, v) {
+    try { localStorage.setItem('mb_' + k, JSON.stringify(v)); }
+    catch (e) {
+      if (/quota/i.test(e?.name || '') && !LS.warned && typeof toast === 'function') {
+        LS.warned = true;
+        toast(tx('Der Speicher des Browsers ist voll – Änderungen werden evtl. nicht gespeichert. Tipp: nicht benötigte Playlists entfernen.'), 10000);
+      }
+    }
+  },
   del(k) { try { localStorage.removeItem('mb_' + k); } catch {} },
 };
 

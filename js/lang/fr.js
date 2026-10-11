@@ -563,5 +563,6 @@
     "Runde, Countdown, Tipps und QR-Code groß – z. B. am Laptop mit HDMI": "Manche, compte à rebours, réponses et QR code en grand – p. ex. sur un portable via HDMI",
     "Aus der Lobby entfernen": "Retirer du salon",
     "Aus welchem Album?": "De quel album ?",
+    "Der Speicher des Browsers ist voll – Änderungen werden evtl. nicht gespeichert. Tipp: nicht benötigte Playlists entfernen.": "Le stockage du navigateur est plein – les modifications risquent de ne pas être enregistrées. Astuce : retire les playlists inutiles.",
   },
 };

@@ -305,6 +305,8 @@ function confetti() {
    sync (nur Lobby) = { num, marks, onChange(marks) }: Nummer/Markierungen vom Server, Änderungen zurück an den Server */
 function mountCard(b, el, onWin, sync = null) {
   const key = 'card_' + b.g;
+  // Einträge früherer Bingos weg – sonst sammelt sich über viele Spielabende eine Karte pro Bingo im Speicher
+  try { Object.keys(localStorage).filter(k => k.startsWith('mb_card_') && k !== 'mb_' + key).forEach(k => localStorage.removeItem(k)); } catch {}
   const st = LS.get(key, null) || { num: 1000 + Math.floor(Math.random() * 9000), marks: [] };
   if (sync) { st.num = sync.num; if (sync.marks) st.marks = sync.marks; }
   LS.set(key, st);

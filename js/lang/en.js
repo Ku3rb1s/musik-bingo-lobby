@@ -563,5 +563,6 @@
     "Runde, Countdown, Tipps und QR-Code groß – z. B. am Laptop mit HDMI": "Round, countdown, guesses and QR code in large – e.g. on a laptop via HDMI",
     "Aus der Lobby entfernen": "Remove from lobby",
     "Aus welchem Album?": "Which album?",
+    "Der Speicher des Browsers ist voll – Änderungen werden evtl. nicht gespeichert. Tipp: nicht benötigte Playlists entfernen.": "The browser storage is full – changes may not be saved. Tip: remove playlists you don’t need.",
   },
 };

@@ -32,7 +32,10 @@ async function nextRound() {
   const playedSet = new Set(state.played);
   let pool = state.tracks.filter(t => !playedSet.has(t.id));
   let reshuffled = false;
-  if (!pool.length) { reshuffled = true; state.played = []; pool = state.tracks.slice(); }
+  if (!pool.length) {   // alle gespielt → neu mischen, aber nicht gleich wieder den Song, der gerade lief
+    reshuffled = true; state.played = [];
+    pool = state.tracks.length > 1 ? state.tracks.filter(t => t.id !== round?.track?.id) : state.tracks.slice();
+  }
   const track = pool[Math.floor(Math.random() * pool.length)];
   const cat = cats[Math.floor(Math.random() * cats.length)];
   state.played.push(track.id); LS.set('played', state.played);

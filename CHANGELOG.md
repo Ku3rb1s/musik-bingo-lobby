@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.9 – 11.10.2026
+- Alle Songs gespielt → neu gemischt: Der Song, der gerade lief, kam manchmal sofort nochmal – jetzt nicht mehr
+- Speicher des Browsers voll (sehr große Bibliotheken): einmaliger Hinweis statt stillem Scheitern (sonst wären nach dem Neuladen z. B. Songs weg)
+- Karten früherer Bingos werden aus dem Speicher entfernt (sammelten sich über viele Spielabende an)
+
 ## 4.12.8 – 11.10.2026
 - Neue Standard-Kategorie „Aus welchem Album?“ (standardmäßig aus) – Antwort ist das Album laut Spotify; Beispiel bei eigenen Kategorien jetzt „Aus welchem Film?“
 - Kategorien: Beim Darüberfahren mit der Maus leuchtete der Papierkorb mit – die Zeile gehört jetzt zum Schalter
