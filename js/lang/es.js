@@ -546,7 +546,7 @@
     "Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“": "Aún puedes unirte – salir solo es posible con «Terminar bingo»",
     "spielt mit": "juega",
     "Mitspielen": "Jugar también",
-    "Song startet": "La canción empieza",
+    "Startpunkt im Song": "Punto de inicio",
     "Wo die Musik einsetzt": "Dónde empieza la música",
     "Am Anfang": "Al principio",
     "Zufällige Stelle": "Punto aleatorio",
@@ -559,6 +559,6 @@
     "schwerer": "más difícil",
     "Beides kannst du jederzeit in den Einstellungen ändern.": "Puedes cambiar ambos en cualquier momento en los ajustes.",
     "Antippen zum Ändern (Einstellungen)": "Toca para cambiar (ajustes)",
-    "Alles bereit – los geht’s!": "Todo listo – ¡vamos!",
+    "Los geht’s!": "¡Vamos!",
   },
 };

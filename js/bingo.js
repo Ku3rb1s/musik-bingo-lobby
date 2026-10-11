@@ -150,7 +150,7 @@ function renderRules() {
     code ? row('✅', tx('Markieren'), tx('1 pro Runde'), tx('Nach der Auflösung, nur die Kategorie der Runde')) : row('✅', tx('Markieren'), tx('selbst'), tx('Jeder markiert auf seinem Handy, du prüfst bei „Bingo!“')),
     code ? row('🔔', tx('Buzzer'), hasBuzz(b) ? tx('an') : tx('aus'), hasBuzz(b) ? tx('Mitspieler starten den Countdown') : '') : '',
     link('⏱️', tx('Countdown'), tx('{n} s', { n: state.settings.seconds }), 'rowSec'),
-    link('▶️', tx('Song startet'), tx(START[state.settings.start] || START.begin), 'rowStart'),
+    link('▶️', tx('Startpunkt im Song'), tx(START[state.settings.start] || START.begin), 'rowStart'),
     `<div class="cell rule"><span class="rule-ic">⭐</span><span class="grow">${tx('Spielleiter')}<span class="sub">${plays ? tx('Du spielst mit eigener Karte mit') : tx('Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“')}</span></span>`
       + (plays ? `<span class="rule-v">${tx('spielt mit')}</span>` : `<button class="mini" data-host-join>${tx('Mitspielen')}</button>`) + '</div>',
   ].join('');

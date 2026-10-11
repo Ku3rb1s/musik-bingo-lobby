@@ -546,7 +546,7 @@
     "Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“": "You can still join – leaving is only possible via “End bingo”",
     "spielt mit": "plays",
     "Mitspielen": "Join in",
-    "Song startet": "Song starts",
+    "Startpunkt im Song": "Starting point",
     "Wo die Musik einsetzt": "Where the music begins",
     "Am Anfang": "At the beginning",
     "Zufällige Stelle": "Random spot",
@@ -559,6 +559,6 @@
     "schwerer": "harder",
     "Beides kannst du jederzeit in den Einstellungen ändern.": "You can change both at any time in the settings.",
     "Antippen zum Ändern (Einstellungen)": "Tap to change (settings)",
-    "Alles bereit – los geht’s!": "All set – let’s go!",
+    "Los geht’s!": "Let’s go!",
   },
 };

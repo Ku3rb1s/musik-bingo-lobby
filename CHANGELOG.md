@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.11.2 – 11.10.2026
+- Sprung aus „Regeln & Karten“: Eine früher angesprungene Zeile (z. B. Countdown) leuchtete beim nächsten Öffnen der Einstellungen erneut auf – jetzt leuchtet nur die gerade gewählte
+- „Song startet“ heißt jetzt „Startpunkt im Song“
+- Startbildschirm: kurz „Los geht’s!“ (passt auf jedem Handy in eine Zeile)
+
 ## 4.11.1 – 11.10.2026
 - Buzzer-Ton standardmäßig aus (einmalig auch bei allen, bei denen er seit 4.10.1 automatisch an war) – einschalten unter Einstellungen
 - Bingo einrichten: Countdown (15/20/30/45/60 s, Standard 30 s) und „Song startet“ (am Anfang / ab 0:30 / zufällig, Standard am Anfang) direkt einstellbar – dieselben Einstellungen wie unter Einstellungen, dort jederzeit änderbar

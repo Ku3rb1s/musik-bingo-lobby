@@ -546,7 +546,7 @@
     "Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“": "Tu peux encore rejoindre – quitter n’est possible qu’avec « Terminer le bingo »",
     "spielt mit": "joue",
     "Mitspielen": "Jouer aussi",
-    "Song startet": "Début du morceau",
+    "Startpunkt im Song": "Point de départ",
     "Wo die Musik einsetzt": "Où la musique commence",
     "Am Anfang": "Au début",
     "Zufällige Stelle": "Endroit aléatoire",
@@ -559,6 +559,6 @@
     "schwerer": "plus difficile",
     "Beides kannst du jederzeit in den Einstellungen ändern.": "Tu peux modifier les deux à tout moment dans les réglages.",
     "Antippen zum Ändern (Einstellungen)": "Toucher pour modifier (réglages)",
-    "Alles bereit – los geht’s!": "Tout est prêt – c’est parti !",
+    "Los geht’s!": "C’est parti !",
   },
 };

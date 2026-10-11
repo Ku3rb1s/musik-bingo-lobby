@@ -19,7 +19,7 @@ function render() {
       $('#catIcon').innerHTML = '<img src="icon-192.png?v=5" alt="">';
       document.documentElement.style.setProperty('--cat', '#ffa03c');
       $('#catName').textContent = !state.tracks.length ? tx('Füge eine Playlist hinzu')
-        : state.history.length ? tx(state.history.length === 1 ? '{n} Runde gespielt' : '{n} Runden gespielt', { n: state.history.length }) : tx('Alles bereit – los geht’s!').replace(/ (\S+)$/, '\u00a0$1');   // letztes Wort nicht allein umbrechen
+        : state.history.length ? tx(state.history.length === 1 ? '{n} Runde gespielt' : '{n} Runden gespielt', { n: state.history.length }) : tx('Los geht’s!');
     }
   }
   // Bei der Auflösung dreht sich die Platte um und zeigt das Cover
@@ -378,6 +378,8 @@ document.addEventListener('click', async e => {
   // Nach dem Ziehen keinen Namen „anklicken“
   bar.addEventListener('click', e => { if (moved) { e.stopPropagation(); moved = false; } }, true);
 })();
+// Aufleuchten nur einmal: Klasse nach der Animation entfernen (sonst läuft sie beim nächsten Öffnen der Einstellungen erneut)
+document.addEventListener('animationend', e => { if (e.animationName === 'cellFlash') e.target.classList.remove('flash'); });
 document.addEventListener('change', e => {
   const tg = e.target.closest('[data-cat-toggle]');
   if (tg) { state.cats[+tg.dataset.catToggle].enabled = tg.checked; saveCats(); }
