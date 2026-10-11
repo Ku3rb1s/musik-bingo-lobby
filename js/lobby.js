@@ -74,7 +74,7 @@ const Lobby = {
         renderLobby();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'check') renderCheckWho();
         if (round?.phase === 'revealed') renderGuessList();   // Tipps der Mitspieler
-        checkBuzz();
+        checkBuzz(); checkHintReq();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
       }, e => toast('Lobby: ' + tx(e.message), 6000));
       this.syncRound();
@@ -121,6 +121,7 @@ const Lobby = {
       const mine = this.me().guess;
       if (this.lastId && round.id > this.lastId) { $('#myGuessText').value = ''; LS.set('guess', ''); }
       else if (mine?.t && mine.n === round.id) { $('#myGuessText').value = mine.t; LS.set('guess', mine.t); }
+      fitGuess($('#myGuessText'));
       this.lastId = round.id;
     }
     if (!round) return this.write('round', null);
@@ -128,9 +129,13 @@ const Lobby = {
     // ph: p = läuft, c = Countdown (end = Zeitpunkt in ms), r = aufgelöst
     const cd = round.phase === 'countdown' && round.end;
     const pv = !rev && lastRevFor(round);   // vorige Runde – solange die laufende nicht aufgelöst ist, darf man sie nachtragen
+    // Tipps: hm = wie viele es in dieser Runde gibt, h = die schon aufgedeckten (mit Namen, wer ihn geholt hat)
+    const all = rev ? [] : hintsFor(round.cat, t), hm = all.length;
+    const h = all.slice(0, round.hints || 0).map((x, i) => JSON.parse(JSON.stringify({ ...x, ...(round.hintBy?.[i] ? { by: round.hintBy[i] } : {}) })));
     this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end + fbOffset, dur: round.dur } : {}),
       ...(round.bz ? { bz: round.bz } : {}),   // wer gebuzzert hat (Name)
       ...(pv ? { pv } : {}),
+      ...(hm ? { hm, ...(h.length ? { h } : {}) } : {}),
       ...(round.n <= (state.partieFrom || 0) ? { old: 1 } : {}),   // Runde gehört zur vorigen Partie → nicht markierbar
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc
       ...(rev ? { a: withLang('de', () => plainText(answerFor(round.cat, t))), at: round.cat.answer, s: `${t.artists} – ${t.title}`, ti: t.title, ar: t.artists,

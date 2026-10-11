@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.13.6', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.14.0', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -105,8 +105,8 @@ const state = {
   sources: LS.get('sources', []),
   played: LS.get('played', []),
   cats: LS.get('cats', null) || structuredClone(DEFAULT_CATS),
-  settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzSound: false, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
-    limit: 0, hints: true, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
+  settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzVol: 0, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
+    limit: 0, hintMax: 2, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
   bingo: (b => b?.k ? b : null)(LS.get('bingo', null)),   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
   lobby: LS.get('lobby', null),     // Code der eigenen Lobby (Firebase), solange Bingo läuft
   match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
@@ -121,6 +121,13 @@ const state = {
 LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
 // 4.11.1: Buzzer-Ton ist jetzt standardmäßig aus – einmalig auch bei allen, die ihn mit 4.10.x automatisch an hatten
 if (!LS.get('buzzOff1', false)) { state.settings.buzzSound = false; LS.set('settings', state.settings); LS.set('buzzOff1', true); }
+// 4.14.0: „Tipps erlauben“ (an/aus) → Tipps pro Runde (0–3), „Buzzer-Ton“ (an/aus) → Lautstärke (0 = aus … 3 = laut)
+{
+  const s = state.settings, raw = LS.get('settings', {});
+  if (raw.hintMax == null) s.hintMax = raw.hints === false ? 0 : 2;
+  if (raw.buzzVol == null) s.buzzVol = raw.buzzSound ? 2 : 0;
+  if ('hints' in s || 'buzzSound' in s) { delete s.hints; delete s.buzzSound; LS.set('settings', s); }
+}
 // Neue Standard-Kategorien auch bei bestehenden Spielern ergänzen – so, wie sie ausgeliefert werden (Herkunftsland: aus)
 if (DEFAULT_CATS.some(d => !state.cats.some(c => c.id === d.id))) {
   for (const d of DEFAULT_CATS) if (!state.cats.some(c => c.id === d.id)) state.cats.push(structuredClone(d));
@@ -159,8 +166,10 @@ function placeToast() {
 }
 // Ist gerade ein Hinweis zu sehen und öffnet sich ein Fenster, holt ihn das wieder nach vorn
 const raiseToast = () => { if ($('#toast').classList.contains('show')) placeToast(); };
-function toast(msg, ms = 3500, action = null) {
+function toast(msg, ms = 3500, action = null, img = null) {
   const el = $('#toast'), btn = $('#toastBtn');
+  $('#toastImg').classList.toggle('hidden', !img);
+  if (img) $('#toastImg').src = img;
   el.style.translate = ''; el.style.opacity = '';   // war der vorige weggewischt
   $('#toastMsg').textContent = msg;
   btn.classList.toggle('hidden', !action);
@@ -265,20 +274,29 @@ function beep(freq = 880, dur = .15, vol = .2) {
     o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
   } catch {}
 }
-// Buzzer-Ton wie in einer Quizshow – bewusst leise und weich: zwei leicht verstimmte Töne, oben abgeschnitten (Tiefpass),
-// knapp eine halbe Sekunde. Unabhängig von „Töne beim Countdown“.
-function buzzSound() {
-  if (state.settings.buzzSound === false) return;
+// Buzzer-Ton: ein helles „Ding-Dong“ wie in einer Quizshow – zwei glockige Töne (Grundton + leise Obertöne), die
+// weich ausklingen. Lautstärke in den Einstellungen (0 = aus), unabhängig von „Töne beim Countdown“.
+const BUZZ_VOL = [0, .06, .14, .28];
+function buzzSound(level = state.settings.buzzVol) {
+  const v = BUZZ_VOL[level] || 0;
+  if (!v) return;
   try {
     actx = actx || new AudioContext(); actx.resume?.();
-    const t = actx.currentTime, g = actx.createGain(), lp = actx.createBiquadFilter();
-    lp.type = 'lowpass'; lp.frequency.value = 900;
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.05, t + .03);
-    g.gain.setValueAtTime(.05, t + .3); g.gain.exponentialRampToValueAtTime(.0005, t + .48);
-    lp.connect(g).connect(actx.destination);
-    for (const f of [180, 188]) { const o = actx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(t); o.stop(t + .5); }
+    const t0 = actx.currentTime, out = actx.createGain();
+    out.gain.value = v; out.connect(actx.destination);
+    for (const [f, d] of [[784, 0], [1047, .17]]) {
+      for (const [mul, amp] of [[1, 1], [2.01, .3], [3.02, .1]]) {
+        const o = actx.createOscillator(), g = actx.createGain(), t = t0 + d;
+        o.type = 'sine'; o.frequency.value = f * mul;
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(amp, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + .9);
+        o.connect(g).connect(out); o.start(t); o.stop(t + .95);
+      }
+    }
   } catch {}
 }
+// Vibrieren (geht nur auf Android – iPhones erlauben das Websites nicht). Am Handy der Mitspieler abschaltbar.
+const vibeOn = () => LS.get('vibe', true) !== false;
+const vib = p => { if (vibeOn()) try { navigator.vibrate?.(p); } catch {} };
 function fillRange(el) { el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); }
 
 /* ---------------- Sheets mit Unterseiten ---------------- */
@@ -286,7 +304,7 @@ function openSheet(id, page = 'main') {
   document.querySelectorAll('dialog.sheet[open]').forEach(d => { if (d.id !== id) d.close(); });
   const d = $('#' + id);
   goPage(d, page, false);
-  if (!d.open) d.showModal();
+  if (!d.open) { d.showModal(); if (document.activeElement?.matches('select, input, textarea')) document.activeElement.blur(); }
   document.body.classList.add('locked');
   raiseToast();
 }

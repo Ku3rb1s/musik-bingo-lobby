@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.13.6">
+<link rel="stylesheet" href="css/app.css?v=4.14.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -48,6 +48,7 @@
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M14 9l2 2"/></symbol>
   <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
   <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4.5M16 6h3a3 3 0 0 1-3 4.5M12 13v4M8.5 20.5h7M10 17h4v3.5h-4z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 1.8H4.4z"/><path d="M10 21a2.2 2.2 0 0 0 4 0"/></symbol>
   <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
@@ -119,7 +120,7 @@
   <div class="sheet-head">
     <span class="grab"></span>
     <button class="nav-back invisible" data-back><svg class="ic"><use href="#i-back"/></svg>Playlists</button>
-    <div class="nav-title">Playlists</div>
+    <div class="nav-title" tabindex="-1" autofocus>Playlists</div>
     <button class="nav-done" data-close>Fertig</button>
   </div>
   <div class="sheet-body">
@@ -181,7 +182,7 @@
     <button class="nav-back invisible" data-back><svg class="ic"><use href="#i-back"/></svg>Einstellungen</button>
     <!-- Sprache: nur auf der Hauptseite (dort ist links frei), die Auswahlliste liegt unsichtbar über dem Knopf -->
     <label class="lang-pill nav-lang" title="Sprache · Language">🌐 <span id="langCodeS"></span><select id="langSel" aria-label="Sprache"></select></label>
-    <div class="nav-title">Einstellungen</div>
+    <div class="nav-title" tabindex="-1" autofocus>Einstellungen</div>
     <button class="nav-done" data-close>Fertig</button>
   </div>
   <div class="sheet-body">
@@ -226,14 +227,28 @@
             <option value="5">5 Sekunden</option>
           </select>
         </label>
-        <label class="cell"><span class="grow">Tipps erlauben<span class="sub">Anfangsbuchstabe, Jahrzehnt oder Cover</span></span><span class="switch"><input type="checkbox" id="setHints"><span></span></span></label>
+        <label class="cell" id="rowHints"><span class="grow">Tipps pro Runde<span class="sub">Anfangsbuchstabe, Jahrzehnt oder Cover – auch Mitspieler können sie holen</span></span>
+          <select id="setHints">
+            <option value="0">Keine</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </label>
         <label class="cell"><span class="grow">Automatisch auflösen<span class="sub">Wenn der Countdown abgelaufen ist</span></span><span class="switch"><input type="checkbox" id="setAuto"><span></span></span></label>
       </div>
 
       <div class="group-h">Töne</div>
       <div class="group">
         <label class="cell"><span class="grow">Töne beim Countdown</span><span class="switch"><input type="checkbox" id="setBeep"><span></span></span></label>
-        <label class="cell"><span class="grow">🔔 Buzzer-Ton<span class="sub">Wenn ein Mitspieler buzzert</span></span><span class="switch"><input type="checkbox" id="setBuzzSound"><span></span></span></label>
+        <label class="cell"><span class="grow">🔔 Buzzer-Ton<span class="sub">Wenn ein Mitspieler buzzert</span></span>
+          <select id="setBuzzVol">
+            <option value="0">Aus</option>
+            <option value="1">Leise</option>
+            <option value="2">Mittel</option>
+            <option value="3">Laut</option>
+          </select>
+        </label>
       </div>
 
 
@@ -361,7 +376,7 @@
   <div class="sheet-head">
     <span class="grab"></span>
     <button class="nav-back invisible" data-back><svg class="ic"><use href="#i-back"/></svg>Bingo</button>
-    <div class="nav-title">Bingo</div>
+    <div class="nav-title" tabindex="-1" autofocus>Bingo</div>
     <button class="nav-done" data-close>Fertig</button>
   </div>
   <div class="sheet-body">
@@ -472,7 +487,14 @@
           <button data-start="s30">Ab 0:30<small>mittendrin</small></button>
           <button data-start="random">Zufällig<small>schwerer</small></button>
         </div>
-        <div class="group-f" style="text-align:center;margin-top:6px">Beides kannst du jederzeit in den Einstellungen ändern.</div>
+        <div class="group-h">Tipps pro Runde</div>
+        <div class="seg" id="bingoHintSeg">
+          <button data-hints="0">0<small>keine</small></button>
+          <button data-hints="1">1<small>knapp</small></button>
+          <button data-hints="2">2<small>normal</small></button>
+          <button data-hints="3">3<small>leichter</small></button>
+        </div>
+        <div class="group-f" style="text-align:center;margin-top:6px">Countdown, Startpunkt und Tipps kannst du jederzeit in den Einstellungen ändern.</div>
         <div class="group-h">Felder</div>
         <div class="chip-scroll" id="bingoCats"></div>
         <div class="group-f" style="text-align:center;margin-top:2px" id="bingoCatsNote"></div>
@@ -593,6 +615,7 @@
           <div class="guess-row">
             <div class="guess-field"><textarea id="guessText" class="guess-input" rows="1" maxlength="80" placeholder="z. B. Queen – 1975" autocomplete="off" spellcheck="false" enterkeyhint="done"></textarea><button class="guess-clear" id="btnGuessClear" aria-label="Tipp löschen" title="Tipp löschen">✕</button></div>
             <button class="guess-big" id="btnGuessShow" aria-label="Tipp groß zeigen"><svg class="ic"><use href="#i-eye"/></svg><span>Groß<br>zeigen</span></button>
+            <button class="guess-big hint-req hidden" id="btnHintReq" aria-label="Tipp für alle holen"></button>
           </div>
         </div>
   <div class="glass card-wrap">
@@ -602,6 +625,7 @@
     <div class="chip-scroll" id="cardLegend"></div>
     <div class="small muted mark-help" id="markHelp">Nach der Auflösung: Lag dein Tipp richtig? Dann ein leuchtendes Feld antippen – 1 Feld pro Runde.</div>
     <div class="small muted" id="cardLobbyInfo" style="text-align:center;margin-top:8px"></div>
+    <label class="vibe-row hidden" id="vibeRow"><span>📳 Vibrieren <small>bei Bingo, Countdown und Tipps</small></span><span class="switch"><input type="checkbox" id="setVibe"><span></span></span></label>
   </div>
   </div>
 </div>
@@ -637,6 +661,15 @@
   </div>
 </div>
 
+<!-- Ein anderer Mitspieler hat Bingo (gerufen bzw. bestätigt) -->
+<div id="otherWin" class="win other-win hidden" role="status">
+  <div>
+    <div class="big-word">BINGO!</div>
+    <p id="owText"></p>
+    <button class="ghost" id="owClose">Weiter</button>
+  </div>
+</div>
+
 <!-- Tipp im Vollbild zum Herzeigen -->
 <dialog id="guessShow" class="guess-show">
   <div class="gs-paper">
@@ -658,20 +691,20 @@
 </dialog>
 
 <div id="embedWrap"><div id="embedHost"></div></div>
-<div id="toast" role="status" popover="manual"><span id="toastMsg"></span><button id="toastBtn" class="mini hidden"></button></div>
+<div id="toast" role="status" popover="manual"><img id="toastImg" class="hidden" alt=""><span id="toastMsg"></span><button id="toastBtn" class="mini hidden"></button></div>
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.13.6"></script>
-<script src="js/lang/fr.js?v=4.13.6"></script>
-<script src="js/lang/es.js?v=4.13.6"></script>
-<script src="js/i18n.js?v=4.13.6"></script>
-<script src="js/core.js?v=4.13.6"></script>
-<script src="js/spotify.js?v=4.13.6"></script>
-<script src="js/game.js?v=4.13.6"></script>
-<script src="js/lobby.js?v=4.13.6"></script>
-<script src="js/bingo.js?v=4.13.6"></script>
-<script src="js/views.js?v=4.13.6"></script>
-<script src="js/ui.js?v=4.13.6"></script>
+<script src="js/lang/en.js?v=4.14.0"></script>
+<script src="js/lang/fr.js?v=4.14.0"></script>
+<script src="js/lang/es.js?v=4.14.0"></script>
+<script src="js/i18n.js?v=4.14.0"></script>
+<script src="js/core.js?v=4.14.0"></script>
+<script src="js/spotify.js?v=4.14.0"></script>
+<script src="js/game.js?v=4.14.0"></script>
+<script src="js/lobby.js?v=4.14.0"></script>
+<script src="js/bingo.js?v=4.14.0"></script>
+<script src="js/views.js?v=4.14.0"></script>
+<script src="js/ui.js?v=4.14.0"></script>
 </body>
 </html>

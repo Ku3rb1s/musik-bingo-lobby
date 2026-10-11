@@ -2,6 +2,15 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.14.0 – 11.10.2026
+- Tipps für alle: Mitspieler holen am Handy einen Tipp (Knopf neben dem Tipp-Feld, zeigt wie viele noch übrig sind). Jeder neue Tipp – auch vom Spielleiter – kommt bei allen oben als Hinweis an (das Cover unscharf als Bild), steht unter der Frage in der Runden-Box und auf dem Fernseher
+- Tipps pro Runde einstellbar (0–3): in den Einstellungen, beim Bingo-Einrichten und als Zeile unter „Regeln & Karten“ – gilt sofort, auch mitten im Spiel. Ersetzt den Schalter „Tipps erlauben“
+- Lobby: „Groß zeigen“ ist nur noch ein kleines Auge oben rechts neben „Dein Tipp“
+- Tipp-Feld wächst mit dem Text (mehrere Zeilen) – am iPhone rutscht nichts mehr aus dem Bild und der Cursor lässt sich wieder überall hinsetzen
+- Buzzer: weißes Glocken-Symbol statt Emoji; neuer Ton (helles „Ding-Dong“), Lautstärke in den Einstellungen wählbar (Aus/Leise/Mittel/Laut)
+- Ruft ein anderer Mitspieler Bingo oder gewinnt er, sehen alle einen großen Bingo-Bildschirm (schließt sich von selbst); Vibrieren dazu, am Handy einzeln abschaltbar (iPhones erlauben Websites kein Vibrieren)
+- iPad: Beim Öffnen der Einstellungen klappt die Sprachauswahl nicht mehr von selbst auf
+
 ## 4.13.6 – 11.10.2026
 - Spielleiter: Der Knopf „Countdown · 30 s“ ist jetzt auch auf Englisch, Französisch und Spanisch übersetzt
 - Tipps bei „Aus welchem Album?“: Fehlt das Album (z. B. CSV-Import ohne Album-Spalte), kommt kein sinnloser Tipp „beginnt mit ?“ mehr

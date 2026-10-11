@@ -50,7 +50,7 @@ function render() {
   // Unter der Platte: kleine, beschriftete Zusatzknöpfe passend zur Phase
   const acts = [];
   if (round && ph !== 'revealed') {
-    if (state.settings.hints) {
+    if (+state.settings.hintMax) {
       const left = hintsFor(round.cat, round.track).length - (round.hints || 0);
       acts.push(`<button class="pill-btn" data-act="hint" ${left > 0 ? '' : 'disabled'}>${ic('bulb')}${tx('Tipp')}${left > 0 ? ` · ${left}` : ''}</button>`);
     }
@@ -94,7 +94,7 @@ function discTap() {
   else Player.toggle();
   const dw = $('#discWrap');
   dw.classList.remove('tapped'); void dw.offsetWidth; dw.classList.add('tapped');
-  try { navigator.vibrate?.(10); } catch {}
+  vib(10);
 }
 // Tipps, die Mitspieler in der Lobby für diese Runde (round.id) abgegeben haben
 const guessesFor = id => lobbyList().filter(p => p.guess?.n === id && p.guess.t);
@@ -231,8 +231,8 @@ function renderSettings() {
   const s = state.settings;
   const r = $('#setSec'); r.value = s.seconds; fillRange(r); $('#secVal').textContent = s.seconds + ' s';
   $('#setStart').value = s.start; $('#setMode').value = s.mode;
-  $('#setBeep').checked = s.beep; $('#setBuzzSound').checked = s.buzzSound !== false; $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
-  $('#setLimit').value = String(s.limit || 0); $('#setHints').checked = s.hints; $('#setMb').checked = s.mb;
+  $('#setBeep').checked = s.beep; $('#setBuzzVol').value = String(s.buzzVol || 0); $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
+  $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setMb').checked = s.mb;
   renderThemes();
   $('#appVersion').textContent = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}`;
   const showDev = s.mode === 'connect' || Player.mode === 'connect';
@@ -519,6 +519,10 @@ $('#bingoStartSeg').onclick = e => {
   const b = e.target.closest('[data-start]'); if (!b) return;
   state.settings.start = b.dataset.start; saveSettings(); renderBingo();
 };
+$('#bingoHintSeg').onclick = e => {
+  const b = e.target.closest('[data-hints]'); if (!b) return;
+  setHintMax(+b.dataset.hints); renderBingo();
+};
 $('#bingoSizeSeg').onclick = e => {
   const b = e.target.closest('[data-size]'); if (!b) return;
   bingoSize = +b.dataset.size; renderBingo();
@@ -538,7 +542,9 @@ $('#btnBingoOff').onclick = async () => {
   goPage($('#sheetGame'), 'main', true);
 };
 $('#setLimit').onchange = e => { state.settings.limit = +e.target.value; saveSettings(); };
-$('#setHints').onchange = e => { state.settings.hints = e.target.checked; saveSettings(); };
+// Tipps pro Runde: gilt sofort, auch für die laufende Runde (Handys sehen, wie viele es noch gibt)
+const setHintMax = n => { state.settings.hintMax = n; saveSettings(); Lobby.syncRound(); };
+$('#setHints').onchange = e => setHintMax(+e.target.value);
 $('#setMb').onchange = e => { state.settings.mb = e.target.checked; saveSettings(); renderHist(); };
 const THEMES = [['graphit', 'Graphit', '#3a4252', '#1f3a32'], ['ozean', 'Ozean', '#0b4f75', '#0d6e66'], ['wald', 'Wald', '#1d5a3a', '#4c5b1a'], ['abend', 'Abend', '#7a2e1c', '#7d1f4a'], ['lila', 'Lila', '#4a22a0', '#8a1458']];
 function applyTheme() {
@@ -577,7 +583,7 @@ $('#setDevice').onchange = e => {
 };
 $('#btnDevRefresh').onclick = e => { e.preventDefault(); renderDevices(); };
 $('#setBeep').onchange = e => { state.settings.beep = e.target.checked; saveSettings(); };
-$('#setBuzzSound').onchange = e => { state.settings.buzzSound = e.target.checked; saveSettings(); if (e.target.checked) buzzSound(); };   // zum Probehören
+$('#setBuzzVol').onchange = e => { state.settings.buzzVol = +e.target.value; saveSettings(); buzzSound(); };   // zum Probehören
 $('#setAuto').onchange = e => { state.settings.autoReveal = e.target.checked; saveSettings(); };
 $('#setPause').onchange = e => { state.settings.pauseOnReveal = e.target.checked; saveSettings(); };
 

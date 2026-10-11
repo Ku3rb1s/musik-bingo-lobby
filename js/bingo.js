@@ -103,6 +103,7 @@ async function renderBingo() {
     $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
     document.querySelectorAll('#bingoSecSeg button').forEach(x => x.classList.toggle('on', +x.dataset.sec === +state.settings.seconds));
     document.querySelectorAll('#bingoStartSeg button').forEach(x => x.classList.toggle('on', x.dataset.start === state.settings.start));
+    document.querySelectorAll('#bingoHintSeg button').forEach(x => x.classList.toggle('on', +x.dataset.hints === +(state.settings.hintMax ?? 2)));
     document.querySelectorAll('#bingoGamesSeg button').forEach(x => x.classList.toggle('on', +x.dataset.games === (state.settings.games ?? 0)));
     document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
     // Alle Kategorien als Schalter: antippen = an/aus (gleiche Einstellung wie unter Einstellungen → Kategorien)
@@ -152,6 +153,7 @@ function renderRules() {
     code ? row('🔔', tx('Buzzer'), hasBuzz(b) ? tx('an') : tx('aus'), hasBuzz(b) ? tx('Mitspieler starten den Countdown') : '') : '',
     link('⏱️', tx('Countdown'), tx('{n} s', { n: state.settings.seconds }), 'rowSec'),
     link('▶️', tx('Startpunkt im Song'), tx(START[state.settings.start] || START.begin), 'rowStart'),
+    link('💡', tx('Tipps pro Runde'), +state.settings.hintMax ? String(state.settings.hintMax) : tx('keine'), 'rowHints'),
     `<div class="cell rule"><span class="rule-ic">⭐</span><span class="grow">${tx('Spielleiter')}<span class="sub">${plays ? tx('Du spielst mit eigener Karte mit') : tx('Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“')}</span></span>`
       + (plays ? `<span class="rule-v">${tx('spielt mit')}</span>` : `<button class="mini" data-host-join>${tx('Mitspielen')}</button>`) + '</div>',
   ].join('');
@@ -297,7 +299,7 @@ function confetti() {
   }
   // In ein offenes Menü einhängen – sonst läge das Konfetti dahinter
   (document.querySelector('dialog.sheet[open]') || document.body).appendChild(c); setTimeout(() => c.remove(), 4500);
-  try { navigator.vibrate?.([30, 40, 30]); } catch {}
+  vib([30, 40, 30]);
 }
 
 /* Eine Bingo-Karte anzeigen und markieren – für Mitspieler (über den QR-Code) und für den Spielleiter in der App.
@@ -333,9 +335,9 @@ function mountCard(b, el, onWin, sync = null) {
     const adding = !st.marks.includes(i);
     // Lobby: nur ein Feld der aktuellen Kategorie pro Runde – sonst kurz wackeln und erklären
     const no = sync?.guard?.(i, fields[i], adding);
-    if (no) { toast(no, 4000); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); try { navigator.vibrate?.([20, 40, 20]); } catch {} return; }
+    if (no) { toast(no, 4000); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); vib([20, 40, 20]); return; }
     st.marks = adding ? [...st.marks, i] : st.marks.filter(x => x !== i);
-    LS.set(key, st); try { navigator.vibrate?.(10); } catch {}
+    LS.set(key, st); vib(10);
     // Erst die Markierung speichern, dann zeichnen: draw() kann „Bingo!“ an den Server melden, und dessen
     // Echo darf die neue Markierung nicht mit dem alten Stand überschreiben
     sync?.onChange(st.marks, adding ? i : null, adding ? null : i); draw();
@@ -353,12 +355,26 @@ function mountCard(b, el, onWin, sync = null) {
   };
 }
 
+// Tipp-Feld wächst mit dem Text (mehrere Zeilen) – so bleibt alles sichtbar und der Cursor lässt sich überall hinsetzen
+function fitGuess(el) {
+  el.style.height = '';
+  if (el.scrollHeight > el.clientHeight + 1) el.style.height = el.scrollHeight + 10 + 'px';
+}
+// „Groß zeigen“: ohne Lobby großer Knopf neben dem Tipp, in der Lobby nur ein kleines Auge oben rechts
+// (die anderen sehen die Tipps dort ohnehin live)
+function placeEye(btn, small) {
+  const to = btn.closest('.guess-wrap').querySelector(small ? '.guess-head' : '.guess-row');
+  if (btn.parentElement !== to) to.appendChild(btn);
+  btn.classList.toggle('eye-mini', small);
+}
 /* Tipp-Zettel: Text eintippen und bei der Auflösung im Vollbild den anderen zeigen */
 function mountGuess(text, show, clear) {
   text.value = LS.get('guess', '');
-  text.oninput = () => LS.set('guess', text.value);
+  text.oninput = () => { LS.set('guess', text.value); fitGuess(text); };
+  text.onfocus = () => fitGuess(text);
   text.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); text.blur(); } };
-  clear.onclick = () => { text.value = ''; LS.set('guess', ''); text.focus(); };
+  clear.onclick = () => { text.value = ''; LS.set('guess', ''); fitGuess(text); text.focus(); };
+  requestAnimationFrame(() => fitGuess(text));
   show.onclick = () => {
     const v = text.value.trim();
     if (!v) { text.focus(); return toast(tx('Schreib zuerst deinen Tipp')); }

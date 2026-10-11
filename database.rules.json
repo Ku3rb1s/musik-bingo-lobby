@@ -39,6 +39,9 @@
             "guess": {
               ".validate": "newData.hasChildren(['t', 'n']) && newData.child('t').isString() && newData.child('t').val().length <= 80 && newData.child('n').isNumber()"
             },
+            "hr": {
+              ".validate": "newData.hasChildren(['n', 't']) && newData.child('n').isNumber() && newData.child('t').isNumber()"
+            },
             "bz": {
               ".validate": "newData.hasChildren(['n', 't']) && newData.child('n').isNumber() && newData.child('t').isNumber()"
             },

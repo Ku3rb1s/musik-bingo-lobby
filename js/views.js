@@ -57,6 +57,24 @@ function answerHtml(r) {
   return m ? `${esc(m[1])}<small>${esc(m[2])}</small>` : esc(a);
 }
 
+// Aufgedeckte Tipps der laufenden Runde (Handys und Fernseher)
+const hintsHtml = (r, cls = 'rl-hints') => r.ph !== 'r' && r.h?.length
+  ? `<div class="${cls}">${r.h.map(h => h.cover ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : `<span>💡 ${esc(hintText(h))}</span>`).join('')}</div>` : '';
+// Ein anderer Mitspieler hat Bingo: großer Bildschirm (schließt sich nach ein paar Sekunden von selbst)
+function showOtherWin(text, won = false) {
+  // Eigenes Bingo oder Spielende sind gerade offen → nur ein Hinweis
+  if (!$('#bingoWin').classList.contains('hidden') || !$('#endScreen').classList.contains('hidden')) return toast(text, 6000);
+  const el = $('#otherWin');
+  $('#owText').textContent = text;
+  el.classList.remove('hidden');
+  el.classList.toggle('won', won);
+  if (won) confetti();
+  vib(won ? [60, 50, 60, 50, 220] : [200, 90, 200]);
+  clearTimeout(showOtherWin.t);
+  showOtherWin.t = setTimeout(() => el.classList.add('hidden'), won ? 8000 : 6500);
+}
+$('#otherWin').onclick = () => $('#otherWin').classList.add('hidden');
+
 /* Karten-Ansicht für Mitspieler: läuft komplett auf deren Handy, ohne Spotify */
 function cardMode(param) {
   mountGuess($('#guessText'), $('#btnGuessShow'), $('#btnGuessClear'));
@@ -228,6 +246,12 @@ async function lobbyMode(code, autoName = null) {
     $('#joinBox').classList.add('hidden');
     $('#cardLive').classList.remove('hidden');
     $('#cardLobbyInfo').textContent = `Lobby ${code} · ${me.name}`;
+    // „Groß zeigen“ nur noch als kleines Auge oben rechts – auf seinem Platz sitzt der Tipp-Knopf
+    placeEye($('#btnGuessShow'), true);
+    // Vibrieren: an jedem Handy einzeln abschaltbar (nur wo das Handy es kann – iPhones erlauben es Websites nicht)
+    $('#vibeRow').classList.toggle('hidden', !('vibrate' in navigator));
+    $('#setVibe').checked = vibeOn();
+    $('#setVibe').onchange = e => { LS.set('vibe', e.target.checked); vib(40); };
     // Lobby von sich aus verlassen (Knopf auf dem Spielende-Bildschirm)
     leaveLobby = () => {
       leaving = true;
@@ -244,6 +268,7 @@ async function lobbyMode(code, autoName = null) {
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
     let lastPh = null, lastPhKey = null, buzzSent = null, buzzT = null;   // Runden-Box: Countdown-Start erkennen, Buzzer gedrückt
+    let hintSent = null, hintT = null, hintSeen = null;                  // Tipp-Knopf gedrückt, zuletzt gesehene Tipps { key, n }
     const cdEndOf = cdClock(); let roundSeen = false, cdEnd = 0;          // Countdown-Ende auf der eigenen Uhr
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const curMark = () => curRound && markable({ key: keyOf(curRound), ph: curRound.ph, i: curRound.i, q: curRound.q, pv: curRound.pv, old: curRound.old }, (i, q) => curB?.k.find(k => k.i === i)?.n || q);
@@ -338,8 +363,8 @@ async function lobbyMode(code, autoName = null) {
       allPlayers = s.val() || {};
       if (!firstPlayers) for (const [id, p] of Object.entries(allPlayers)) {
         if (id === f.uid || !p?.name) continue;
-        if (p.ok && !prev[id]?.ok) { toast(tx('🏆 {n} hat Bingo und gewinnt die Partie!', { n: p.name }), 7000); confetti(); }
-        else if (p.bingo && !prev[id]?.bingo) toast(tx('🎉 {n} ruft BINGO!', { n: p.name }), 6000);
+        if (p.ok && !prev[id]?.ok) showOtherWin(tx('🏆 {n} hat Bingo und gewinnt die Partie!', { n: p.name }), true);
+        else if (p.bingo && !prev[id]?.bingo) showOtherWin(tx('🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …', { n: p.name }));
       }
       firstPlayers = false;
       renderGuesses();
@@ -401,13 +426,22 @@ async function lobbyMode(code, autoName = null) {
         // Gespeicherter Tipp dieser Runde (nach „Rückgängig“ oder Neuladen) gehört ins Feld
         else if (mine?.t && mine.n === keyOf(r) && $('#guessText').value.trim() !== mine.t) { $('#guessText').value = mine.t; LS.set('guess', mine.t); }
         lastKey = keyOf(r);
+        fitGuess($('#guessText'));
       }
       // Karte: Felder hervorheben, die man gerade markieren darf
       // Countdown startet (Spielleiter oder Buzzer) → kurz vibrieren, damit es jeder merkt
-      if (r?.ph === 'c' && lastPh === 'p' && keyOf(r) === lastPhKey) { try { navigator.vibrate?.(60); } catch {} }
+      if (r?.ph === 'c' && lastPh === 'p' && keyOf(r) === lastPhKey) vib(60);
       // Spielleiter hat den Countdown rückgängig gemacht (Song läuft wieder) → Buzzer sofort wieder frei
       if (r?.ph === 'p' && lastPh === 'c' && keyOf(r) === lastPhKey) { buzzSent = null; clearTimeout(buzzT); }
       lastPh = r?.ph ?? null; lastPhKey = keyOf(r);
+      // Neuer Tipp (vom Spielleiter oder einem Mitspieler) → kommt oben als Hinweis bei allen an
+      const hn = r?.h?.length || 0;
+      if (r && hintSeen?.key === keyOf(r) && hn > hintSeen.n) {
+        const h = r.h[hn - 1];
+        toast((h.by ? tx('💡 Tipp von {n}:', { n: h.by }) : tx('💡 Tipp:')) + ' ' + (h.cover ? tx('Unscharfes Cover') : hintText(h)), 7000, null, h.cover || null);
+        vib(25);
+      }
+      hintSeen = r ? { key: keyOf(r), n: hn } : null;
       updMark();
       renderGuesses();
       drawRound();
@@ -426,18 +460,38 @@ async function lobbyMode(code, autoName = null) {
       box.classList.toggle('has-cover', !!cover);
       const side = cd ? `<div class="rl-timer" style="--c:${esc(r.c)}" role="timer"><b class="rl-cd"></b></div>`
         : cover ? `<img class="rl-cover" src="${esc(r.cv)}" alt="">`
-        : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">🔔<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
+        : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">${ic('bell')}<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
-        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
+        <div class="rl-n">${esc(tx(r.q))}</div>${hintsHtml(r)}${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
       if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
+      drawHintBtn();
     }
+    // Tipp-Knopf (neben dem Tipp-Feld): holt den nächsten Tipp für alle – der Spielleiter deckt ihn auf.
+    // Kommt nichts zurück (Spielleiter offline), wird er nach ein paar Sekunden wieder frei.
+    function drawHintBtn() {
+      const r = curRound, b = $('#btnHintReq'), hm = r?.hm || 0, got = r?.h?.length || 0;
+      const show = !!r && r.ph !== 'r' && hm > 0;
+      b.classList.toggle('hidden', !show);
+      if (!show) return;
+      const left = Math.max(0, hm - got), wait = hintSent === `${keyOf(r)}:${got}`;
+      b.disabled = !left || wait;
+      b.innerHTML = `${ic('bulb')}<span>${wait ? tx('Kommt …') : tx('Tipp')}<small>${left ? tx('noch {n}', { n: left }) : tx('keine mehr')}</small></span>`;
+    }
+    $('#btnHintReq').onclick = () => {
+      const r = curRound; if (!r || r.ph === 'r') return;
+      const k = `${keyOf(r)}:${r.h?.length || 0}`;
+      hintSent = k; drawHintBtn(); vib(15);
+      f.update(meRef, { hr: { n: keyOf(r), t: f.serverTimestamp() } }).catch(err => { hintSent = null; drawHintBtn(); toast(tx('Sync-Fehler: {e}', { e: err.message })); });
+      clearTimeout(hintT);
+      hintT = setTimeout(() => { if (hintSent === k) { hintSent = null; drawHintBtn(); } }, 6000);
+    };
     // Buzzer: Runde merken, der Spielleiter startet daraufhin den Countdown. Kommt nichts zurück (Spielleiter offline),
     // wird der Knopf nach ein paar Sekunden wieder frei.
     $('#roundLive').addEventListener('click', e => {
       if (!e.target.closest('.rl-buzz') || !curRound || curRound.ph !== 'p' || !hasBuzz(curB)) return;
       const k = keyOf(curRound);
       buzzSent = k; drawRound();
-      try { navigator.vibrate?.(30); } catch {}
+      vib(30);
       f.update(meRef, { bz: { n: k, t: f.serverTimestamp() } }).catch(err => { buzzSent = null; drawRound(); toast(tx('Sync-Fehler: {e}', { e: err.message })); });
       clearTimeout(buzzT);
       buzzT = setTimeout(() => { if (buzzSent === k) { buzzSent = null; if (curRound?.ph === 'p' && keyOf(curRound) === k) { drawRound(); toast(tx('Der Spielleiter hat (noch) nicht reagiert – nochmal versuchen?')); } } }, 6000);
@@ -520,9 +574,9 @@ async function tvMode(code) {
     }
     const tips = '<div class="tv-tips" id="tvTips"></div>';
     if (r.ph === 'c' && r.end) {
-      show(k + cat + `<div class="tv-ring" style="--c:${esc(r.c)}"><b id="tvCount"></b></div>` + buzz + tips);
+      show(k + cat + hintsHtml(r, 'tv-hints') + `<div class="tv-ring" style="--c:${esc(r.c)}"><b id="tvCount"></b></div>` + buzz + tips);
       cdIv = runRing(box.querySelector('.tv-ring'), $('#tvCount'), cdEnd, r.dur);
-    } else show(k + cat + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
+    } else show(k + cat + hintsHtml(r, 'tv-hints') + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
     drawTips();
   };
   // „💬 3 / 8 haben getippt“ unter dem Countdown bzw. dem laufenden Song
@@ -620,6 +674,7 @@ function renderMyCard() {
     return cardPicker($('#myPickBox'), b, new Set(lobbyList().map(p => +p.num)), num => Lobby.joinHost(num));
   }
   mountGuess($('#myGuessText'), $('#btnMyGuessShow'), $('#btnMyGuessClear'));
+  placeEye($('#btnMyGuessShow'), !!Lobby.code);
   let wonSent = null;
   const ctl = mountCard(b, { grid: $('#myCardGrid'), no: $('#myCardNo'), hits: $('#myCardHits'), legend: $('#myCardLegend'), clear: $('#btnMyCardClear') }, (num, initial) => {
     $('#myCardWin').classList.toggle('hidden', num == null);

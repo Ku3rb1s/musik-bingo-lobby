@@ -103,7 +103,7 @@ function spinCategory(final) {
     showCat(final); box.classList.remove('spin');
     box.classList.add('land'); setTimeout(() => box.classList.remove('land'), 550);
     beep(660, .15);
-    try { navigator.vibrate?.(15); } catch {}
+    vib(15);
   }, 1100);
 }
 
@@ -331,41 +331,76 @@ function artistLookup(t) {
 }
 
 /* ---------------- Tipps ---------------- */
+// Tipps einer Runde (höchstens „Tipps pro Runde“): { s: Satz, v: Werte } – Satz und Werte auf Deutsch, so kann jedes Handy
+// sie in seine Sprache übersetzen (hintText). Land: { s, cc } (Ländercode), unscharfes Cover: { cover }.
 function hintsFor(cat, t) {
-  const y = yearOf(t), dec = y ? decLabel(Math.floor(y / 10) * 10) : null;
-  const first = s => (baseTitle(s).replace(/^(the|die|der|das)\s+/i, '').match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase();
-  const words = baseTitle(t.title).split(/\s+/).filter(Boolean).length;
-  const part = y ? tx(['Anfang', 'Anfang', 'Anfang', 'Mitte', 'Mitte', 'Mitte', 'Mitte', 'Ende', 'Ende', 'Ende'][y % 10]) : null;
-  const H = (s, v) => tx(s, v);
-  const artist0 = t.artists.split(',')[0];
-  const cover = t.cover ? { cover: t.thumb || t.cover } : null;   // unscharfes Vorschaubild – klein reicht
-  const list = {
-    title: [H('Der Titel beginnt mit „{c}“', { c: first(t.title) }), H(words === 1 ? 'Der Titel hat {n} Wort' : 'Der Titel hat {n} Wörter', { n: words }), cover],
-    artist: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}n', { d: dec }), cover],
-    year: [dec && H('Erschienen in den {d}n', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
-    range: [dec && H('Erschienen in den {d}n', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
-    decade: [y && H(y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) })],
-    album: [t.album && H('Das Album beginnt mit „{c}“', { c: first(t.album) }), dec && H('Erschienen in den {d}n', { d: dec }), cover],
-    none: [dec && H('Erschienen in den {d}n', { d: dec }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), cover],
-    country: [artistFact(t, 'country') && H('Das Land beginnt mit „{c}“', { c: artistFact(t, 'country')[0] }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) })],
-    kind: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}n', { d: dec })],
-    gender: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}n', { d: dec })],
-  }[cat.answer] || [];
-  return list.filter(Boolean).slice(0, 2);   // immer (höchstens) 2 Tipps pro Runde
+  const max = +state.settings.hintMax || 0;
+  if (!max) return [];
+  return withLang('de', () => {
+    const y = yearOf(t), dec = y ? decLabel(Math.floor(y / 10) * 10) : null;
+    const first = s => (baseTitle(s).replace(/^(the|die|der|das)\s+/i, '').match(/[\p{L}\p{N}]/u) || ['?'])[0].toUpperCase();
+    const words = baseTitle(t.title).split(/\s+/).filter(Boolean).length;
+    const part = y ? ['Anfang', 'Anfang', 'Anfang', 'Mitte', 'Mitte', 'Mitte', 'Mitte', 'Ende', 'Ende', 'Ende'][y % 10] : null;
+    const H = (s, v) => ({ s, v });
+    const artist0 = t.artists.split(',')[0];
+    const cover = t.cover ? { cover: t.thumb || t.cover } : null;   // unscharfes Vorschaubild – klein reicht
+    const decH = dec && H('Erschienen in den {d}n', { d: dec }), artH = H('Der Interpret beginnt mit „{c}“', { c: first(artist0) });
+    const cc = artistCountry(t);
+    const list = {
+      title: [H('Der Titel beginnt mit „{c}“', { c: first(t.title) }), H(words === 1 ? 'Der Titel hat {n} Wort' : 'Der Titel hat {n} Wörter', { n: words }), cover],
+      artist: [artH, decH, cover],
+      year: [decH, part && H('{p} der {d}', { p: part, d: dec }), artH],
+      range: [decH, part && H('{p} der {d}', { p: part, d: dec }), artH],
+      decade: [y && H(y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), artH, H('Der Titel beginnt mit „{c}“', { c: first(t.title) })],
+      album: [t.album && H('Das Album beginnt mit „{c}“', { c: first(t.album) }), decH, cover],
+      none: [decH, artH, cover],
+      country: [cc && { s: 'Das Land beginnt mit „{c}“', cc }, artH, cover],
+      kind: [artH, decH, cover],
+      gender: [artH, decH, cover],
+    }[cat.answer] || [];
+    return list.filter(Boolean).slice(0, max);
+  });
 }
+// Werte eines Tipps übersetzen: feste Wörter („Anfang“), Jahrzehnte („80er“), Land über den Code
+const locPart = p => {
+  let m;
+  if (hasTx(p)) return tx(p);
+  if ((m = p.match(/^(\d{2,4})er$/))) return tx('{d}er', { d: m[1] });
+  return p;
+};
+function hintText(h) {
+  const v = Object.fromEntries(Object.entries(h.v || {}).map(([k, x]) => [k, locPart(String(x))]));
+  if (h.cc) v.c = (regionName(h.cc) || '?')[0].toUpperCase();
+  return tx(h.s, v);
+}
+const hintHtml = h => h.cover ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : `<div class="hint-item">${ic('bulb')}${esc(hintText(h))}</div>`;
 function renderHints() {
   const box = $('#hintBox');
   const show = round && round.hints && round.phase !== 'revealed';
   box.classList.toggle('hidden', !show);
   if (!show) return;
-  box.innerHTML = hintsFor(round.cat, round.track).slice(0, round.hints).map(h =>
-    h.cover ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : `<div class="hint-item">${ic('bulb')}${esc(h)}</div>`).join('');
+  box.innerHTML = hintsFor(round.cat, round.track).slice(0, round.hints).map(hintHtml).join('');
 }
-function giveHint() {
-  if (!round || round.phase === 'revealed') return;
+// Nächsten Tipp aufdecken – vom Spielleiter oder auf Wunsch eines Mitspielers (by = Name). Alle Handys und der Fernseher
+// bekommen ihn mit der Runde (Lobby.syncRound).
+function giveHint(by = null) {
+  if (!round || round.phase === 'revealed') return false;
   const max = hintsFor(round.cat, round.track).length;
-  if ((round.hints || 0) >= max) return toast(tx('Keine weiteren Tipps'));
+  if ((round.hints || 0) >= max) { if (!by) toast(max ? tx('Keine weiteren Tipps') : tx('Tipps sind ausgeschaltet (Einstellungen → Tipps pro Runde)')); return false; }
+  round.hintBy ??= [];
+  round.hintBy[round.hints || 0] = by || '';
   round.hints = (round.hints || 0) + 1;
   beep(990, .1);
-  render();
+  render(); Lobby.syncRound();
+  if (by) toast(tx('💡 {n} hat einen Tipp geholt', { n: by }), 4000);
+  return true;
+}
+// Mitspieler wünschen sich einen Tipp (Knopf am Handy). Mehrere Wünsche gleichzeitig ergeben nur einen Tipp;
+// round.hrT merkt sich den zuletzt verarbeiteten Wunsch.
+function checkHintReq() {
+  if (!Lobby.code || !round || round.phase === 'revealed') return;
+  const reqs = lobbyList().filter(p => p.hr?.n === round.id && p.hr.t > (round.hrT || 0) && p.id !== Lobby.uid).sort((a, b) => a.hr.t - b.hr.t);
+  if (!reqs.length) return;
+  round.hrT = reqs.at(-1).hr.t;
+  giveHint(reqs[0].name);
 }

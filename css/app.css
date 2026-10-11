@@ -937,3 +937,26 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .round-live .rl-cover{flex:none;width:62px;height:62px;border-radius:12px;object-fit:cover;box-shadow:0 6px 16px -6px #000}
 .round-live.has-cover .rl-ic{display:none}
 .round-live .rl-a small{display:inline;margin-left:.35em}
+/* 4.14.0: Tipps für alle, kleines Auge, Buzzer-Icon, Bingo der anderen, Vibrieren */
+.guess-head .guess-big.eye-mini{width:auto;height:30px;padding:0 10px;flex-direction:row;background:rgba(255,255,255,.08);border:1px solid var(--g-brd);
+  box-shadow:none;color:var(--muted);border-radius:99px}
+.guess-big.eye-mini span{display:none}
+.guess-big.eye-mini .ic{width:18px;height:18px}
+.guess-big.hint-req{background:linear-gradient(135deg,#ffb020,#ff8a3d);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 20px -10px #ff8a3d}
+.guess-big.hint-req span{display:flex;flex-direction:column;gap:2px;font-weight:800;font-size:.8rem}
+.guess-big.hint-req small{font-size:.62rem;font-weight:600;opacity:.92}
+.guess-big:disabled{opacity:.5;box-shadow:none}
+.guess-row .guess-input{transition:height .15s}
+.round-live .rl-hints{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:6px}
+.round-live .rl-hints span{font-size:.78rem;font-weight:600;color:#ffd27a;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.3);border-radius:99px;padding:.15em .6em}
+.round-live .rl-hints img{width:30px;height:30px;border-radius:7px;object-fit:cover;filter:blur(3px)}
+.rl-buzz .ic{width:25px;height:25px;stroke-width:2.2}
+#toastImg{width:44px;height:44px;border-radius:10px;object-fit:cover;filter:blur(6px) saturate(1.2);flex:none}
+.tv-hints{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:calc(var(--u) * .6);margin-top:calc(var(--u) * .9)}
+.tv-hints span{font-size:calc(var(--u) * 1.5);font-weight:700;color:#ffd27a;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.35);border-radius:99px;padding:.2em .8em}
+.tv-hints img{width:calc(var(--u) * 5);height:calc(var(--u) * 5);border-radius:calc(var(--u) * .6);object-fit:cover;filter:blur(calc(var(--u) * .5))}
+.other-win{cursor:pointer}
+.other-win p{max-width:420px;margin-left:auto;margin-right:auto}
+.vibe-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:.85rem;font-weight:600}
+.vibe-row small{display:block;font-weight:500;color:var(--muted);font-size:.75rem}
+.nav-title:focus{outline:none}
