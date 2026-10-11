@@ -117,12 +117,13 @@ main{max-width:960px;margin:0 auto;padding:0 16px 40px}
 .disc-wrap.counting svg.ring-svg{opacity:1}
 .ring-svg circle{fill:none;stroke-width:5}
 .ring-svg .trk{stroke:rgba(255,255,255,.07)}
-/* Ring + Schein: zweiter, breiter Ring mit wenig Deckkraft statt drop-shadow-Filter (der malte in Chrome ein dunkles
-   Quadrat vor das Milchglas und kostete bei jeder Aktualisierung Rechenleistung). Fortschritt über --len/--off. */
+/* Ring + Schein: weichgezeichnete Kopie des Rings direkt in der Grafik (SVG-Filter) statt CSS drop-shadow – der malte
+   in Chrome ein dunkles Quadrat vor das Milchglas. overflow:visible, damit der Schein am Rand nicht abgeschnitten wird.
+   Fortschritt über --len/--off (gilt für Ring und Schein). */
+.disc-wrap svg.ring-svg{overflow:visible}
 .ring-svg .ring,.ring-svg .ring-glow{stroke:var(--cat);stroke-linecap:round;stroke-dasharray:var(--len,0);stroke-dashoffset:var(--off,0)}
-.ring-svg .ring-glow{stroke-width:11;opacity:.22}
+.ring-svg .ring-glow{stroke-width:6;opacity:.85}
 .disc-wrap.urgent .ring,.disc-wrap.urgent .ring-glow{stroke:var(--danger)}
-.disc-wrap.urgent .ring-glow{opacity:.32}
 .disc{position:absolute;inset:9%;border-radius:50%;
   background:
     radial-gradient(circle,transparent 0 31%,rgba(255,255,255,.05) 31.5% 32%,transparent 32.5% 40%,rgba(255,255,255,.04) 40.5% 41%,transparent 41.5% 52%,rgba(255,255,255,.05) 52.5% 53%,transparent 53.5% 66%,rgba(255,255,255,.04) 66.5% 67%,transparent 67.5%),

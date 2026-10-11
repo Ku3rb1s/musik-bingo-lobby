@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.5 – 11.10.2026
+- Countdown-Ring: Leuchten wieder weich (weichgezeichnete Kopie direkt in der Grafik) statt eines harten, breiten Streifens, der zudem am Rand abgeschnitten wurde – ohne das dunkle Quadrat von früher
+
 ## 4.12.4 – 11.10.2026
 - Hinweise blieben manchmal für immer stehen: Lief die App beim Erscheinen im Hintergrund (z. B. kurz zu Spotify gewechselt), wurde der Hinweis erst nach dem Ausblenden eingeblendet
 - Countdown-Ring (Spielleiter): dunkles Quadrat hinter dem Ring entfernt – der Leuchteffekt ist jetzt ein zweiter, weicher Ring statt eines Filters (auch sparsamer)
