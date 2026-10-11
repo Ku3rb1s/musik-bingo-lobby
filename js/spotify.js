@@ -177,14 +177,15 @@ async function loadPlaylist(id) {
     return false;
   } finally {
     loadingPl.delete(id); renderMyPlaylists(); renderLib();
-    btn.disabled = false; btn.textContent = 'Laden';
+    btn.disabled = false; btn.querySelector('.loader')?.remove();
   }
 }
 async function addFromLink() {
   const id = parsePlaylistId($('#plUrl').value);
   if (!id) return toast(tx('Das sieht nicht nach einem Playlist-Link aus'));
   $('#plUrl').blur();
-  const btn = $('#btnLoadPl'); btn.disabled = true; btn.innerHTML = '<span class="loader"></span>';
+  // Ladekreis vor den Text (der Text bleibt – so stimmt er auch nach einem Sprachwechsel)
+  const btn = $('#btnLoadPl'); btn.disabled = true; if (!btn.querySelector('.loader')) btn.insertAdjacentHTML('afterbegin', '<span class="loader"></span>');
   if (await loadPlaylist(id)) $('#plUrl').value = '';
 }
 

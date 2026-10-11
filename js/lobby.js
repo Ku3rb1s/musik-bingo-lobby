@@ -227,7 +227,7 @@ function checkLobbyPlayer(id) {
   renderCheckWho(); checkCard();
 }
 const lobbyList = () => Object.entries(Lobby.players).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }))
-  .sort((a, b) => (!!b.bingo - !!a.bingo) || (b.marks?.length || 0) - (a.marks?.length || 0) || String(a.name).localeCompare(b.name));
+  .sort((a, b) => (!!b.bingo - !!a.bingo) || marksOf(b) - marksOf(a) || String(a.name).localeCompare(b.name));
 const marksOf = p => p.g === state.bingo?.g ? (p.marks || []).length : 0;
 function renderLobby() {
   const list = lobbyList(), b = state.bingo, code = Lobby.code;

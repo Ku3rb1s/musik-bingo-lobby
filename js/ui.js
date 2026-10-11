@@ -415,6 +415,7 @@ $('#csvFile').onchange = async e => { const f = e.target.files[0]; if (f) import
 function resetGame() {
   $('#endScreen').classList.add('hidden');
   state.played = []; state.history = []; LS.set('played', []); LS.set('history', []); state.lastRev = null; LS.del('lastRev');
+  state.partieFrom = 0; LS.set('partieFrom', 0);   // Verlauf beginnt neu → Bingo-Prüfung zählt wieder ab Runde 1
   round = null; stopTimer(); clearTimeout(snippetT); renderAll();
   Lobby.syncRound(); Lobby.clearMarks();
   if (state.match) { newMatch(state.match.total); saveMatch(); }

@@ -60,9 +60,11 @@ function createBingo() {
   if (cats.length < 2) return toast(tx('Für Bingo braucht es mindestens 2 aktive Kategorien (Einstellungen → Kategorien).'), 6000);
   state.bingo = { g: randStr(6), s: bingoSize, ...(state.settings.joker && bingoSize % 2 ? { f: 1 } : {}), k: cats.map(c => { const [e, col] = catStyle(c); return { i: c.id, c: col.slice(1), e, n: shortCat(c) }; }) };
   LS.set('bingo', state.bingo);
+  // Neue Karten: für die Prüfung zählen nur Runden ab jetzt (frühere Runden konnte niemand auf dieser Karte markieren)
+  state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   renderLobby(); renderMyCardBtn();
   // Lobby: bestehende bekommt die neuen Karten (alle Handys wechseln automatisch), sonst eine neue öffnen
-  if (Lobby.code) Lobby.setBingo(state.bingo);
+  if (Lobby.code) { Lobby.setBingo(state.bingo); Lobby.syncRound(); }
   else if (hasFirebase() && state.settings.lobby !== false) {
     Lobby.opening = true;
     Lobby.open(state.bingo)

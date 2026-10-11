@@ -44,7 +44,8 @@ async function nextRound() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (reshuffled) toast(tx('Alle Songs wurden gespielt – die Liste wird neu gemischt'));
   // Rückgängig nur beim Überspringen (Song lief noch, Runde war nicht aufgelöst)
-  else if (prev && prev.round.phase !== 'revealed') toast(tx('Song übersprungen'), 5000, { label: tx('Rückgängig'), fn: () => undoNext(prev) });
+  // (und nur, solange die neue Runde noch läuft – wurde sie schon aufgelöst, steht sie im Verlauf)
+  else if (prev && prev.round.phase !== 'revealed') { const cur = round; toast(tx('Song übersprungen'), 5000, { label: tx('Rückgängig'), fn: () => { if (round === cur && cur.phase !== 'revealed') undoNext(prev); } }); }
   await playSnippet();
 }
 // Zurück zur vorherigen Runde (versehentlich „Nächster Song“ oder „Überspringen“ getippt)

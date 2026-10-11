@@ -2,6 +2,13 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.6 – 11.10.2026
+- Bingo-Prüfung ohne Lobby: Nach „Neues Spiel“ zählte die Prüfung die neuen Runden unter Umständen nicht (alter Partie-Beginn blieb gespeichert) → „Noch kein Bingo möglich“, obwohl genug gespielt war. Neues Spiel beginnt jetzt wieder bei Runde 1.
+- Neue Bingo-Karten: Die Prüfung zählt nur Runden ab dem Erstellen der Karten (vorher konnten ältere Runden ein Bingo „möglich“ machen); die Handys erfahren das sofort
+- „Rückgängig“ nach dem Überspringen: Wurde die neue Runde in den 5 Sekunden schon aufgelöst, sprang „Rückgängig“ trotzdem zurück und brachte Verlauf und Markier-Regeln durcheinander – geht jetzt nur, solange die neue Runde noch läuft
+- Mitspieler-Liste: Sortierung nach gültigen Markierungen (Markierungen einer alten Karte zählen nicht mehr mit)
+- Playlist-Link laden: Der Knopf hieß danach immer „Laden“ (auch auf Englisch/Französisch/Spanisch)
+
 ## 4.9.5 – 11.10.2026
 - Fernseher: Mitspieler wieder in einer Spalte; passen nicht alle auf den Bildschirm, läuft die Liste langsam endlos nach oben (weicher Rand oben/unten). Neue Tipps lassen die Liste nicht zurückspringen.
 
