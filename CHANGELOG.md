@@ -2,6 +2,16 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.10.1 – 11.10.2026
+- 🔔 Buzzer-Ton (Einstellungen, abschaltbar): Buzzert ein Mitspieler, kommt beim Spielleiter ein Quizshow-Buzzer statt eines Pieps; beim Einschalten zum Probehören
+- Fernseher überarbeitet:
+  - Passt immer auf den Bildschirm (Größen richten sich nach Breite und Höhe) – vorher wurde bei der Auflösung der Song unten abgeschnitten
+  - Auflösung: Cover links, Lösung groß rechts, darunter Titel, Interpret und Jahr (lange Titel werden gekürzt)
+  - Countdown als großer Ring wie auf den Handys, die letzten 5 Sekunden rot; wer gebuzzert hat, steht groß darunter
+  - „💬 3 / 8 haben getippt“ während der Song läuft
+  - Große Einblendungen: „🎉 BINGO! – Name ruft Bingo“, „🏆 Name gewinnt die Partie!“ (mit Konfetti), „Partie 2 von 3 – neue Partie“
+  - Während des Spiels ist der QR-Code kleiner – mehr Platz für Mitspieler und Tipps
+
 ## 4.10.0 – 11.10.2026
 - Neu: 🔔 Buzzer für Mitspieler (Bingo einrichten → Lobby, vor dem Erstellen der Karten einstellen). Solange der Song läuft, hat jedes Handy oben in der Runden-Box einen Buzzer-Knopf – wer die Antwort weiß, drückt ihn und startet den Countdown für alle. Es zählt der Erste. Der Spielleiter sieht „🔔 Name“ oben und einen Hinweis, Handys und Fernseher zeigen den Namen ebenfalls. Nach „Rückgängig“ kann erneut gebuzzert werden. Reagiert der Spielleiter nicht (App zu), wird der Knopf nach 6 s wieder frei.
 - Countdown bei den Mitspielern gut sichtbar: großer Ring mit Sekunden rechts in der Runden-Box (am selben Platz wie der Buzzer – nichts Zusätzliches auf dem Bildschirm), die letzten 5 Sekunden rot, kurzes Vibrieren beim Start

@@ -196,7 +196,7 @@ function renderSettings() {
   const s = state.settings;
   const r = $('#setSec'); r.value = s.seconds; fillRange(r); $('#secVal').textContent = s.seconds + ' s';
   $('#setStart').value = s.start; $('#setMode').value = s.mode;
-  $('#setBeep').checked = s.beep; $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
+  $('#setBeep').checked = s.beep; $('#setBuzzSound').checked = s.buzzSound !== false; $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
   $('#setLimit').value = String(s.limit || 0); $('#setHints').checked = s.hints; $('#setMb').checked = s.mb;
   renderThemes();
   $('#appVersion').textContent = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}`;
@@ -517,6 +517,7 @@ $('#setDevice').onchange = e => {
 };
 $('#btnDevRefresh').onclick = e => { e.preventDefault(); renderDevices(); };
 $('#setBeep').onchange = e => { state.settings.beep = e.target.checked; saveSettings(); };
+$('#setBuzzSound').onchange = e => { state.settings.buzzSound = e.target.checked; saveSettings(); if (e.target.checked) buzzSound(); };   // zum Probehören
 $('#setAuto').onchange = e => { state.settings.autoReveal = e.target.checked; saveSettings(); };
 $('#setPause').onchange = e => { state.settings.pauseOnReveal = e.target.checked; saveSettings(); };
 

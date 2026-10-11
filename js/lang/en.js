@@ -515,5 +515,12 @@
     "Gesendet": "Sent",
     "Buzzer": "Buzzer",
     "Der Spielleiter hat (noch) nicht reagiert – nochmal versuchen?": "The host hasn't reacted (yet) – try again?",
+    "🔔 {n} hat gebuzzert!": "🔔 {n} buzzed!",
+    "💬 {a} / {b} haben getippt": "💬 {a} / {b} have guessed",
+    "{n} gewinnt die Partie!": "{n} wins the game!",
+    "{n} ruft Bingo – der Spielleiter prüft die Karte": "{n} calls bingo – the host is checking the card",
+    "Neue Partie – Markierungen sind gelöscht": "New game – marks have been cleared",
+    "🔔 Buzzer-Ton": "🔔 Buzzer sound",
+    "Wenn ein Mitspieler buzzert": "When a player buzzes",
   },
 };

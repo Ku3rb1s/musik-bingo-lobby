@@ -515,5 +515,12 @@
     "Gesendet": "Envoyé",
     "Buzzer": "Buzzer",
     "Der Spielleiter hat (noch) nicht reagiert – nochmal versuchen?": "L’animateur n’a pas (encore) réagi – réessayer ?",
+    "🔔 {n} hat gebuzzert!": "🔔 {n} a buzzé !",
+    "💬 {a} / {b} haben getippt": "💬 {a} / {b} ont répondu",
+    "{n} gewinnt die Partie!": "{n} gagne la partie !",
+    "{n} ruft Bingo – der Spielleiter prüft die Karte": "{n} crie bingo – l’animateur vérifie la carte",
+    "Neue Partie – Markierungen sind gelöscht": "Nouvelle partie – les marques sont effacées",
+    "🔔 Buzzer-Ton": "🔔 Son du buzzer",
+    "Wenn ein Mitspieler buzzert": "Quand un joueur buzze",
   },
 };

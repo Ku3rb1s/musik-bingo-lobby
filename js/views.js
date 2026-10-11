@@ -457,19 +457,54 @@ async function tvMode(code) {
   const base = `lobbies/${code}`;
   let r = null, players = {}, match = null, cdIv = null, ended = false;
   const key = x => x ? x.id ?? x.n : null;
+  // Hauptfläche: Warten → Song läuft → Countdown (Ring, wer gebuzzert hat) → Auflösung (Cover links, Lösung rechts).
+  // Alle Größen richten sich nach Breite UND Höhe (--u in app.css) – auf einem Fernseher kann niemand scrollen.
   const draw = () => {
     clearInterval(cdIv); cdIv = null;
+    const box = $('#tvRound');
+    box.className = 'tv-round glass' + (r && !ended ? ' ph-' + r.ph : '');
+    $('#tvApp').classList.toggle('playing', !!r && !ended);   // während des Spiels: QR-Code kleiner, mehr Platz für die Liste
     if (ended) return show(`<div class="tv-idle">${tx('Das Bingo wurde beendet.')}</div>`);
     if (!r) return show(`<div class="tv-idle">${tx('Gleich geht’s los …')}</div><div class="tv-k">${tx('Jetzt beitreten – QR-Code scannen')}</div>`);
-    const head = `<div class="tv-k">${tx('Runde {n}', { n: esc(r.n) })}${r.bz ? ` · 🔔 ${esc(r.bz)}` : ''}</div><div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span>${esc(tx(r.q))}</div>`;
-    if (r.ph === 'r') return show(head + (r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '') +
-      `<div class="tv-answer">${esc(locAnswer(r))}</div><div class="tv-song">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>`);
-    if (r.ph === 'c' && r.end) {
-      const tick = () => { const sec = Math.max(0, Math.ceil((r.end - Date.now()) / 1000)); const el = $('#tvCount'); if (el) el.textContent = sec; if (!sec) { clearInterval(cdIv); cdIv = null; } };
-      show(head + '<div class="tv-count" id="tvCount"></div>'); tick(); cdIv = setInterval(tick, 250); return;
+    const k = `<div class="tv-k">${tx('Runde {n}', { n: esc(r.n) })}</div>`;
+    const cat = `<div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span><span>${esc(tx(r.q))}</span></div>`;
+    const buzz = r.bz ? `<div class="tv-buzz">${tx('🔔 {n} hat gebuzzert!', { n: esc(r.bz) })}</div>` : '';
+    if (r.ph === 'r') {
+      const title = r.ti ?? r.s, artist = r.ar ?? '';
+      return show(k + cat + `<div class="tv-rev">${r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '<div class="tv-cover tv-nocover">♪</div>'}
+        <div class="tv-rev-t"><div class="tv-answer">${esc(locAnswer(r))}</div><div class="tv-title">${esc(title)}</div>
+        <div class="tv-artist"><span>${esc(artist)}</span>${r.y ? `<span class="rv-year">${artist ? '· ' : ''}${esc(r.y)}</span>` : ''}</div></div></div>` + buzz);
     }
-    show(head + `<div class="tv-k">${tx('♪ Hört genau hin …')}</div>`);
+    const tips = '<div class="tv-tips" id="tvTips"></div>';
+    if (r.ph === 'c' && r.end) {
+      const total = r.dur || 30000;
+      show(k + cat + `<div class="tv-ring" style="--c:${esc(r.c)}"><b id="tvCount"></b></div>` + buzz + tips);
+      const ring = box.querySelector('.tv-ring'), el = $('#tvCount');
+      const tick = () => {
+        const rem = Math.max(0, r.end - Date.now()), sec = Math.ceil(rem / 1000);
+        el.textContent = sec; ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3)); ring.classList.toggle('urgent', sec <= 5);
+        if (!rem) { clearInterval(cdIv); cdIv = null; }
+      };
+      tick(); cdIv = setInterval(tick, 250);
+    } else show(k + cat + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
+    drawTips();
   };
+  // „💬 3 / 8 haben getippt“ unter dem Countdown bzw. dem laufenden Song
+  const drawTips = () => {
+    const el = $('#tvTips'); if (!el || !r) return;
+    const list = Object.values(players).filter(p => p?.name);
+    const n = list.filter(p => p.guess?.n === key(r) && p.guess.t).length;
+    el.textContent = list.length ? tx('💬 {a} / {b} haben getippt', { a: n, b: list.length }) : '';
+  };
+  // Große Einblendung für Ereignisse, die alle sehen sollen (Bingo-Ruf, Sieg, neue Partie)
+  let bannerT = null;
+  const banner = (html, ms = 7000, party = false) => {
+    const b = $('#tvBanner');
+    b.innerHTML = html; b.classList.remove('hidden'); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    if (party) confetti();
+    clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.add('hidden'), ms);
+  };
+  let firstPlayers = true, lastGame = null;
   const drawSide = () => {
     const list = Object.entries(players).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
     const done = p => r && p.guess?.n === key(r) && p.guess.t;
@@ -493,9 +528,21 @@ async function tvMode(code) {
   };
   addEventListener('resize', () => drawSide());
   f.onValue(f.at(`${base}/round`), s => { r = s.val(); draw(); drawSide(); });
-  f.onValue(f.at(`${base}/players`), s => { players = s.val() || {}; drawSide(); });
+  f.onValue(f.at(`${base}/players`), s => {
+    const prev = players;
+    players = s.val() || {};
+    if (!firstPlayers) for (const [id, p] of Object.entries(players)) {
+      if (!p?.name) continue;
+      if (p.ok && !prev[id]?.ok) banner(`<div class="tv-b-big">🏆</div><div>${tx('{n} gewinnt die Partie!', { n: esc(p.name) })}</div>`, 9000, true);
+      else if (p.bingo && !prev[id]?.bingo) banner(`<div class="tv-b-big">🎉 <b>BINGO!</b></div><div>${tx('{n} ruft Bingo – der Spielleiter prüft die Karte', { n: esc(p.name) })}</div>`, 8000);
+    }
+    firstPlayers = false;
+    drawSide(); drawTips();
+  });
   f.onValue(f.at(`${base}/match`), s => {
     match = s.val(); if (match) { match.wins ??= {}; match.names ??= {}; match.won ??= []; match.tips ??= {}; }
+    if (match && lastGame !== null && match.game > lastGame && !match.over) banner(`<div class="tv-b-big"><b>${esc(partieName(match))}</b></div><div>${tx('Neue Partie – Markierungen sind gelöscht')}</div>`, 6000);
+    if (match) lastGame = match.game;
     drawSide();
     if (match?.over) showEnd(match, ''); else $('#endScreen').classList.add('hidden');
   });

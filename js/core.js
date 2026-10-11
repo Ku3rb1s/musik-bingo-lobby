@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.10.0', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.10.1', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -95,7 +95,7 @@ const state = {
   sources: LS.get('sources', []),
   played: LS.get('played', []),
   cats: LS.get('cats', null) || structuredClone(DEFAULT_CATS),
-  settings: Object.assign({ seconds: 30, start: 'begin', beep: true, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
+  settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzSound: true, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
     limit: 0, hints: true, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
   bingo: LS.get('bingo', null)?.k ? LS.get('bingo', null) : null,   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
   lobby: LS.get('lobby', null),     // Code der eigenen Lobby (Firebase), solange Bingo läuft
@@ -242,6 +242,18 @@ function beep(freq = 880, dur = .15, vol = .2) {
     g.gain.setValueAtTime(vol, actx.currentTime);
     g.gain.exponentialRampToValueAtTime(.001, actx.currentTime + dur);
     o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
+  } catch {}
+}
+// Buzzer-Ton wie in einer Quizshow: zwei leicht verstimmte, raue Töne, ca. 0,7 s (unabhängig von „Töne beim Countdown“)
+function buzzSound() {
+  if (state.settings.buzzSound === false) return;
+  try {
+    actx = actx || new AudioContext(); actx.resume?.();
+    const t = actx.currentTime, g = actx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.22, t + .02);
+    g.gain.setValueAtTime(.22, t + .5); g.gain.exponentialRampToValueAtTime(.001, t + .75);
+    g.connect(actx.destination);
+    for (const f of [138, 146]) { const o = actx.createOscillator(); o.type = 'square'; o.frequency.value = f; o.connect(g); o.start(t); o.stop(t + .76); }
   } catch {}
 }
 function fillRange(el) { el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); }

@@ -136,6 +136,7 @@ function checkBuzz() {
   const p = lobbyList().filter(p => p.bz?.n === round.id && p.bz.t > (round.bzT || 0) && p.id !== Lobby.uid).sort((a, b) => a.bz.t - b.bz.t)[0];
   if (!p) return;
   round.bzT = p.bz.t;
+  buzzSound();
   startCountdown(p.name);
   toast(tx('🔔 {n} hat gebuzzert – der Countdown läuft', { n: p.name }), 5000);
 }

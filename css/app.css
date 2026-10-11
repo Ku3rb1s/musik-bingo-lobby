@@ -803,3 +803,59 @@ html.ios .volume,html.ios .hint{display:none}
 .round-meta .buzz-by{background:linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .round-live .rl-by{display:inline-block;max-width:100%;vertical-align:bottom;text-transform:none;letter-spacing:0;font-weight:800;color:#ff8a5c;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ---------- Fernseher (4.10.1): alles passt immer auf den Bildschirm ---------- */
+/* --u: 1 % der Breite, aber nie mehr, als die Höhe hergibt (16:9 → 1vw ≈ 1.78vh) */
+#tvApp{--u:min(1vw,1.78vh);gap:calc(var(--u) * 3);padding:calc(var(--u) * 3);align-items:stretch;grid-template-rows:minmax(0,1fr)}
+.tv-main{display:flex;flex-direction:column;min-height:0;min-width:0}
+.tv-top{margin-bottom:calc(var(--u) * 1.6)}
+.tv-top .logo{font-size:calc(var(--u) * 2)}
+.tv-top .logo img{width:calc(var(--u) * 3);height:calc(var(--u) * 3)}
+.tv-top .pill{font-size:calc(var(--u) * 1.3)}
+.tv-round{flex:1;min-height:0;overflow:hidden;padding:calc(var(--u) * 3);gap:calc(var(--u) * 1.4)}
+.tv-k{font-size:calc(var(--u) * 1.4)}
+.tv-idle{font-size:calc(var(--u) * 3)}
+.tv-cat{font-size:calc(var(--u) * 4.4);display:flex;flex-direction:column;align-items:center}
+.tv-cat .tv-ic{font-size:calc(var(--u) * 5.5);margin-bottom:calc(var(--u) * .6)}
+.tv-listen{font-size:calc(var(--u) * 2);color:var(--muted);font-weight:700}
+.tv-tips{font-size:calc(var(--u) * 1.6);color:var(--muted);font-weight:700;min-height:1.2em}
+/* Countdown: Ring wie auf den Handys */
+.tv-ring{--c:var(--accent);--p:1;position:relative;width:calc(var(--u) * 20);height:calc(var(--u) * 20);margin:0 auto;display:grid;place-items:center;flex:none}
+.tv-ring::before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p) * 1turn),rgba(255,255,255,.1) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - calc(var(--u) * 1.3)),#000 calc(100% - calc(var(--u) * 1.2)));mask:radial-gradient(farthest-side,transparent calc(100% - calc(var(--u) * 1.3)),#000 calc(100% - calc(var(--u) * 1.2)))}
+.tv-ring b{font-size:calc(var(--u) * 8);font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.tv-ring.urgent::before{background:conic-gradient(var(--danger) calc(var(--p) * 1turn),rgba(255,255,255,.1) 0)}
+.tv-ring.urgent b{color:var(--danger)}
+.tv-buzz{align-self:center;max-width:100%;background:linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;font-weight:900;font-size:calc(var(--u) * 2.2);
+  padding:.35em 1em;border-radius:99px;box-shadow:0 1vh 3vh -1vh #ff3878;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:pop .45s cubic-bezier(.3,1.4,.5,1)}
+/* Countdown & Auflösung: Frage kleiner, damit Ring bzw. Lösung Platz haben */
+.tv-round.ph-c .tv-cat,.tv-round.ph-r .tv-cat{font-size:calc(var(--u) * 2.6);flex-direction:row;justify-content:center;gap:.4em}
+.tv-round.ph-c .tv-cat .tv-ic,.tv-round.ph-r .tv-cat .tv-ic{font-size:1em;margin:0}
+/* Auflösung: Cover links, Lösung rechts */
+.tv-rev{display:grid;grid-template-columns:auto minmax(0,1fr);gap:calc(var(--u) * 3);align-items:center;text-align:left;margin-top:calc(var(--u) * 1)}
+.tv-round .tv-cover{width:calc(var(--u) * 24);height:calc(var(--u) * 24);border-radius:calc(var(--u) * 1.5);margin:0;object-fit:cover;box-shadow:0 2vh 5vh -1vh #000}
+.tv-nocover{display:grid;place-items:center;background:linear-gradient(135deg,#ffa03c,#ff3878);font-size:calc(var(--u) * 9);color:#fff}
+.tv-rev-t{min-width:0;display:flex;flex-direction:column;gap:calc(var(--u) * .8)}
+.tv-answer{font-size:calc(var(--u) * 4.6);line-height:1.05;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.tv-title{font-size:calc(var(--u) * 2.4);font-weight:800;line-height:1.15;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.tv-artist{font-size:calc(var(--u) * 1.9);color:var(--muted);font-weight:600;display:flex;gap:.35em;white-space:nowrap;min-width:0}
+.tv-artist span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.tv-artist .rv-year{flex:none}
+.tv-artist .rv-year{color:var(--warn);font-weight:800}
+/* Rechte Seite: während des Spiels QR-Code kleiner → mehr Platz für Mitspieler und Tipps */
+.tv-side{gap:calc(var(--u) * 1.2)}
+.tv-qr{width:min(20vw,34vh,340px)}
+#tvApp.playing .tv-qr{width:min(13vw,22vh,240px)}
+.tv-join{font-size:calc(var(--u) * 1.15)}
+#tvCode{font-size:calc(var(--u) * 4)}
+#tvApp.playing #tvCode{font-size:calc(var(--u) * 3)}
+.tv-players{font-size:calc(var(--u) * 1.5);padding:calc(var(--u) * 1.4)}
+.tv-players .tv-h{font-size:calc(var(--u) * 1.1)}
+.tv-players .tvp .g{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+/* Große Einblendung (Bingo-Ruf, Sieg, neue Partie) */
+.tv-banner{position:fixed;left:50%;top:50%;translate:-50% -50%;z-index:150;width:min(80vw,140vh);text-align:center;
+  padding:calc(var(--u,1vw) * 3) calc(var(--u,1vw) * 4);border-radius:calc(var(--u,1vw) * 3);font-size:calc(min(1vw,1.78vh) * 3);font-weight:800;
+  background:rgba(20,16,30,.88);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:2px solid rgba(255,255,255,.14);box-shadow:0 3vh 10vh -2vh #000}
+.tv-banner.pop{animation:pop .5s cubic-bezier(.3,1.4,.5,1)}
+.tv-banner .tv-b-big{font-family:Outfit,system-ui,sans-serif;font-size:2.4em;font-weight:900;line-height:1.05;margin-bottom:.2em}
+.tv-banner .tv-b-big b{font-weight:900;background:linear-gradient(135deg,#ffa03c,#ff3878);-webkit-background-clip:text;background-clip:text;color:transparent}
+body:not(.tv-mode) .tv-banner{display:none}

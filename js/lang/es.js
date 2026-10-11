@@ -515,5 +515,12 @@
     "Gesendet": "Enviado",
     "Buzzer": "Pulsador",
     "Der Spielleiter hat (noch) nicht reagiert – nochmal versuchen?": "El anfitrión no ha reaccionado (aún) – ¿intentarlo de nuevo?",
+    "🔔 {n} hat gebuzzert!": "🔔 ¡{n} ha pulsado!",
+    "💬 {a} / {b} haben getippt": "💬 {a} / {b} han respondido",
+    "{n} gewinnt die Partie!": "¡{n} gana la partida!",
+    "{n} ruft Bingo – der Spielleiter prüft die Karte": "{n} canta bingo – el anfitrión revisa el cartón",
+    "Neue Partie – Markierungen sind gelöscht": "Nueva partida – las marcas se han borrado",
+    "🔔 Buzzer-Ton": "🔔 Sonido del pulsador",
+    "Wenn ein Mitspieler buzzert": "Cuando un jugador pulsa",
   },
 };
