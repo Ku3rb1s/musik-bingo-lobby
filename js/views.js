@@ -382,6 +382,10 @@ async function lobbyMode(code, autoName = null) {
     try {
       const [b, players] = await Promise.all([f.get(f.at(`${base}/bingo`)), f.get(f.at(`${base}/players`))]).then(r => r.map(x => x.val()));
       const used = new Set(Object.values(players || {}).map(p => +p?.num));
+      // Name schon vergeben (zwei „Max“)? → „Max 2“, damit Liste, Siege und Tipps eindeutig bleiben
+      const taken = new Set(Object.entries(players || {}).filter(([id]) => id !== f.uid).map(([, p]) => String(p?.name || '').toLowerCase()));
+      const typed = name;
+      for (let i = 2, base0 = name.slice(0, 21); taken.has(name.toLowerCase()); i++) name = `${base0} ${i}`;
       $('#joinName').classList.add('hidden'); $('#joinCodeInput').classList.add('hidden'); btn.classList.add('hidden');
       $('#pickBox').classList.remove('hidden');
       msg(tx('Hallo {n}! Such dir deine Karte aus:', { n: name }));
@@ -390,7 +394,7 @@ async function lobbyMode(code, autoName = null) {
         try {
           me = { name, num, on: true, joined: f.serverTimestamp() };
           await f.set(meRef, me);
-          LS.set('name', name);
+          LS.set('name', typed);   // für das nächste Mal den eingegebenen Namen merken (ohne „ 2“)
           start();
         } catch (err) { msg(tx('Beitreten fehlgeschlagen: {e}', { e: err.message })); showPicker(name); }
       });
@@ -442,6 +446,7 @@ async function tvMode(code) {
     const done = p => r && p.guess?.n === key(r) && p.guess.t;
     const wins = id => match?.wins?.[id] || 0;
     list.sort((a, b) => wins(b.id) - wins(a.id) || String(a.name).localeCompare(b.name));
+    $('#tvPlayers').classList.toggle('many', list.length > 8);   // viele Mitspieler: zwei Spalten, damit alle auf den Bildschirm passen
     $('#tvPlayers').innerHTML = `<div class="tv-h">${r?.ph === 'r' ? tx('Tipps') : tx('Mitspieler')} · ${list.length}</div>` + (list.map(p => `<div class="tvp"><span>${p.bingo ? '🎉 ' : ''}${esc(p.name)}${wins(p.id) ? ` <b>🏆${wins(p.id)}</b>` : ''}</span>` +
       (r?.ph === 'r' ? `<span class="g">${done(p) ? esc(p.guess.t) : '–'}</span>` : `<span class="g">${done(p) ? '<b>✓</b>' : ''}</span>`) + '</div>').join('') || `<div class="g">${tx('Noch niemand da – QR-Code scannen!')}</div>`);
     $('#tvMatch').textContent = match ? matchTitle(match) : '';

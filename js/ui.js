@@ -391,6 +391,7 @@ function resetGame() {
 }
 // „Spiel starten“: Ist noch kein Bingo eingerichtet, erst fragen – ohne Bingo einfach los, sonst zu „Bingo einrichten“
 async function startGame() {
+  if (needSongs()) return;   // ohne Songs zuerst Playlists – die Bingo-Frage kommt danach
   if (!state.bingo) {
     const c = await ask(tx('Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.'),
       { ok: tx('Ohne Bingo starten'), cancel: tx('Bingo einrichten'), choice: true });

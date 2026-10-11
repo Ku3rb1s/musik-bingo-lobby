@@ -2,6 +2,19 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.3 – 11.10.2026
+- Komplett-Prüfung der Darstellung (automatisch: Text, der aus seinem Kasten oder über den Rand ragt) – alle Ansichten, alle 4 Sprachen, Handy 320/375 px, iPad hoch/quer, PC, Fernseher 720p/1080p. Behoben:
+  - 5 × 5-Karten ragten auf schmalen Handys über den Rand, wenn ein Feld einen langen Namen hat (Meine Karte, Bingo prüfen, Mitspieler)
+  - Lobby-/Partien-/Größen-Auswahl: Beschreibungen liefen auf Französisch/Spanisch über den Rand – brechen jetzt um
+  - Spielende-Bildschirm: Knöpfe ragten auf kleinen Handys über den Rand
+  - Designs (Französisch/Spanisch) zu breit auf kleinen Handys
+  - „Musik-Bingo“ in der Kopfzeile auf sehr kleinen Handys unter den Knöpfen; bei Mitspielern dort nur noch das Logo-Bild
+  - Lange Knopftexte (z. B. „Finalement garder mon ancienne carte“) brechen um
+  - Fernseher: bei vielen Mitspielern lief die Liste unten aus dem Bild – ab 9 Mitspielern zwei Spalten, QR-Code passt sich an, Seite immer bildschirmhoch
+- Auflösung auf kleinen Bildschirmen: die Frage steht nicht mehr doppelt (oben in der Kategorie reicht)
+- Gleicher Name beim Beitreten (zwei „Max“) → automatisch „Max 2“, damit Liste, Siege und Tipps eindeutig sind
+- Ohne Songs fragt „Spiel starten“ nicht mehr nach Bingo, sondern öffnet direkt die Playlists bzw. die Anmeldung
+
 ## 4.9.2 – 11.10.2026
 - Akku: Hintergrund bewegt sich nur noch 5× statt 60× pro Sekunde (sieht gleich aus, die Milchglas-Flächen müssen viel seltener neu berechnet werden); das Pulsieren der leuchtenden Kartenfelder läuft ohne Neuzeichnen über den Grafikchip
 

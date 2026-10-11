@@ -351,11 +351,11 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .tv-players .tv-h{font-size:1.1vw;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 /* Spielende-Bildschirm */
 .win.end{z-index:160}
-.end-box{max-width:460px;width:100%}
+.end-box{max-width:460px;width:100%;min-width:0}
 .end-word{font-size:clamp(3rem,15vw,5.5rem)!important}
 .end-winner{font-size:1.5rem;font-weight:800;margin:6px 0 12px}
 .end-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
-.end-btns button{width:100%}
+.end-btns button{width:100%;white-space:normal}
 /* Neue Partie: Karte behalten oder neu wählen */
 .repick{padding:14px 16px;margin-bottom:12px;text-align:center}
 .repick .rp-h{font-weight:800;margin-bottom:2px}
@@ -397,7 +397,9 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .qr-box{background:#fff;border-radius:20px;padding:16px;width:min(300px,78vw);margin:16px auto 8px;text-align:center;color:#333}
 .qr-box svg,.qr-box img{width:100%;height:auto;display:block}
 .qr-box .small{color:#555;margin-top:6px}
-.bgrid{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:6px;margin:12px 0}
+/* minmax(0,1fr): Spalten bleiben gleich breit, auch wenn ein Feld einen langen Namen hat (sonst ragt die Karte über den Rand) */
+.bgrid{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:6px;margin:12px 0}
+.bgrid>.bcell{min-width:0}
 .bcell{--c:#888;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;
   background:color-mix(in srgb,var(--c) 26%,rgba(255,255,255,.02));border:2px solid color-mix(in srgb,var(--c) 80%,transparent);
   padding:4px;font-weight:700;font-size:clamp(.62rem,2.9vw,.9rem);line-height:1.12;overflow-wrap:anywhere;hyphens:auto;color:var(--text);
@@ -424,6 +426,9 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .seg{display:flex;gap:4px;background:var(--cell);border-radius:14px;padding:4px;margin-top:8px}
 .seg button{flex:1;flex-direction:column;gap:1px;background:none;color:var(--text);padding:.6em .4em;border-radius:11px;font-weight:700;font-size:1rem}
 .seg button small{font-size:.72rem;font-weight:500;color:var(--muted)}
+/* Längere Texte (z. B. Französisch) dürfen umbrechen statt über den Rand zu laufen */
+.seg button{min-width:0;white-space:normal;text-align:center;line-height:1.2}
+.seg button small{line-height:1.2;overflow-wrap:anywhere}
 .seg button.on{background:rgba(255,255,255,.16);box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .check-res{text-align:center;margin:10px 0 4px;font-weight:800;font-size:1.15rem}
 .check-res.won{color:var(--accent)}
@@ -605,8 +610,9 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
   font-weight:600;font-size:.88rem;padding:.6em 1.05em;border-radius:99px;gap:.45em}
 .pill-btn .ic{width:1.1em;height:1.1em}
 /* Themen-Auswahl */
-.theme-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
-.theme-pick{flex-direction:column;gap:6px;background:none;color:var(--muted);font-weight:600;font-size:.78rem;padding:6px 2px;border-radius:14px}
+.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:8px}
+.theme-pick{flex-direction:column;gap:6px;background:none;color:var(--muted);font-weight:600;font-size:.78rem;padding:6px 2px;border-radius:14px;
+  min-width:0;white-space:normal;hyphens:auto;overflow-wrap:anywhere;line-height:1.15;text-align:center}
 .theme-pick i{width:46px;height:46px;border-radius:50%;display:block;border:2px solid transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .theme-pick.on{color:var(--text)}
 .theme-pick.on i{border-color:var(--text);box-shadow:0 0 0 3px rgba(255,255,255,.12)}
@@ -648,6 +654,15 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
   #toast.show{transform:translateX(-50%) translateY(0)}
 }
 @keyframes sheetUp{from{transform:translateY(100%)}}
+/* Sehr kleine Handys (z. B. iPhone SE 1. Gen.): Kopfzeile und Designs etwas kompakter */
+@media (max-width:350px){
+  header{gap:8px}
+  .logo{font-size:1.02rem;gap:7px}.logo img{width:30px;height:30px}
+  .hdr-r{gap:6px}
+  .hbtn{width:40px;height:40px}
+  .theme-pick{font-size:.68rem}.theme-pick i{width:40px;height:40px}
+}
+.logo span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 /* Lautstärke-Regler und Tastatur-Hinweise nur am PC/Laptop – auf Handy und iPad (auch mit Tastatur) ausblenden */
 @media (pointer:coarse){.volume,.hint{display:none}}
 html.ios .volume,html.ios .hint{display:none}
@@ -720,6 +735,7 @@ html.ios .volume,html.ios .hint{display:none}
 /* Kompakte Auflösung auf niedrigen Bildschirmen: Album/Datum und Jahres-Chips weg (die Antwort steht ja oben) */
 @media (max-height:900px),(max-width:640px){
   .stage.revealed .rv-meta,.stage.revealed .tags{display:none}
+  .stage.revealed .rv-q{display:none}   /* die Frage steht schon oben in der Kategorie */
   .stage.revealed .rv-answer{padding:12px 16px;margin-bottom:8px}
   .stage.revealed .rv-song{padding:10px 14px}
   .stage.revealed .guess-list{margin-top:8px;padding:8px 12px}
@@ -738,3 +754,18 @@ html.ios .volume,html.ios .hint{display:none}
 .bcell.free{background-color:#ff6a50;background-image:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 60%),linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;border-color:transparent;box-shadow:0 6px 18px -8px #ff3878}
 .bcell.free .bi{font-size:1.6em}
 .bcell.free.line{box-shadow:0 0 0 2.5px #fff inset,0 6px 18px -8px #ff3878}
+/* Breite Knöpfe dürfen umbrechen (lange Texte in anderen Sprachen), kleine Pillen bleiben einzeilig */
+.repick button,.pick-box button,.join-box button,.win button,.notice button,button.full{white-space:normal;line-height:1.25}
+/* Mitspieler auf sehr schmalen Handys: oben nur das Logo-Bild, damit Sprache und Kartennummer Platz haben */
+@media (max-width:350px){#cardApp .card-head .logo span{display:none}}
+/* Fernseher: nie höher als der Bildschirm (dort kann niemand scrollen); viele Mitspieler → zwei Spalten */
+#tvApp{height:100dvh;overflow:hidden}
+.tv-side{min-height:0;max-height:calc(100dvh - 6vw)}
+.tv-players{min-height:0;overflow:hidden}
+.tv-players.many{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:1.6vw;font-size:1.1vw}
+.tv-players.many .tv-h{grid-column:1/-1}
+.tv-players .tvp span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* QR-Code richtet sich auch nach der Höhe; bei vielen Mitspielern etwas kleiner, damit die Liste ganz sichtbar bleibt */
+.tv-qr{width:min(20vw,34vh,340px)}
+.tv-side:has(.tv-players.many) .tv-qr{width:min(14vw,24vh,260px)}
+.tv-side:has(.tv-players.many) #tvCode{font-size:3vw}
