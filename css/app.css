@@ -784,3 +784,22 @@ html.ios .volume,html.ios .hint{display:none}
 .bcell{min-height:0}
 .bcell>span:not(.bi){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;max-width:100%}
 .bgrid.n5 .bcell>span:not(.bi){-webkit-line-clamp:2;line-clamp:2}
+/* Buzzer & Countdown bei den Mitspielern: fester Platz rechts in der Runden-Box */
+.round-live .rl-main{flex:1;min-width:0}
+.rl-buzz,.rl-timer{flex:none;width:62px;height:62px;border-radius:50%}
+.rl-buzz{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-size:1.45rem;line-height:1;
+  background:linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;border:0;box-shadow:0 8px 20px -8px #ff3878,inset 0 1px 0 rgba(255,255,255,.35);transition:transform .1s,opacity .2s}
+.rl-buzz small{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.rl-buzz:active{transform:scale(.9)}
+.rl-buzz:disabled{opacity:.55;box-shadow:none}
+.rl-timer{--c:var(--accent);--p:1;position:relative;display:grid;place-items:center}
+.rl-timer::before{content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(var(--c) calc(var(--p) * 1turn),rgba(255,255,255,.12) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px));mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 5px))}
+.rl-timer b{font-size:1.55rem;font-weight:900;font-variant-numeric:tabular-nums}
+.rl-timer.urgent::before{background:conic-gradient(var(--danger) calc(var(--p) * 1turn),rgba(255,255,255,.12) 0)}
+.rl-timer.urgent b{color:var(--danger)}
+/* Spielleiter: wer gebuzzert hat */
+.round-meta .buzz-by{background:linear-gradient(135deg,#ffa03c,#ff3878);color:#fff;font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.round-live .rl-by{display:inline-block;max-width:100%;vertical-align:bottom;text-transform:none;letter-spacing:0;font-weight:800;color:#ff8a5c;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

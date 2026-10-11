@@ -6,6 +6,10 @@ function render() {
   const ph = round?.phase || 'idle';
   $('#roundNo').textContent = round ? tx('Runde {n}', { n: round.n }) : tx('Runde –');
   const left = state.tracks.filter(t => !state.played.includes(t.id)).length;
+  // Hat ein Mitspieler gebuzzert, steht sein Name statt „Songs übrig“ oben (bis zur nächsten Runde)
+  $('#buzzBy').textContent = round?.bz ? '🔔 ' + round.bz : '';
+  $('#buzzBy').classList.toggle('hidden', !round?.bz);
+  $('#remaining').classList.toggle('hidden', !!round?.bz);
   $('#remaining').textContent = state.tracks.length ? tx('{a} / {b} Songs übrig', { a: left, b: state.tracks.length }) : tx('Keine Songs');
   $('#catLabel').textContent = round ? tx('Kategorie dieser Runde') : 'Musik-Bingo';
   $('#cat').classList.toggle('idle', !round);
@@ -454,6 +458,7 @@ $('#bingoLobbySeg').onclick = e => {
   state.settings.lobby = b.dataset.lobby === '1'; LS.set('settings', state.settings); renderBingo();
 };
 $('#setJoker').onchange = e => { state.settings.joker = e.target.checked; LS.set('settings', state.settings); };
+$('#setBuzz').onchange = e => { state.settings.buzz = e.target.checked; LS.set('settings', state.settings); };
 $('#bingoSizeSeg').onclick = e => {
   const b = e.target.closest('[data-size]'); if (!b) return;
   bingoSize = +b.dataset.size; renderBingo();

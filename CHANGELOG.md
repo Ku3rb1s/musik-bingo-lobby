@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.10.0 – 11.10.2026
+- Neu: 🔔 Buzzer für Mitspieler (Bingo einrichten → Lobby, vor dem Erstellen der Karten einstellen). Solange der Song läuft, hat jedes Handy oben in der Runden-Box einen Buzzer-Knopf – wer die Antwort weiß, drückt ihn und startet den Countdown für alle. Es zählt der Erste. Der Spielleiter sieht „🔔 Name“ oben und einen Hinweis, Handys und Fernseher zeigen den Namen ebenfalls. Nach „Rückgängig“ kann erneut gebuzzert werden. Reagiert der Spielleiter nicht (App zu), wird der Knopf nach 6 s wieder frei.
+- Countdown bei den Mitspielern gut sichtbar: großer Ring mit Sekunden rechts in der Runden-Box (am selben Platz wie der Buzzer – nichts Zusätzliches auf dem Bildschirm), die letzten 5 Sekunden rot, kurzes Vibrieren beim Start
+- Datenbank-Regeln: Feld `bz` (Buzzer) für Mitspieler erlaubt
+
 ## 4.9.6 – 11.10.2026
 - Bingo-Prüfung ohne Lobby: Nach „Neues Spiel“ zählte die Prüfung die neuen Runden unter Umständen nicht (alter Partie-Beginn blieb gespeichert) → „Noch kein Bingo möglich“, obwohl genug gespielt war. Neues Spiel beginnt jetzt wieder bei Runde 1.
 - Neue Bingo-Karten: Die Prüfung zählt nur Runden ab dem Erstellen der Karten (vorher konnten ältere Runden ein Bingo „möglich“ machen); die Handys erfahren das sofort

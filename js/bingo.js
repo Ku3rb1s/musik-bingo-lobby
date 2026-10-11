@@ -39,6 +39,8 @@ function cardFields(b, num) {
 }
 // Joker in der Mitte – nur bei ungerader Größe (3×3, 5×5), 4×4 hat keine Mitte
 const hasJoker = b => !!b?.f && b.s % 2 === 1;
+// Buzzer (nur mit Lobby): Mitspieler dürfen per Knopf den Countdown starten – wird beim Erstellen festgelegt (b.z)
+const hasBuzz = b => !!b?.z;
 const fieldCount = b => b.s * b.s - (hasJoker(b) ? 1 : 0);   // Felder zum Markieren
 function bingoLines(s) {
   const L = [];
@@ -58,7 +60,8 @@ let bingoSize = 4;
 function createBingo() {
   const cats = state.cats.filter(c => c.enabled);
   if (cats.length < 2) return toast(tx('Für Bingo braucht es mindestens 2 aktive Kategorien (Einstellungen → Kategorien).'), 6000);
-  state.bingo = { g: randStr(6), s: bingoSize, ...(state.settings.joker && bingoSize % 2 ? { f: 1 } : {}), k: cats.map(c => { const [e, col] = catStyle(c); return { i: c.id, c: col.slice(1), e, n: shortCat(c) }; }) };
+  state.bingo = { g: randStr(6), s: bingoSize, ...(state.settings.joker && bingoSize % 2 ? { f: 1 } : {}),
+    ...(state.settings.buzz && hasFirebase() && (Lobby.code || state.settings.lobby !== false) ? { z: 1 } : {}), k: cats.map(c => { const [e, col] = catStyle(c); return { i: c.id, c: col.slice(1), e, n: shortCat(c) }; }) };
   LS.set('bingo', state.bingo);
   // Neue Karten: für die Prüfung zählen nur Runden ab jetzt (frühere Runden konnte niemand auf dieser Karte markieren)
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
@@ -94,6 +97,7 @@ async function renderBingo() {
     document.querySelectorAll('#bingoSizeSeg button').forEach(x => x.classList.toggle('on', +x.dataset.size === bingoSize));
     $('#bingoJokerBox').classList.toggle('hidden', bingoSize % 2 === 0);
     $('#setJoker').checked = !!state.settings.joker;
+    $('#setBuzz').checked = !!state.settings.buzz;
     $('#bingoLobbyBox').classList.toggle('hidden', !hasFirebase());
     document.querySelectorAll('#bingoLobbySeg button').forEach(x => x.classList.toggle('on', (x.dataset.lobby === '1') === (state.settings.lobby !== false)));
     $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
@@ -106,7 +110,7 @@ async function renderBingo() {
     $('#bingoCatsNote').style.color = on < 2 ? 'var(--warn)' : '';
     return;
   }
-  $('#bingoInfo').innerHTML = `${b.s} × ${b.s}${hasJoker(b) ? tx(' mit Joker') : ''} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(tx(k.n))}</span>`; }).join('')}`;
+  $('#bingoInfo').innerHTML = `${b.s} × ${b.s}${hasJoker(b) ? tx(' mit Joker') : ''}${hasBuzz(b) ? ' · ' + tx('🔔 Buzzer') : ''} · ${b.k.map(k => { const [icon, color] = kStyle(k); return `<span class="cat-chip" style="--c:${color}">${icon} ${esc(tx(k.n))}</span>`; }).join('')}`;
   renderCheckWho(); renderMatch();
   document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
   $('#myCardCell').classList.toggle('hidden', state.settings.hostPlays === false);

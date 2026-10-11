@@ -52,7 +52,7 @@ async function nextRound() {
 function undoNext(prev) {
   stopTimer(); clearTimeout(snippetT); cancelSpin();
   round = prev.round;
-  if (round.phase === 'countdown') round.phase = 'playing';
+  if (round.phase === 'countdown') { round.phase = 'playing'; round.bz = null; }
   state.played = prev.played; LS.set('played', state.played);
   render(); Lobby.syncRound();
   playSnippet();
@@ -103,12 +103,13 @@ function spinCategory(final) {
   }, 1100);
 }
 
-function startCountdown() {
+// by = Name des Mitspielers, der gebuzzert hat (sonst startet der Spielleiter selbst)
+function startCountdown(by = null) {
   if (!round || round.phase !== 'playing') return;
   Player.unlock();
-  round.phase = 'countdown'; round.timeUp = false;
+  round.phase = 'countdown'; round.timeUp = false; round.bz = by;
   const total = state.settings.seconds * 1000, end = Date.now() + total;
-  round.end = end; Lobby.syncRound();   // Fernseher-Ansicht zeigt den Countdown mit
+  round.end = end; round.dur = total; Lobby.syncRound();   // Fernseher-Ansicht zeigt den Countdown mit
   const ring = $('#ring'), C = 2 * Math.PI * 56;
   ring.style.strokeDasharray = C;
   let lastSec = null;
@@ -126,6 +127,17 @@ function startCountdown() {
     }
   };
   tick(); timerIv = setInterval(tick, 100);
+}
+
+// Buzzer: Ein Mitspieler hat für die laufende Runde gebuzzert → Countdown starten. Es zählt der früheste Buzz (Server-Zeit);
+// round.bzT merkt sich den zuletzt verarbeiteten – nach „Rückgängig“ darf erneut gebuzzert werden.
+function checkBuzz() {
+  if (!Lobby.code || !hasBuzz(state.bingo) || round?.phase !== 'playing') return;
+  const p = lobbyList().filter(p => p.bz?.n === round.id && p.bz.t > (round.bzT || 0) && p.id !== Lobby.uid).sort((a, b) => a.bz.t - b.bz.t)[0];
+  if (!p) return;
+  round.bzT = p.bz.t;
+  startCountdown(p.name);
+  toast(tx('🔔 {n} hat gebuzzert – der Countdown läuft', { n: p.name }), 5000);
 }
 
 function reveal() {

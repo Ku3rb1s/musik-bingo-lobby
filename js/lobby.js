@@ -68,6 +68,7 @@ const Lobby = {
         renderLobby();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'check') renderCheckWho();
         if (round?.phase === 'revealed') renderGuessList();   // Tipps der Mitspieler
+        checkBuzz();
         if ($('#sheetGame').open && $('#sheetGame').dataset.page === 'mycard') syncMyCard();
       }, e => toast('Lobby: ' + tx(e.message), 6000));
       this.syncRound();
@@ -121,7 +122,8 @@ const Lobby = {
     // ph: p = läuft, c = Countdown (end = Zeitpunkt in ms), r = aufgelöst
     const cd = round.phase === 'countdown' && round.end;
     const pv = !rev && lastRevFor(round);   // vorige Runde – solange die laufende nicht aufgelöst ist, darf man sie nachtragen
-    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end } : {}), ...(pv ? { pv } : {}),
+    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end, dur: round.dur } : {}),
+      ...(round.bz ? { bz: round.bz } : {}),   // wer gebuzzert hat (Name) ...(pv ? { pv } : {}),
       ...(round.n <= (state.partieFrom || 0) ? { old: 1 } : {}),   // Runde gehört zur vorigen Partie → nicht markierbar
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc
       ...(rev ? { a: withLang('de', () => plainText(answerFor(round.cat, t))), at: round.cat.answer, s: `${t.artists} – ${t.title}`,
@@ -250,7 +252,7 @@ function renderLobby() {
     : code ? tx('Antippen, um die Karte eines Mitspielers zu prüfen. Markierungen und „Bingo!“ kommen hier live an.')
     : b ? tx('Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.')
     : tx('Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.');
-  $('#bingoSub').textContent = b ? tx('{s} × {s} Karten', { s: b.s }) + (hasJoker(b) ? tx(' mit Joker') : '') + tx(' · {n} Kategorien', { n: b.k.length }) + (code ? tx(' · antippen zum Einladen') : '') : '';
+  $('#bingoSub').textContent = b ? tx('{s} × {s} Karten', { s: b.s }) + (hasJoker(b) ? tx(' mit Joker') : '') + (hasBuzz(b) && code ? ' · ' + tx('🔔 Buzzer') : '') + tx(' · {n} Kategorien', { n: b.k.length }) + (code ? tx(' · antippen zum Einladen') : '') : '';
   renderScorebar(); renderMatch();
 }
 // Leiste auf dem Hauptbildschirm: Mitspieler mit Siegen und ✓, wer für diese Runde fertig getippt hat

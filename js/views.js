@@ -208,6 +208,7 @@ async function lobbyMode(code, autoName = null) {
     // Alle Zustände zuerst anlegen: Firebase kann Rückmeldungen aus dem Zwischenspeicher sofort liefern
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
+    let lastPh = null, lastPhKey = null, buzzSent = null, buzzT = null;   // Runden-Box: Countdown-Start erkennen, Buzzer gedrückt
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const curMark = () => curRound && markable({ key: keyOf(curRound), ph: curRound.ph, i: curRound.i, q: curRound.q, pv: curRound.pv, old: curRound.old }, (i, q) => curB?.k.find(k => k.i === i)?.n || q);
     // Leuchtende Felder und Hinweis an den aktuellen Stand anpassen (neue Runde, Auflösung, eigene Markierung)
@@ -239,7 +240,7 @@ async function lobbyMode(code, autoName = null) {
       if (!b) return leave(tx('Der Spielleiter hat das Bingo beendet. Für ein neues Spiel den neuen Lobby-Code eingeben.'));
       if (curB && b.g === curB.g) return;
       const fresh = !!curB;      // neue Karten während des Spiels
-      curB = b; mountMine();
+      curB = b; mountMine(); drawRound();
       f.update(meRef, { g: b.g, ...(me.g === b.g ? {} : { marks: null }) }).catch(() => {});
       if (fresh) toast(tx('Neue Karten – deine Karte wurde neu gemischt'), 6000);
     });
@@ -346,7 +347,7 @@ async function lobbyMode(code, autoName = null) {
     }
     // Aktuelle Runde
     f.onValue(f.at(`${base}/round`), s => {
-      const r = s.val(), box = $('#roundLive');
+      const r = s.val();
       curRound = r;
       // Neue Runde → alter Tipp weg. Macht der Spielleiter ein Überspringen rückgängig, kommt der Tipp dieser Runde zurück.
       if (r && keyOf(r) !== lastKey) {
@@ -357,19 +358,47 @@ async function lobbyMode(code, autoName = null) {
         lastKey = keyOf(r);
       }
       // Karte: Felder hervorheben, die man gerade markieren darf
+      // Countdown startet (Spielleiter oder Buzzer) → kurz vibrieren, damit es jeder merkt
+      if (r?.ph === 'c' && lastPh === 'p' && keyOf(r) === lastPhKey) { try { navigator.vibrate?.(60); } catch {} }
+      lastPh = r?.ph ?? null; lastPhKey = keyOf(r);
       updMark();
       renderGuesses();
+      drawRound();
+    });
+    // Runden-Box oben: links Kategorie (und nach der Auflösung die Lösung), rechts ein fester Platz für
+    // den Buzzer (solange der Song läuft) bzw. den Countdown-Ring – so kommt nichts Zusätzliches auf den Bildschirm.
+    function drawRound() {
+      const r = curRound, box = $('#roundLive');
       clearInterval(cdIv); cdIv = null;
       box.classList.toggle('hidden', !r);
       if (!r) return;
       box.style.borderColor = r.c;
-      const cd = r.ph === 'c' && r.end;
-      box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · noch {s} s', { s: '<b class="rl-cd"></b>' }) : tx(' · läuft')}</div>
-        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(locAnswer(r))}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>`;
+      const cd = r.ph === 'c' && r.end, canBuzz = r.ph === 'p' && hasBuzz(curB), sent = buzzSent === keyOf(r);
+      const st = r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · Countdown') : tx(' · läuft');
+      const side = cd ? `<div class="rl-timer" style="--c:${esc(r.c)}" role="timer"><b class="rl-cd"></b></div>`
+        : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">🔔<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
+      box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
+        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(locAnswer(r))}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
       if (cd) {
-        const tick = () => { const sec = Math.max(0, Math.ceil((r.end - Date.now()) / 1000)), el = box.querySelector('.rl-cd'); if (el) el.textContent = sec; if (!sec) { clearInterval(cdIv); cdIv = null; } };
+        const ring = box.querySelector('.rl-timer'), el = box.querySelector('.rl-cd'), total = r.dur || 30000;
+        const tick = () => {
+          const rem = Math.max(0, r.end - Date.now()), sec = Math.ceil(rem / 1000);
+          el.textContent = sec; ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3)); ring.classList.toggle('urgent', sec <= 5);
+          if (!rem) { clearInterval(cdIv); cdIv = null; }
+        };
         tick(); cdIv = setInterval(tick, 250);
       }
+    }
+    // Buzzer: Runde merken, der Spielleiter startet daraufhin den Countdown. Kommt nichts zurück (Spielleiter offline),
+    // wird der Knopf nach ein paar Sekunden wieder frei.
+    $('#roundLive').addEventListener('click', e => {
+      if (!e.target.closest('.rl-buzz') || !curRound || curRound.ph !== 'p' || !hasBuzz(curB)) return;
+      const k = keyOf(curRound);
+      buzzSent = k; drawRound();
+      try { navigator.vibrate?.(30); } catch {}
+      f.update(meRef, { bz: { n: k, t: f.serverTimestamp() } }).catch(err => { buzzSent = null; drawRound(); toast(tx('Sync-Fehler: {e}', { e: err.message })); });
+      clearTimeout(buzzT);
+      buzzT = setTimeout(() => { if (buzzSent === k) { buzzSent = null; if (curRound?.ph === 'p' && keyOf(curRound) === k) { drawRound(); toast(tx('Der Spielleiter hat (noch) nicht reagiert – nochmal versuchen?')); } } }, 6000);
     });
   };
 
@@ -432,7 +461,7 @@ async function tvMode(code) {
     clearInterval(cdIv); cdIv = null;
     if (ended) return show(`<div class="tv-idle">${tx('Das Bingo wurde beendet.')}</div>`);
     if (!r) return show(`<div class="tv-idle">${tx('Gleich geht’s los …')}</div><div class="tv-k">${tx('Jetzt beitreten – QR-Code scannen')}</div>`);
-    const head = `<div class="tv-k">${tx('Runde {n}', { n: esc(r.n) })}</div><div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span>${esc(tx(r.q))}</div>`;
+    const head = `<div class="tv-k">${tx('Runde {n}', { n: esc(r.n) })}${r.bz ? ` · 🔔 ${esc(r.bz)}` : ''}</div><div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span>${esc(tx(r.q))}</div>`;
     if (r.ph === 'r') return show(head + (r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '') +
       `<div class="tv-answer">${esc(locAnswer(r))}</div><div class="tv-song">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>`);
     if (r.ph === 'c' && r.end) {
