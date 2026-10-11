@@ -51,6 +51,12 @@ function runRing(ring, num, end, total = 30000) {
   return iv;
 }
 
+// Lösung als HTML (Handys, Fernseher); bei „Jahr ± …“ steht „(richtig: 1987–1993)“ klein in einer eigenen Zeile darunter
+function answerHtml(r) {
+  const a = locAnswer(r), m = r.at === 'range' && a.match(/^(\S+) (\(.+\))$/);
+  return m ? `${esc(m[1])}<small>${esc(m[2])}</small>` : esc(a);
+}
+
 /* Karten-Ansicht für Mitspieler: läuft komplett auf deren Handy, ohne Spotify */
 function cardMode(param) {
   mountGuess($('#guessText'), $('#btnGuessShow'), $('#btnGuessClear'));
@@ -411,7 +417,7 @@ async function lobbyMode(code, autoName = null) {
       const side = cd ? `<div class="rl-timer" style="--c:${esc(r.c)}" role="timer"><b class="rl-cd"></b></div>`
         : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">🔔<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
-        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(locAnswer(r))}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
+        <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
       if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
     }
     // Buzzer: Runde merken, der Spielleiter startet daraufhin den Countdown. Kommt nichts zurück (Spielleiter offline),
@@ -498,7 +504,7 @@ async function tvMode(code) {
     if (r.ph === 'r') {
       const title = r.ti ?? r.s, artist = r.ar ?? '';
       return show(k + cat + `<div class="tv-rev">${r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '<div class="tv-cover tv-nocover">♪</div>'}
-        <div class="tv-rev-t"><div class="tv-answer">${esc(locAnswer(r))}</div><div class="tv-title">${esc(title)}</div>
+        <div class="tv-rev-t"><div class="tv-answer">${answerHtml(r)}</div><div class="tv-title">${esc(title)}</div>
         <div class="tv-artist"><span>${esc(artist)}</span>${r.y ? `<span class="rv-year">${artist ? '· ' : ''}${esc(r.y)}</span>` : ''}</div></div></div>` + buzz);
     }
     const tips = '<div class="tv-tips" id="tvTips"></div>';

@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.6 – 11.10.2026
+- Handy: Countdown-Ring leuchtete in „Tipp“/„Überspringen“ hinein – mehr Abstand
+- Handy: „Jahr korrigieren“ unter dem Cover kleiner
+- Einstellungen: Untertitel „Wo die Musik einsetzt“ entfernt
+- „Jahr ± 3“: „(richtig: 1987–1993)“ steht jetzt in einer eigenen Zeile unter der Jahreszahl (Spielleiter, Handys, Fernseher)
+
 ## 4.12.5 – 11.10.2026
 - Countdown-Ring: Leuchten wieder weich (weichgezeichnete Kopie direkt in der Grafik) statt eines harten, breiten Streifens, der zudem am Rand abgeschnitten wurde – ohne das dunkle Quadrat von früher
 

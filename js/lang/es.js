@@ -541,7 +541,6 @@
     "spielt mit": "juega",
     "Mitspielen": "Jugar también",
     "Startpunkt im Song": "Punto de inicio",
-    "Wo die Musik einsetzt": "Dónde empieza la música",
     "Am Anfang": "Al principio",
     "Zufällige Stelle": "Punto aleatorio",
     "flott": "rápido",

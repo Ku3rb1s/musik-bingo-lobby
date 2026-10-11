@@ -541,7 +541,6 @@
     "spielt mit": "joue",
     "Mitspielen": "Jouer aussi",
     "Startpunkt im Song": "Point de départ",
-    "Wo die Musik einsetzt": "Où la musique commence",
     "Am Anfang": "Au début",
     "Zufällige Stelle": "Endroit aléatoire",
     "flott": "rapide",

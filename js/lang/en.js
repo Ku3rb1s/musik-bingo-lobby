@@ -541,7 +541,6 @@
     "spielt mit": "plays",
     "Mitspielen": "Join in",
     "Startpunkt im Song": "Starting point",
-    "Wo die Musik einsetzt": "Where the music begins",
     "Am Anfang": "At the beginning",
     "Zufällige Stelle": "Random spot",
     "flott": "quick",
