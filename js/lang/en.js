@@ -561,5 +561,6 @@
     "Nichts gefunden": "Nothing found",
     "online": "online",
     "Runde, Countdown, Tipps und QR-Code groß – z. B. am Laptop mit HDMI": "Round, countdown, guesses and QR code in large – e.g. on a laptop via HDMI",
+    "Aus der Lobby entfernen": "Remove from lobby",
   },
 };

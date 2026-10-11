@@ -561,5 +561,6 @@
     "Nichts gefunden": "Aucun résultat",
     "online": "en ligne",
     "Runde, Countdown, Tipps und QR-Code groß – z. B. am Laptop mit HDMI": "Manche, compte à rebours, réponses et QR code en grand – p. ex. sur un portable via HDMI",
+    "Aus der Lobby entfernen": "Retirer du salon",
   },
 };

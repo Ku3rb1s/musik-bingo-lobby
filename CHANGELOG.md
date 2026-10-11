@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.7 – 11.10.2026
+- Mitspieler-Liste: Markierungs-Zahlen stehen untereinander, auch wenn der Spielleiter mitspielt (leerer Platz statt fehlendem Knopf); „Entfernen“ zeigt eine Tür mit Pfeil nach draußen statt eines Papierkorbs
+
 ## 4.12.6 – 11.10.2026
 - Handy: Countdown-Ring leuchtete in „Tipp“/„Überspringen“ hinein – mehr Abstand
 - Handy: „Jahr korrigieren“ unter dem Cover kleiner

@@ -561,5 +561,6 @@
     "Nichts gefunden": "No se encontró nada",
     "online": "en línea",
     "Runde, Countdown, Tipps und QR-Code groß – z. B. am Laptop mit HDMI": "Ronda, cuenta atrás, respuestas y código QR en grande – p. ej. en un portátil por HDMI",
+    "Aus der Lobby entfernen": "Quitar de la sala",
   },
 };

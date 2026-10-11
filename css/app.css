@@ -903,3 +903,6 @@ a.cell{color:inherit;text-decoration:none}
 .tv-players .tvp.ok .g{color:var(--accent);font-weight:700}
 .tv-answer small{display:block;font-size:.38em;color:var(--muted);font-weight:600;margin-top:.3em}
 .round-live .rl-a small{display:block;font-size:.78em;color:var(--muted);font-weight:500}
+/* Mitspieler-Liste: Platzhalter in Knopfbreite beim eigenen Eintrag – so stehen die Markierungs-Zahlen untereinander */
+.icon-btn.del-ph{visibility:hidden}
+.icon-btn.del-ph::before{content:'';display:block;width:1.25em;height:1.25em}

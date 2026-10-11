@@ -250,7 +250,8 @@ function renderLobby() {
       <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : `<i class="on-dot" title="${tx('online')}"></i>`}</span>
       <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">${tx('Karte Nr. {n}', { n: esc(p.num) })}${p.bingo ? (p.ok ? tx(' · Bingo bestätigt') : tx(' · ruft BINGO!')) : ''}</span></span>
       <span class="marks">${marksOf(p)} / ${b ? fieldCount(b) : '–'}</span>
-      ${p.id === Lobby.uid ? '' : `<span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="${tx('Entfernen')}">${ic('trash')}</span>`}
+      ${p.id === Lobby.uid ? '<span class="icon-btn del-ph" aria-hidden="true"></span>'
+        : `<span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="${tx('Aus der Lobby entfernen')}" title="${tx('Aus der Lobby entfernen')}">${ic('kick')}</span>`}
     </button>`).join('')
     || `<div class="cell muted">${code ? tx('Noch niemand beigetreten.') : tx('Noch keine Lobby.')}</div>`;
   $('#playerNote').textContent = !hasFirebase()
