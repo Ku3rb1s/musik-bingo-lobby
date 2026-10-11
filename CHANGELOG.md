@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.2 – 11.10.2026
+- Akku: Hintergrund bewegt sich nur noch 5× statt 60× pro Sekunde (sieht gleich aus, die Milchglas-Flächen müssen viel seltener neu berechnet werden); das Pulsieren der leuchtenden Kartenfelder läuft ohne Neuzeichnen über den Grafikchip
+
 ## 4.9.1 – 11.10.2026
 - Sprache wechseln beim Spielleiter ohne Neuladen: laufende Runde, Musik und Countdown laufen weiter, alle Texte wechseln sofort (Mitspieler laden weiterhin neu – ihr Stand kommt vom Server zurück)
 - Rückfragen: lange Knopftexte brechen um statt über den Rand zu laufen; linker Knopf (Abbrechen bzw. zweite Wahl) weiß, Hauptaktion grün bzw. rot

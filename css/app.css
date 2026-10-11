@@ -24,7 +24,9 @@ body.locked{overflow:hidden}
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:var(--sat);background:var(--bg);z-index:40;pointer-events:none}
 input,textarea{-webkit-user-select:text;user-select:text}
 .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;animation:float 22s ease-in-out infinite alternate}
+/* Akku: Die Farbflächen wandern nur in 5 Schritten pro Sekunde (steps) statt 60 – bei der starken Unschärfe ist jeder Schritt
+   kleiner als ein Pixel, also unsichtbar. Sonst müssten alle Milchglas-Flächen darüber 60× pro Sekunde neu berechnet werden. */
+.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;animation:float 22s steps(110) infinite alternate;will-change:transform}
 .bg i:nth-child(1){width:55vmax;height:55vmax;left:-15vmax;top:-20vmax;background:var(--blob1)}
 .bg i:nth-child(2){width:45vmax;height:45vmax;right:-15vmax;top:5vmax;background:var(--blob2);animation-delay:-8s}
 .bg i:nth-child(3){width:40vmax;height:40vmax;left:20vmax;bottom:-25vmax;background:var(--cat);opacity:.18;transition:background 1s;animation-delay:-14s}
@@ -411,8 +413,11 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 /* Felder der aktuellen Kategorie leuchten, die anderen treten zurück – so sieht man sofort, was man abhaken darf */
 .bgrid.has-hot .bcell:not(.hot):not(.on):not(.free){opacity:.38;filter:saturate(.55)}
 .bcell.free{cursor:default}
-.bcell.hot:not(.on){box-shadow:0 0 0 3px var(--c),0 0 22px -2px var(--c);animation:hotPulse 1.6s ease-in-out infinite}
-@keyframes hotPulse{50%{box-shadow:0 0 0 3px var(--c),0 0 6px -2px var(--c)}}
+/* Leuchtende Felder: fester Ring + pulsierender Schein auf eigener Ebene (nur Transparenz – rechnet der Grafikchip ohne Neuzeichnen) */
+.bcell.hot:not(.on){box-shadow:0 0 0 3px var(--c)}
+.bcell.hot:not(.on)::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 22px -2px var(--c);animation:hotGlow 1.6s ease-in-out infinite;will-change:opacity}
+@keyframes hotGlow{50%{opacity:.25}}
 .bcell.line{box-shadow:0 0 0 2.5px #fff inset}
 .cat-chip{display:inline-flex;align-items:center;gap:6px;padding:.38em .85em;border-radius:99px;font-weight:600;font-size:.86rem;white-space:nowrap;
   background:color-mix(in srgb,var(--c) 20%,transparent);border:1px solid color-mix(in srgb,var(--c) 55%,transparent)}
