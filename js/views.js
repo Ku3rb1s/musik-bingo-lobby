@@ -22,6 +22,30 @@ function locAnswer(r) {
   return String(r.a ?? '').split(' · ').map(one).join(' · ');
 }
 
+// Countdown-Ende auf der eigenen Uhr. Kommt der Start live an (Normalfall), zählt der Moment der Ankunft – das stimmt
+// unabhängig davon, wie die Uhren der Geräte gehen. Nur wer mitten im Countdown dazukommt (Beitreten, Neuladen),
+// rechnet über die Server-Zeit (r.end = Server-Zeit, geschätzt vom Spielleiter). r.end kennzeichnet den Countdown –
+// sendet der Spielleiter dieselbe Runde nochmal (z. B. Jahr nachgeschlagen), bleibt das Ende gleich.
+function cdClock() {
+  let key = null, end = 0;
+  return (r, live) => {
+    if (r.end !== key) { key = r.end; end = live && r.dur ? Date.now() + r.dur : r.end - fbOffset; }
+    return end;
+  };
+}
+// Countdown-Ring (Handys und Fernseher): Sekunden, Fortschritt (--p) und die letzten 5 s rot.
+// Liefert die Intervall-ID (zum Stoppen bei der nächsten Runde); bei 0 stoppt der Ring von selbst.
+function runRing(ring, num, end, total = 30000) {
+  const tick = () => {
+    const rem = Math.max(0, end - Date.now()), sec = Math.ceil(rem / 1000);
+    num.textContent = sec; ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3)); ring.classList.toggle('urgent', sec <= 5);
+    if (!rem) clearInterval(iv);
+  };
+  const iv = setInterval(tick, 250);
+  tick();
+  return iv;
+}
+
 /* Karten-Ansicht für Mitspieler: läuft komplett auf deren Handy, ohne Spotify */
 function cardMode(param) {
   mountGuess($('#guessText'), $('#btnGuessShow'), $('#btnGuessClear'));
@@ -56,7 +80,7 @@ async function lobbyAlive(f, code) {
   const s = await f.get(f.at(`lobbies/${code}`));
   if (!s.exists() || !s.child('bingo').exists()) return false;
   const act = s.child('act').val() || s.child('created').val() || 0;
-  if (Date.now() - act > STALE_MS) { f.remove(f.at(`lobbies/${code}`)).catch(() => {}); return false; }
+  if (serverNow() - act > STALE_MS) { f.remove(f.at(`lobbies/${code}`)).catch(() => {}); return false; }
   return true;
 }
 
@@ -209,6 +233,7 @@ async function lobbyMode(code, autoName = null) {
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
     let lastPh = null, lastPhKey = null, buzzSent = null, buzzT = null;   // Runden-Box: Countdown-Start erkennen, Buzzer gedrückt
+    const cdEndOf = cdClock(); let roundSeen = false, cdEnd = 0;          // Countdown-Ende auf der eigenen Uhr
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const curMark = () => curRound && markable({ key: keyOf(curRound), ph: curRound.ph, i: curRound.i, q: curRound.q, pv: curRound.pv, old: curRound.old }, (i, q) => curB?.k.find(k => k.i === i)?.n || q);
     // Leuchtende Felder und Hinweis an den aktuellen Stand anpassen (neue Runde, Auflösung, eigene Markierung)
@@ -349,6 +374,8 @@ async function lobbyMode(code, autoName = null) {
     f.onValue(f.at(`${base}/round`), s => {
       const r = s.val();
       curRound = r;
+      if (r?.ph === 'c' && r.end) cdEnd = cdEndOf(r, roundSeen);
+      roundSeen = true;
       // Neue Runde → alter Tipp weg. Macht der Spielleiter ein Überspringen rückgängig, kommt der Tipp dieser Runde zurück.
       if (r && keyOf(r) !== lastKey) {
         const mine = me?.guess;
@@ -379,15 +406,7 @@ async function lobbyMode(code, autoName = null) {
         : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">🔔<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
         <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${esc(locAnswer(r))}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
-      if (cd) {
-        const ring = box.querySelector('.rl-timer'), el = box.querySelector('.rl-cd'), total = r.dur || 30000;
-        const tick = () => {
-          const rem = Math.max(0, r.end - Date.now()), sec = Math.ceil(rem / 1000);
-          el.textContent = sec; ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3)); ring.classList.toggle('urgent', sec <= 5);
-          if (!rem) { clearInterval(cdIv); cdIv = null; }
-        };
-        tick(); cdIv = setInterval(tick, 250);
-      }
+      if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
     }
     // Buzzer: Runde merken, der Spielleiter startet daraufhin den Countdown. Kommt nichts zurück (Spielleiter offline),
     // wird der Knopf nach ein paar Sekunden wieder frei.
@@ -456,6 +475,7 @@ async function tvMode(code) {
   loadQrLib().then(qrcode => { const q = qrcode(0, 'L'); q.addData(lobbyUrl(code)); q.make(); $('#tvQr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }).catch(() => {});
   const base = `lobbies/${code}`;
   let r = null, players = {}, match = null, cdIv = null, ended = false;
+  const cdEndOf = cdClock(); let roundSeen = false, cdEnd = 0;   // Countdown-Ende auf der eigenen Uhr
   const key = x => x ? x.id ?? x.n : null;
   // Hauptfläche: Warten → Song läuft → Countdown (Ring, wer gebuzzert hat) → Auflösung (Cover links, Lösung rechts).
   // Alle Größen richten sich nach Breite UND Höhe (--u in app.css) – auf einem Fernseher kann niemand scrollen.
@@ -477,15 +497,8 @@ async function tvMode(code) {
     }
     const tips = '<div class="tv-tips" id="tvTips"></div>';
     if (r.ph === 'c' && r.end) {
-      const total = r.dur || 30000;
       show(k + cat + `<div class="tv-ring" style="--c:${esc(r.c)}"><b id="tvCount"></b></div>` + buzz + tips);
-      const ring = box.querySelector('.tv-ring'), el = $('#tvCount');
-      const tick = () => {
-        const rem = Math.max(0, r.end - Date.now()), sec = Math.ceil(rem / 1000);
-        el.textContent = sec; ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3)); ring.classList.toggle('urgent', sec <= 5);
-        if (!rem) { clearInterval(cdIv); cdIv = null; }
-      };
-      tick(); cdIv = setInterval(tick, 250);
+      cdIv = runRing(box.querySelector('.tv-ring'), $('#tvCount'), cdEnd, r.dur);
     } else show(k + cat + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
     drawTips();
   };
@@ -527,7 +540,12 @@ async function tvMode(code) {
     $('#tvMatch').textContent = match ? matchTitle(match) : '';
   };
   addEventListener('resize', () => drawSide());
-  f.onValue(f.at(`${base}/round`), s => { r = s.val(); draw(); drawSide(); });
+  f.onValue(f.at(`${base}/round`), s => {
+    r = s.val();
+    if (r?.ph === 'c' && r.end) cdEnd = cdEndOf(r, roundSeen);
+    roundSeen = true;
+    draw(); drawSide();
+  });
   f.onValue(f.at(`${base}/players`), s => {
     const prev = players;
     players = s.val() || {};

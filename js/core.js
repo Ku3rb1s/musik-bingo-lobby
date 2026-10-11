@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.11.2', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.11.3', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -97,7 +97,7 @@ const state = {
   cats: LS.get('cats', null) || structuredClone(DEFAULT_CATS),
   settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzSound: false, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
     limit: 0, hints: true, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
-  bingo: LS.get('bingo', null)?.k ? LS.get('bingo', null) : null,   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
+  bingo: (b => b?.k ? b : null)(LS.get('bingo', null)),   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
   lobby: LS.get('lobby', null),     // Code der eigenen Lobby (Firebase), solange Bingo läuft
   match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
   partieFrom: LS.get('partieFrom', 0),   // Rundennummer, ab der die aktuelle Partie zählt (für die Bingo-Prüfung)

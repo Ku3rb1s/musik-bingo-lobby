@@ -6,6 +6,10 @@
 //   players: { {uid}: { name, num, g, marks: [Feldnummern], on, bingo: Zeit | null, ok } } }
 // Der Spielleiter schreibt Karten und Runde, jeder Mitspieler nur seinen eigenen Eintrag (siehe database.rules.json).
 let fbP = null;
+// Abweichung der eigenen Uhr von der Server-Uhr (meldet Firebase). Countdown-Enden laufen über Server-Zeit –
+// sonst zeigt ein Handy mit falsch gehender Uhr einen falschen Countdown.
+let fbOffset = 0;
+const serverNow = () => Date.now() + fbOffset;
 function firebase() {
   fbP ??= (async () => {
     if (!hasFirebase()) throw new Error('Firebase ist nicht eingerichtet');
@@ -16,7 +20,9 @@ function firebase() {
     // Anonym anmelden – die ID bleibt im Browser gespeichert, so findet jeder nach dem Neuladen seine Karte wieder
     const user = await new Promise(res => { const off = auth.onAuthStateChanged(au, u => { off(); res(u); }); })
       || (await auth.signInAnonymously(au)).user;
-    return { ...db, db: db.getDatabase(a), uid: user.uid, at: p => db.ref(db.getDatabase(a), p) };
+    const d = db.getDatabase(a);
+    db.onValue(db.ref(d, '.info/serverTimeOffset'), s => { fbOffset = s.val() || 0; });
+    return { ...db, db: d, uid: user.uid, at: p => db.ref(d, p) };
   })();
   fbP.catch(() => { fbP = null; });
   return fbP;
@@ -122,7 +128,7 @@ const Lobby = {
     // ph: p = läuft, c = Countdown (end = Zeitpunkt in ms), r = aufgelöst
     const cd = round.phase === 'countdown' && round.end;
     const pv = !rev && lastRevFor(round);   // vorige Runde – solange die laufende nicht aufgelöst ist, darf man sie nachtragen
-    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end, dur: round.dur } : {}),
+    this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end + fbOffset, dur: round.dur } : {}),
       ...(round.bz ? { bz: round.bz } : {}),   // wer gebuzzert hat (Name) ...(pv ? { pv } : {}),
       ...(round.n <= (state.partieFrom || 0) ? { old: 1 } : {}),   // Runde gehört zur vorigen Partie → nicht markierbar
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc

@@ -447,7 +447,7 @@ const Player = {
         const d = this.lastUpdate?.duration || 0;
         this.preview = d > 0 && d < 35000;
         if (this.preview) {
-          if (!this.previewWarned) { this.previewWarned = true; toast(tx('Nur Vorschau-Ausschnitte – die Startposition wird ignoriert.'), 7000); }
+          if (!this.previewWarned) { this.previewWarned = true; toast(tx('Nur Vorschau-Ausschnitte – der Startpunkt im Song wird ignoriert.'), 7000); }
           renderStatus();
         } else if (d) this.embed.seek(Math.min(pos, d - 15000) / 1000);
       }

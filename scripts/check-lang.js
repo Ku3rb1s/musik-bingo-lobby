@@ -22,6 +22,13 @@ for (const m of code.matchAll(/\btx\(\s*'((?:\\.|[^'\\])*)'/g)) used.add(m[1].re
 const missingEn = [...used].filter(k => !Object.hasOwn(packs.en.dict, k));
 if (missingEn.length) { problems += missingEn.length; console.log(`\nen: ${missingEn.length} Texte aus dem Code fehlen:`); missingEn.forEach(k => console.log('  - ' + JSON.stringify(k))); }
 
+// Texte in en.js, die nirgends mehr vorkommen (weder im Code noch in index.html) – Überbleibsel umbenannter Texte.
+// Nur ein Hinweis: Manche Texte entstehen erst zur Laufzeit (z. B. tx(KIND_DE[x])) – die stehen aber als Text im Code.
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8').replace(/\s+/g, ' ');
+const flat = code.replace(/\\n/g, '\n');
+const unused = master.filter(k => !flat.includes(k) && !html.includes(k.replace(/\s+/g, ' ')) && !html.includes(k.replace(/\s+/g, ' ').replace(/&/g, '&amp;')));
+if (unused.length) { console.log(`\nHinweis – in en.js, aber nicht mehr benutzt (${unused.length}):`); unused.forEach(k => console.log('  - ' + JSON.stringify(k))); }
+
 for (const [code2, p] of Object.entries(packs)) {
   if (code2 === 'en') continue;
   const keys = Object.keys(p.dict);

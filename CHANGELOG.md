@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.11.3 – 11.10.2026
+- Countdown auf Handys und Fernseher unabhängig von der Uhr des Geräts: Bisher rechnete jedes Gerät mit seiner eigenen Uhr – ging ein Handy z. B. 10 s falsch, zeigte es einen ganz anderen Countdown. Jetzt zählt der Moment, in dem der Start ankommt; nur wer mitten im Countdown dazukommt, rechnet über die Server-Zeit. Sendet der Spielleiter die Runde während des Countdowns nochmal (z. B. Jahr nachgeschlagen), startet nichts neu.
+- Gemeinsamer Countdown-Ring für Handys und Fernseher (vorher doppelter Code)
+- Aufgeräumt: ungenutzte Übersetzungen und CSS-Regeln entfernt; „Startposition“ im Vorschau-Hinweis heißt jetzt auch „Startpunkt im Song“
+- scripts/check-lang.js meldet jetzt auch Übersetzungen, die nicht mehr benutzt werden
+
 ## 4.11.2 – 11.10.2026
 - Sprung aus „Regeln & Karten“: Eine früher angesprungene Zeile (z. B. Countdown) leuchtete beim nächsten Öffnen der Einstellungen erneut auf – jetzt leuchtet nur die gerade gewählte
 - „Song startet“ heißt jetzt „Startpunkt im Song“
