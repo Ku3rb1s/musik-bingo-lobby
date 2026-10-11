@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.11.0 – 11.10.2026
+- „Bingo-Einstellungen“ heißt jetzt „Regeln & Karten“ und zeigt, was in diesem Bingo gilt: Karten (Größe, Joker, Felder), Lobby, Partien (z. B. 2 von 3), Markier-Regel, Buzzer, Countdown, Spielleiter. Die Regeln stehen fest, solange das Bingo läuft – zum Ändern Bingo beenden und neu einrichten. Neue Karten und Fernseher-Ansicht bleiben dort.
+- Spielleiter: Aussteigen mitten im Bingo geht nicht mehr (Karte, Markierungen und Siege gingen verloren) – der Schalter ist weg, und beim eigenen Eintrag in der Mitspieler-Liste gibt es keinen Papierkorb mehr. Wer nicht mitspielt, kann aber jederzeit noch einsteigen („Mitspielen“ → direkt zur Kartenwahl), wie jeder andere auch.
+
 ## 4.10.2 – 11.10.2026
 - Buzzer-Ton viel leiser und weicher (ca. −20 dB, etwa so laut wie die Countdown-Töne): gedämpfter Klang statt harter Rechteck-Töne, knapp eine halbe Sekunde
 - Mitspieler-Leiste: Endete das Ziehen außerhalb der Leiste, wurde der nächste Klick auf einen Namen verschluckt

@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.10.2">
+<link rel="stylesheet" href="css/app.css?v=4.11.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -356,8 +356,8 @@
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
         <button class="cell tap" data-go="bset">
-          <span class="cell-ic" style="background:#6b7280"><svg class="ic"><use href="#i-sliders"/></svg></span>
-          <span class="grow">Bingo-Einstellungen<span class="sub">Mitspielen, neue Karten, Fernseher</span></span>
+          <span class="cell-ic" style="background:#6b7280"><svg class="ic"><use href="#i-file"/></svg></span>
+          <span class="grow">Regeln & Karten<span class="sub">Was in diesem Bingo gilt · neue Karten · Fernseher</span></span>
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
         </div>
@@ -458,12 +458,11 @@
     </section>
 
     <!-- Bingo-Einstellungen -->
-    <section class="page" data-page="bset" data-title="Bingo-Einstellungen">
-      <div class="group-h">Spielleiter</div>
-      <div class="group">
-        <label class="cell"><span class="grow">Ich spiele selbst mit<span class="sub">Eigene Karte, du erscheinst in der Lobby</span></span><span class="switch"><input type="checkbox" class="set-host-plays"><span></span></span></label>
-      </div>
-      <div class="group-h">Karten</div>
+    <section class="page" data-page="bset" data-title="Regeln & Karten">
+      <div class="group-h">Regeln dieses Bingos</div>
+      <div class="group" id="bingoRules"></div>
+      <div class="group-f">Die Regeln stehen fest, solange das Bingo läuft – so gilt für alle dasselbe. Zum Ändern: Bingo beenden und neu einrichten.</div>
+      <div class="group-h">Felder</div>
       <div class="chip-scroll" id="bingoInfo"></div>
       <div class="group" style="margin-top:10px">
         <button class="cell tap" id="btnBingoNew"><span class="grow">Neue Karten erstellen<span class="sub" id="bingoNewSub">Alle müssen den neuen QR-Code scannen</span></span></button>
@@ -601,16 +600,16 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.10.2"></script>
-<script src="js/lang/fr.js?v=4.10.2"></script>
-<script src="js/lang/es.js?v=4.10.2"></script>
-<script src="js/i18n.js?v=4.10.2"></script>
-<script src="js/core.js?v=4.10.2"></script>
-<script src="js/spotify.js?v=4.10.2"></script>
-<script src="js/game.js?v=4.10.2"></script>
-<script src="js/lobby.js?v=4.10.2"></script>
-<script src="js/bingo.js?v=4.10.2"></script>
-<script src="js/views.js?v=4.10.2"></script>
-<script src="js/ui.js?v=4.10.2"></script>
+<script src="js/lang/en.js?v=4.11.0"></script>
+<script src="js/lang/fr.js?v=4.11.0"></script>
+<script src="js/lang/es.js?v=4.11.0"></script>
+<script src="js/i18n.js?v=4.11.0"></script>
+<script src="js/core.js?v=4.11.0"></script>
+<script src="js/spotify.js?v=4.11.0"></script>
+<script src="js/game.js?v=4.11.0"></script>
+<script src="js/lobby.js?v=4.11.0"></script>
+<script src="js/bingo.js?v=4.11.0"></script>
+<script src="js/views.js?v=4.11.0"></script>
+<script src="js/ui.js?v=4.11.0"></script>
 </body>
 </html>

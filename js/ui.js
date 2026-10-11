@@ -313,6 +313,10 @@ document.addEventListener('click', async e => {
     newMatch(state.match?.total); state.match.game = 0; state.match.over = false; nextGame();
     $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());
   }
+  if (t.closest('[data-host-join]')) {   // Spielleiter steigt nachträglich ein → gleich zur Kartenwahl
+    state.settings.hostPlays = true; LS.set('settings', state.settings);
+    renderMyCardBtn(); renderBingo(); goPage($('#sheetGame'), 'mycard');
+  }
   const pDel = t.closest('[data-player-del]');
   if (pDel) {
     const id = pDel.dataset.playerDel, p = Lobby.players[id];
