@@ -870,3 +870,5 @@ button.cell.rule{cursor:pointer}
    des Menüs bei drehender Platte 60× pro Sekunde neu berechnet werden – zu sehen ist dahinter ohnehin nur ein Schimmer. */
 body:has(dialog[open]) .bg i,body:has(dialog[open]) .disc,
 body:has(.win:not(.hidden)) .bg i,body:has(.win:not(.hidden)) .disc{animation-play-state:paused!important}
+/* „Bewegung reduzieren“ (Bedienungshilfen): Fernseher-Liste läuft nicht durch – die zweite Kopie bleibt dann versteckt */
+@media (prefers-reduced-motion:reduce){.tv-copy[aria-hidden]{display:none}.tv-players.rolling .tv-scroll{-webkit-mask-image:none;mask-image:none}}

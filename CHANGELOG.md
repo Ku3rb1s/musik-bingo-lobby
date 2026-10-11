@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.3 – 11.10.2026
+- Countdown auf Handys/Fernseher: Verband sich der Spielleiter mitten im Countdown neu, konnte der Countdown dort von vorn beginnen – ein Countdown wird jetzt am Wechsel der Runde in die Countdown-Phase erkannt, nicht an der (leicht schwankenden) Endzeit
+- Fernseher mit „Bewegung reduzieren“ (Bedienungshilfen): Die Mitspieler-Liste stand doppelt da – läuft dann nicht durch und zeigt jeden Namen einmal
+- Darstellungs-Prüfung aller Menüseiten in 4 Sprachen auf dem kleinsten Handy: ohne Befund
+
 ## 4.12.2 – 11.10.2026
 - Akku/Flüssigkeit (ohne sichtbare Änderung):
   - Ist ein Menü oder Fenster offen, stehen Hintergrund und Platte dahinter still – vorher musste die Milchglas-Unschärfe des Menüs bei laufender Musik 60× pro Sekunde neu berechnet werden

@@ -24,12 +24,15 @@ function locAnswer(r) {
 
 // Countdown-Ende auf der eigenen Uhr. Kommt der Start live an (Normalfall), zählt der Moment der Ankunft – das stimmt
 // unabhängig davon, wie die Uhren der Geräte gehen. Nur wer mitten im Countdown dazukommt (Beitreten, Neuladen),
-// rechnet über die Server-Zeit (r.end = Server-Zeit, geschätzt vom Spielleiter). r.end kennzeichnet den Countdown –
-// sendet der Spielleiter dieselbe Runde nochmal (z. B. Jahr nachgeschlagen), bleibt das Ende gleich.
+// rechnet über die Server-Zeit (r.end = Server-Zeit, geschätzt vom Spielleiter).
+// Ein Countdown beginnt, wenn eine Runde in die Phase „c“ wechselt. Kommt dieselbe Runde währenddessen nochmal
+// (Jahr nachgeschlagen, Spielleiter neu verbunden), bleibt das Ende gleich. Bei jeder Rundenänderung aufrufen.
 function cdClock() {
   let key = null, end = 0;
   return (r, live) => {
-    if (r.end !== key) { key = r.end; end = live && r.dur ? Date.now() + r.dur : r.end - fbOffset; }
+    if (r?.ph !== 'c' || !r.end) { key = null; return 0; }
+    const k = r.id ?? r.n;
+    if (k !== key) { key = k; end = live && r.dur ? Date.now() + r.dur : r.end - fbOffset; }
     return end;
   };
 }
@@ -376,7 +379,7 @@ async function lobbyMode(code, autoName = null) {
     f.onValue(f.at(`${base}/round`), s => {
       const r = s.val();
       curRound = r;
-      if (r?.ph === 'c' && r.end) cdEnd = cdEndOf(r, roundSeen);
+      cdEnd = cdEndOf(r, roundSeen);
       roundSeen = true;
       // Neue Runde → alter Tipp weg. Macht der Spielleiter ein Überspringen rückgängig, kommt der Tipp dieser Runde zurück.
       if (r && keyOf(r) !== lastKey) {
@@ -544,7 +547,7 @@ async function tvMode(code) {
   addEventListener('resize', () => drawSide());
   f.onValue(f.at(`${base}/round`), s => {
     r = s.val();
-    if (r?.ph === 'c' && r.end) cdEnd = cdEndOf(r, roundSeen);
+    cdEnd = cdEndOf(r, roundSeen);
     roundSeen = true;
     draw(); drawSide();
   });
