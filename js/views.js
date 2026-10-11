@@ -36,9 +36,11 @@ function cdClock() {
 // Countdown-Ring (Handys und Fernseher): Sekunden, Fortschritt (--p) und die letzten 5 s rot.
 // Liefert die Intervall-ID (zum Stoppen bei der nächsten Runde); bei 0 stoppt der Ring von selbst.
 function runRing(ring, num, end, total = 30000) {
+  let last = null;
   const tick = () => {
     const rem = Math.max(0, end - Date.now()), sec = Math.ceil(rem / 1000);
-    num.textContent = sec; ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3)); ring.classList.toggle('urgent', sec <= 5);
+    ring.style.setProperty('--p', Math.min(1, rem / total).toFixed(3));
+    if (sec !== last) { num.textContent = sec; ring.classList.toggle('urgent', sec <= 5); last = sec; }
     if (!rem) clearInterval(iv);
   };
   const iv = setInterval(tick, 250);

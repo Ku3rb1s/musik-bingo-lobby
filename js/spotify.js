@@ -96,13 +96,22 @@ async function api(path, opts = {}, retry = true) {
 }
 
 /* ---------------- Songs & Playlists ---------------- */
+// Aus Spotifys Bildliste das kleinste nehmen, das für min Pixel (Breite) noch scharf ist – spart Datenvolumen und
+// Rechenzeit beim Anzeigen (Listen mit Dutzenden Covern). Ohne Größenangabe: das erste (größte).
+function pickImg(images, min) {
+  const list = (images || []).filter(i => i?.url);
+  if (!list.length) return '';
+  if (list.some(i => !i.width)) return list[0].url;
+  const ok = list.filter(i => i.width >= min).sort((a, b) => a.width - b.width);
+  return (ok[0] || list.reduce((a, b) => (b.width > a.width ? b : a))).url;
+}
 function normTrack(t) {
   const date = t.album?.release_date || '';
   return {
     id: t.id, uri: t.uri, title: t.name,
     artists: (t.artists || []).map(a => a.name).join(', '),
     album: t.album?.name || '', date, year: parseInt(date) || null,
-    cover: t.album?.images?.[0]?.url || '', duration: t.duration_ms || 0,
+    cover: t.album?.images?.[0]?.url || '', thumb: pickImg(t.album?.images, 120), duration: t.duration_ms || 0,
   };
 }
 function saveLib() {
@@ -154,7 +163,7 @@ async function loadPlaylist(id) {
   try {
     const meta = myPlaylists?.find(p => p.id === id) || plSearch.list?.find(p => p.id === id);
     let name = meta?.name, cover = meta?.cover;
-    if (!name) { try { const p = await api(`/playlists/${id}?fields=name,images`); name = p?.name; cover = p?.images?.[0]?.url || ''; } catch {} }
+    if (!name) { try { const p = await api(`/playlists/${id}?fields=name,images`); name = p?.name; cover = pickImg(p?.images, 120); } catch {} }
     let page;
     try { page = await api(`/playlists/${id}/items?limit=50`); }
     catch (e) { if (e.status === 401) throw e; page = await api(`/playlists/${id}/tracks?limit=50`); }
@@ -198,7 +207,7 @@ async function loadMyPlaylists(force) {
     const out = [];
     while (page && out.length < 300) {
       for (const p of page.items || []) if (p?.id) out.push({
-        id: p.id, name: p.name, cover: p.images?.[0]?.url || '', total: (p.tracks || p.items)?.total ?? null,
+        id: p.id, name: p.name, cover: pickImg(p.images, 120), total: (p.tracks || p.items)?.total ?? null,
       });
       page = page.next ? await api(page.next) : null;
     }
@@ -226,7 +235,7 @@ async function searchPlaylists() {
     if (my !== plSearch.seq) return;
     const items = [...(r1?.playlists?.items || []), ...(r2?.playlists?.items || [])];
     const list = [...new Map(items.filter(p => p?.id).map(p => [p.id, p])).values()].map(p => ({
-      id: p.id, name: p.name, cover: p.images?.[0]?.url || '', total: (p.tracks || p.items)?.total ?? null,
+      id: p.id, name: p.name, cover: pickImg(p.images, 120), total: (p.tracks || p.items)?.total ?? null,
       owner: p.owner?.display_name || p.owner?.id || '', spotify: p.owner?.id === 'spotify',
     }));
     plSearch.list = [...list.filter(p => !p.spotify), ...list.filter(p => p.spotify)];

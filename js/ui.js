@@ -5,7 +5,7 @@
 function render() {
   const ph = round?.phase || 'idle';
   $('#roundNo').textContent = round ? tx('Runde {n}', { n: round.n }) : tx('Runde –');
-  const left = state.tracks.filter(t => !state.played.includes(t.id)).length;
+  const playedSet = new Set(state.played), left = state.tracks.reduce((n, t) => n + !playedSet.has(t.id), 0);
   // Hat ein Mitspieler gebuzzert, steht sein Name statt „Songs übrig“ oben (bis zur nächsten Runde)
   $('#buzzBy').textContent = round?.bz ? '🔔 ' + round.bz : '';
   $('#buzzBy').classList.toggle('hidden', !round?.bz);
@@ -118,10 +118,13 @@ function renderReveal() {
   renderGuessList();
   loadCover(t);
 }
+let histDirty = false;
 function renderHist() {
+  if (!$('#histBox').open) { histDirty = true; return; }   // zugeklappt: erst beim Aufklappen aufbauen
+  histDirty = false;
   const byId = new Map(state.tracks.map(t => [t.id, t]));
   $('#hist').innerHTML = state.history.map(h => {
-    const cover = byId.get(h.id)?.cover;
+    const t = byId.get(h.id), cover = t?.thumb || t?.cover;
     return `<li><b>#${h.n}</b>${cover ? `<img src="${esc(cover)}" alt="" loading="lazy">` : '<span class="ph"></span>'}
       <span><span class="muted small">${esc(tx(h.cat))}</span><br>${esc(h.artists)} – ${esc(h.title)} <span class="muted">(${h.year ?? '?'})</span></span></li>`;
   }).join('') || `<li class="muted">${tx('Noch keine Runden gespielt')}</li>`;
@@ -365,6 +368,7 @@ document.addEventListener('click', async e => {
     if (await ask(tx('Kategorie „{n}“ löschen?', { n: state.cats[i].name }), { ok: tx('Löschen'), danger: true })) { state.cats.splice(i, 1); saveCats(); }
   }
 });
+$('#histBox').addEventListener('toggle', () => { if ($('#histBox').open && histDirty) renderHist(); });
 // Mitspieler-Leiste: bei vielen Namen zur Seite scrollbar – auf dem Handy wischen, am PC mit Mausrad oder Ziehen.
 // Ein weicher Rand links/rechts zeigt, dass dort noch Namen kommen.
 (() => {

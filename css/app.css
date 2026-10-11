@@ -866,3 +866,7 @@ button.cell.rule{cursor:pointer}
 /* Suchergebnis „von Spotify“: lässt sich mit Entwickler-Apps meist nicht laden → zurückgenommen */
 .cell.pl-spotify{opacity:.6}
 .cell.pl-spotify .sub{white-space:normal}
+/* Akku: Ist ein Menü oder Fenster offen, stehen Hintergrund und Platte dahinter still. Sonst muss die Milchglas-Unschärfe
+   des Menüs bei drehender Platte 60× pro Sekunde neu berechnet werden – zu sehen ist dahinter ohnehin nur ein Schimmer. */
+body:has(dialog[open]) .bg i,body:has(dialog[open]) .disc,
+body:has(.win:not(.hidden)) .bg i,body:has(.win:not(.hidden)) .disc{animation-play-state:paused!important}

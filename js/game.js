@@ -29,7 +29,8 @@ async function nextRound() {
   stopTimer(); clearTimeout(snippetT);
   // Für „Rückgängig“: vorherige Runde merken
   const prev = round ? { round, played: state.played.slice() } : null;
-  let pool = state.tracks.filter(t => !state.played.includes(t.id));
+  const playedSet = new Set(state.played);
+  let pool = state.tracks.filter(t => !playedSet.has(t.id));
   let reshuffled = false;
   if (!pool.length) { reshuffled = true; state.played = []; pool = state.tracks.slice(); }
   const track = pool[Math.floor(Math.random() * pool.length)];
@@ -116,10 +117,12 @@ function startCountdown(by = null) {
   render();
   const tick = () => {
     const rem = Math.max(0, end - Date.now()), s = Math.ceil(rem / 1000);
-    $('#timerNum').textContent = s;
     ring.style.strokeDashoffset = C * (1 - rem / total);
-    $('#discWrap').classList.toggle('urgent', s <= 5);
-    if (s !== lastSec) { if (s <= 3 && s > 0) beep(880, .08); lastSec = s; }
+    if (s !== lastSec) {   // Zahl, Farbe und Ton nur bei neuer Sekunde
+      $('#timerNum').textContent = s; $('#discWrap').classList.toggle('urgent', s <= 5);
+      if (s <= 3 && s > 0) beep(880, .08);
+      lastSec = s;
+    }
     if (rem <= 0) {
       stopTimer(); beep(440, .7, .3);
       if (state.settings.autoReveal) reveal();
@@ -191,13 +194,20 @@ async function fixYear() {
   render(); renderHist(); Lobby.syncRound();
 }
 
+// Bibliothek speichern, wenn gerade nichts los ist (bei vielen Songs ist das ein großer Text – nicht mitten im Spiel)
+let saveTracksT = null;
+function saveTracksSoon() {
+  clearTimeout(saveTracksT);
+  saveTracksT = setTimeout(() => (self.requestIdleCallback || (f => f()))(() => LS.set('tracks', state.tracks)), 3000);
+}
+addEventListener('pagehide', () => { if (saveTracksT) { clearTimeout(saveTracksT); LS.set('tracks', state.tracks); } });
 async function loadCover(t) {
   if (t.cover || t._coverTried) return;
   t._coverTried = true;
   try {
     const r = await fetch('https://open.spotify.com/oembed?url=' + encodeURIComponent('https://open.spotify.com/track/' + t.id));
     const j = await r.json();
-    if (j.thumbnail_url) { t.cover = j.thumbnail_url; LS.set('tracks', state.tracks); if (round?.track === t && round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } }
+    if (j.thumbnail_url) { t.cover = j.thumbnail_url; saveTracksSoon(); if (round?.track === t && round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } }
   } catch {}
 }
 
@@ -325,7 +335,7 @@ function hintsFor(cat, t) {
   const part = y ? tx(['Anfang', 'Anfang', 'Anfang', 'Mitte', 'Mitte', 'Mitte', 'Mitte', 'Ende', 'Ende', 'Ende'][y % 10]) : null;
   const H = (s, v) => tx(s, v);
   const artist0 = t.artists.split(',')[0];
-  const cover = t.cover ? { cover: t.cover } : null;
+  const cover = t.cover ? { cover: t.thumb || t.cover } : null;   // unscharfes Vorschaubild – klein reicht
   const list = {
     title: [H('Der Titel beginnt mit „{c}“', { c: first(t.title) }), H(words === 1 ? 'Der Titel hat {n} Wort' : 'Der Titel hat {n} Wörter', { n: words }), cover],
     artist: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec }), cover],

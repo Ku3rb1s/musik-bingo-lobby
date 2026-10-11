@@ -2,6 +2,15 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.2 – 11.10.2026
+- Akku/Flüssigkeit (ohne sichtbare Änderung):
+  - Ist ein Menü oder Fenster offen, stehen Hintergrund und Platte dahinter still – vorher musste die Milchglas-Unschärfe des Menüs bei laufender Musik 60× pro Sekunde neu berechnet werden
+  - „Songs übrig“ und Song-Auswahl rechnen per Nachschlagen statt Doppelschleife (bei 3000 Songs: von Hunderttausenden Vergleichen auf wenige Tausend)
+  - Vorschaubilder in passender Größe (300 statt 640 px) für Playlist-Listen, Suche, Verlauf und das unscharfe Tipp-Cover
+  - Verlauf wird erst beim Aufklappen aufgebaut; Mitspieler-Leiste nur bei Änderung neu
+  - Countdown (Spielleiter, Handys, Fernseher): Zahl nur bei neuer Sekunde neu gesetzt
+  - Nachgeladene Cover: Bibliothek gesammelt speichern statt jedes Mal die ganze Song-Liste
+
 ## 4.12.1 – 11.10.2026
 - Playlist-Suche: „Suche fehlgeschlagen: Invalid limit“ behoben – Spotify erlaubt Entwickler-Apps nur wenige Treffer pro Anfrage. Jetzt 2 × 10 Treffer (notfalls 2 × 5).
 - Hinweise wieder oben – auf allen Geräten – und nur nach oben wegwischbar wie beim iPhone (nach unten federn sie zurück)
