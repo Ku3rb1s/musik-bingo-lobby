@@ -129,7 +129,8 @@ const Lobby = {
     const cd = round.phase === 'countdown' && round.end;
     const pv = !rev && lastRevFor(round);   // vorige Runde – solange die laufende nicht aufgelöst ist, darf man sie nachtragen
     this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end + fbOffset, dur: round.dur } : {}),
-      ...(round.bz ? { bz: round.bz } : {}),   // wer gebuzzert hat (Name) ...(pv ? { pv } : {}),
+      ...(round.bz ? { bz: round.bz } : {}),   // wer gebuzzert hat (Name)
+      ...(pv ? { pv } : {}),
       ...(round.n <= (state.partieFrom || 0) ? { old: 1 } : {}),   // Runde gehört zur vorigen Partie → nicht markierbar
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc
       ...(rev ? { a: withLang('de', () => plainText(answerFor(round.cat, t))), at: round.cat.answer, s: `${t.artists} – ${t.title}`, ti: t.title, ar: t.artists,

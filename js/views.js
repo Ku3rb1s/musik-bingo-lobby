@@ -396,6 +396,8 @@ async function lobbyMode(code, autoName = null) {
       if (r && keyOf(r) !== lastKey) {
         const mine = me?.guess;
         if (lastKey !== null && keyOf(r) > lastKey) { $('#guessText').value = ''; LS.set('guess', ''); }
+        // Später wieder geöffnet: Im Feld steht noch der abgegebene Tipp einer früheren Runde → weg damit
+        else if (lastKey === null && mine?.t && mine.n !== keyOf(r) && $('#guessText').value.trim() === mine.t) { $('#guessText').value = ''; LS.set('guess', ''); }
         // Gespeicherter Tipp dieser Runde (nach „Rückgängig“ oder Neuladen) gehört ins Feld
         else if (mine?.t && mine.n === keyOf(r) && $('#guessText').value.trim() !== mine.t) { $('#guessText').value = mine.t; LS.set('guess', mine.t); }
         lastKey = keyOf(r);

@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.5 – 11.10.2026
+- Fehler behoben: „Vorige Runde nachtragen“ kam seit 4.10.0 nicht mehr auf den Handys an (die Angabe wurde nicht mehr mitgeschickt) – wer das Markieren vergessen hat, kann jetzt wieder nachtragen, bis die nächste Runde aufgelöst ist
+- Handys: Wer die Lobby später wieder öffnet, sieht nicht mehr den abgegebenen Tipp einer früheren Runde im Tipp-Feld
+
 ## 4.13.4 – 11.10.2026
 - Handys, Runden-Box nach der Auflösung: Cover rechts (wo vorher der Countdown lief) statt des Kategorie-Symbols links; „(richtig: 1970–1976)“ klein direkt neben der Jahreszahl
 - Spielleiter: Mit Lobby steht oben rechts die laufende Partie („Partie 1/3“, „🏁 Spiel vorbei“) statt „Songs übrig“ (die Song-Anzahl steht unter Playlists)
