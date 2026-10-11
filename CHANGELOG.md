@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.1 – 11.10.2026
+- Einstellungen: „Wiedergabe“ wieder weit oben (direkt unter Spotify-Konto), mit Anzeige, worüber die Musik gerade läuft, und eigener Seite: Auswahl, Gerät und „So klappt’s“ für PC, iPhone/iPad/Android (Spotify-App einmal öffnen und kurz einen Song anspielen), Box/Alexa/Sonos/Fernseher und ohne Premium
+- „Eigene Spotify-App verwenden“ verständlich erklärt: wozu (Spotify erlaubt im Entwicklermodus höchstens 5 Spielleiter pro App), was man braucht (Premium) und Schritt für Schritt bis zum Freischalten weiterer Spielleiter
+- Hinweis beim Anmelden nennt das 5-Personen-Limit
+
 ## 4.13.0 – 11.10.2026
 - Neu: Checkliste vor dem ersten Spiel statt leerer Platte – 1. Mit Spotify verbinden, 2. Playlist hinzufügen, 3. Bingo einrichten (optional). Erledigtes bekommt ein ✓, jeder Schritt führt direkt an die richtige Stelle. Oben „Willkommen!“ bzw. „Los geht’s!“; „Runde –“, „Keine Songs“ und der leere Verlauf sind bis dahin ausgeblendet.
 - Einstellungen aufgeräumt: Hauptseite mit Spotify, Design, Spiel (Countdown, Startpunkt, Song-Länge, Tipps, Automatisch auflösen), Töne, Kategorien. Selten Gebrauchtes unter „Erweitert“: Abspielen über/Gerät, Bei Auflösung pausieren, Originaljahr (MusicBrainz).

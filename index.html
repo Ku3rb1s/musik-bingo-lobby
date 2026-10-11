@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.13.0">
+<link rel="stylesheet" href="css/app.css?v=4.13.1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -193,6 +193,11 @@
           <span class="grow">Spotify-Konto<span class="sub" id="accSub"></span></span>
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
+        <button class="cell tap" data-go="play">
+          <span class="cell-ic" style="background:#0ea5e9"><svg class="ic"><use href="#i-vol"/></svg></span>
+          <span class="grow">Wiedergabe<span class="sub" id="playSub"></span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
 
       </div>
 
@@ -242,7 +247,7 @@
         </button>
         <button class="cell tap" data-go="adv">
           <span class="cell-ic" style="background:#6b7280"><svg class="ic"><use href="#i-sliders"/></svg></span>
-          <span class="grow">Erweitert<span class="sub">Wiedergabe, Originaljahr, Pause bei Auflösung</span></span>
+          <span class="grow">Erweitert<span class="sub">Originaljahr, Pause bei Auflösung</span></span>
           <svg class="ic chev"><use href="#i-chev"/></svg>
         </button>
       </div>
@@ -250,10 +255,9 @@
       <div class="group-f" id="appVersion" style="text-align:center;margin-top:28px;opacity:.6"></div>
     </section>
 
-    <section class="page" data-page="adv" data-title="Erweitert">
-      <div class="group-h" style="margin-top:14px">Wiedergabe</div>
-      <div class="group">
-        <label class="cell"><span class="grow">Abspielen über</span>
+    <section class="page" data-page="play" data-title="Wiedergabe">
+      <div class="group" style="margin-top:14px">
+        <label class="cell"><span class="grow">Musik spielt über</span>
           <select id="setMode">
             <option value="auto">Automatisch</option>
             <option value="connect">Spotify-App / Box</option>
@@ -268,7 +272,17 @@
         </div>
       </div>
       <div class="group-f" id="modeInfo"></div>
-      <div class="group-h">Auflösung</div>
+      <div class="group-h">So klappt’s</div>
+      <div class="play-help">
+        <div class="ph"><span class="ph-ic">💻</span><div><b>Am PC oder Laptop</b><span>Chrome oder Edge spielen die Musik selbst ab – mit Spotify Premium.</span></div></div>
+        <div class="ph"><span class="ph-ic">📱</span><div><b>Am iPhone, iPad oder Android-Handy</b><span>Hier darf der Browser keine ganzen Songs abspielen – das übernimmt die Spotify-App. Öffne sie einmal, spiel kurz irgendeinen Song an und komm zurück. Danach steuert Musik-Bingo die App.</span></div></div>
+        <div class="ph"><span class="ph-ic">🔊</span><div><b>Box, Alexa, Sonos oder Fernseher</b><span>Oben „Spotify-App / Box“ wählen und das Gerät aussuchen. Taucht es nicht auf: In der Spotify-App einmal darauf abspielen (Geräte-Symbol unten), dann ↻ antippen.</span></div></div>
+        <div class="ph"><span class="ph-ic">🎧</span><div><b>Ohne Premium</b><span>„Nur Vorschau“ spielt 30-Sekunden-Ausschnitte.</span></div></div>
+      </div>
+    </section>
+
+    <section class="page" data-page="adv" data-title="Erweitert">
+      <div class="group-h" style="margin-top:14px">Auflösung</div>
       <div class="group">
         <label class="cell"><span class="grow">Bei Auflösung pausieren<span class="sub">Musik stoppt, sobald die Lösung kommt</span></span><span class="switch"><input type="checkbox" id="setPause"><span></span></span></label>
       </div>
@@ -304,17 +318,23 @@
         </div>
         <div id="fileWarn" class="warn hidden">Die Seite wurde direkt als Datei geöffnet. Für den Login bitte über <b>start.bat</b> oder die Online-Adresse öffnen.</div>
         <button id="btnLogin" class="big full">Mit Spotify anmelden</button>
-        <div class="group-f" style="text-align:center;margin-top:14px">Musik-Bingo ist noch im Testbetrieb: Anmelden kann sich nur, wer vom Ersteller freigeschaltet wurde. Zum Mitraten braucht niemand ein Konto.</div>
+        <div class="group-f" style="text-align:center;margin-top:14px">Anmelden kann sich nur, wer vom Ersteller freigeschaltet wurde – Spotify erlaubt höchstens 5 Spielleiter pro App. Zum Mitraten braucht niemand ein Konto. Mehr Spielleiter: „Eigene Spotify-App verwenden“ unten.</div>
 
         <details class="group" id="ownApp" style="margin-top:28px">
           <summary class="cell tap"><span class="grow muted">Eigene Spotify-App verwenden</span><svg class="ic chev"><use href="#i-chev"/></svg></summary>
+          <div class="own-intro">
+            <p>Spotify lässt Apps wie Musik-Bingo nur im Entwicklermodus laufen: Pro App können sich höchstens 5 Spielleiter anmelden, und der Ersteller muss jeden freischalten.</p>
+            <p>Mit einer eigenen, kostenlosen Spotify-App bist du selbst der Ersteller – du meldest dich ohne Freischaltung an und kannst bis zu 4 weitere Spielleiter freischalten. Du brauchst dafür Spotify Premium. Mitspieler brauchen nie ein Konto.</p>
+          </div>
           <ol class="steps">
-            <li><span>Auf <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a> eine App erstellen.</span></li>
-            <li><span>Als <b>Redirect URI</b> eintragen:<br><code class="redir"></code></span></li>
-            <li><span><b>Web API</b> und <b>Web Playback SDK</b> anhaken, speichern und die <b>Client ID</b> hier einfügen.</span></li>
+            <li><span>Auf der Spotify-Entwicklerseite mit deinem Spotify-Konto anmelden und „Create app“ antippen.<br><a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a></span></li>
+            <li><span>Name z. B. „Musik-Bingo“, Beschreibung beliebig. Als Redirect URI genau diese Adresse eintragen:<br><code class="redir"></code></span></li>
+            <li><span>Bei den APIs „Web API“ und „Web Playback SDK“ anhaken, den Bedingungen zustimmen und speichern.</span></li>
+            <li><span>In der App unter „Settings“ die Client ID kopieren und hier einfügen:</span></li>
           </ol>
           <div class="cell"><input id="clientId" class="bare" placeholder="Client ID" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
             <button id="btnOwnLogin" class="mini">Anmelden</button></div>
+          <div class="group-f">Weitere Spielleiter freischalten: in deiner App unter „User Management“ Name und Spotify-E-Mail eintragen.</div>
         </details>
       </div>
     </section>
@@ -643,16 +663,16 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.13.0"></script>
-<script src="js/lang/fr.js?v=4.13.0"></script>
-<script src="js/lang/es.js?v=4.13.0"></script>
-<script src="js/i18n.js?v=4.13.0"></script>
-<script src="js/core.js?v=4.13.0"></script>
-<script src="js/spotify.js?v=4.13.0"></script>
-<script src="js/game.js?v=4.13.0"></script>
-<script src="js/lobby.js?v=4.13.0"></script>
-<script src="js/bingo.js?v=4.13.0"></script>
-<script src="js/views.js?v=4.13.0"></script>
-<script src="js/ui.js?v=4.13.0"></script>
+<script src="js/lang/en.js?v=4.13.1"></script>
+<script src="js/lang/fr.js?v=4.13.1"></script>
+<script src="js/lang/es.js?v=4.13.1"></script>
+<script src="js/i18n.js?v=4.13.1"></script>
+<script src="js/core.js?v=4.13.1"></script>
+<script src="js/spotify.js?v=4.13.1"></script>
+<script src="js/game.js?v=4.13.1"></script>
+<script src="js/lobby.js?v=4.13.1"></script>
+<script src="js/bingo.js?v=4.13.1"></script>
+<script src="js/views.js?v=4.13.1"></script>
+<script src="js/ui.js?v=4.13.1"></script>
 </body>
 </html>

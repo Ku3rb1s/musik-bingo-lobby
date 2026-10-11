@@ -150,7 +150,11 @@ function renderHist() {
       <span><span class="muted small">${esc(tx(h.cat))}</span><br>${esc(h.artists)} – ${esc(h.title)} <span class="muted">(${h.year ?? '?'})</span></span></li>`;
   }).join('') || `<li class="muted">${tx('Noch keine Runden gespielt')}</li>`;
 }
+const MODE_NAMES = { auto: 'Automatisch', connect: 'Spotify-App / Box', sdk: 'Diesen Browser', embed: 'Nur Vorschau' };
 function renderStatus() {
+  // Einstellungen → „Wiedergabe“: worüber die Musik gerade läuft
+  $('#playSub').textContent = Player.mode === 'connect' && Player.connectDev ? tx('Spielt auf „{d}“', { d: Player.connectDev.name })
+    : Player.mode === 'sdk' ? tx('Spielt in diesem Browser') : tx(MODE_NAMES[state.settings.mode] || MODE_NAMES.auto);
   $('#accSub').textContent = state.tok ? (state.me?.name ? tx('Verbunden als {n}', { n: state.me.name }) : tx('Verbunden')) : tx('Nicht verbunden – hier einrichten');
   const s = state.settings;
   $('#modeInfo').textContent =

@@ -924,3 +924,12 @@ a.cell{color:inherit;text-decoration:none}
 body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .step{white-space:normal}
 .stage.setup .round-meta{visibility:hidden;height:0;margin:0}
+/* Wiedergabe → „So klappt’s“ */
+.play-help{display:flex;flex-direction:column;gap:8px}
+.play-help .ph{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.play-help .ph-ic{font-size:1.3rem;line-height:1.2;flex:none}
+.play-help b{display:block;font-size:.95rem}
+.play-help span:not(.ph-ic){display:block;font-size:.84rem;color:var(--muted);margin-top:2px;line-height:1.4}
+/* Eigene Spotify-App: Einleitung */
+.own-intro{padding:4px 16px 2px;font-size:.86rem;color:var(--muted);line-height:1.45}
+.own-intro p{margin:8px 0}
