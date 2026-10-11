@@ -363,7 +363,8 @@ document.addEventListener('click', async e => {
     if (Math.abs(e.clientX - drag.x) > 5) moved = true;
     if (moved) bar.scrollLeft = drag.l - (e.clientX - drag.x);
   });
-  addEventListener('pointerup', () => { drag = null; });
+  // „moved“ nur für den Klick direkt nach dem Ziehen – endet das Ziehen außerhalb der Leiste, sonst bliebe der nächste Klick hängen
+  addEventListener('pointerup', () => { if (drag) setTimeout(() => { moved = false; }, 0); drag = null; });
   // Nach dem Ziehen keinen Namen „anklicken“
   bar.addEventListener('click', e => { if (moved) { e.stopPropagation(); moved = false; } }, true);
 })();

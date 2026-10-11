@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.10.1', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.10.2', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -244,16 +244,18 @@ function beep(freq = 880, dur = .15, vol = .2) {
     o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + dur);
   } catch {}
 }
-// Buzzer-Ton wie in einer Quizshow: zwei leicht verstimmte, raue Töne, ca. 0,7 s (unabhängig von „Töne beim Countdown“)
+// Buzzer-Ton wie in einer Quizshow – bewusst leise und weich: zwei leicht verstimmte Töne, oben abgeschnitten (Tiefpass),
+// knapp eine halbe Sekunde. Unabhängig von „Töne beim Countdown“.
 function buzzSound() {
   if (state.settings.buzzSound === false) return;
   try {
     actx = actx || new AudioContext(); actx.resume?.();
-    const t = actx.currentTime, g = actx.createGain();
-    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.22, t + .02);
-    g.gain.setValueAtTime(.22, t + .5); g.gain.exponentialRampToValueAtTime(.001, t + .75);
-    g.connect(actx.destination);
-    for (const f of [138, 146]) { const o = actx.createOscillator(); o.type = 'square'; o.frequency.value = f; o.connect(g); o.start(t); o.stop(t + .76); }
+    const t = actx.currentTime, g = actx.createGain(), lp = actx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 900;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.05, t + .03);
+    g.gain.setValueAtTime(.05, t + .3); g.gain.exponentialRampToValueAtTime(.0005, t + .48);
+    lp.connect(g).connect(actx.destination);
+    for (const f of [180, 188]) { const o = actx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(t); o.stop(t + .5); }
   } catch {}
 }
 function fillRange(el) { el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); }

@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.10.2 – 11.10.2026
+- Buzzer-Ton viel leiser und weicher (ca. −20 dB, etwa so laut wie die Countdown-Töne): gedämpfter Klang statt harter Rechteck-Töne, knapp eine halbe Sekunde
+- Mitspieler-Leiste: Endete das Ziehen außerhalb der Leiste, wurde der nächste Klick auf einen Namen verschluckt
+
 ## 4.10.1 – 11.10.2026
 - 🔔 Buzzer-Ton (Einstellungen, abschaltbar): Buzzert ein Mitspieler, kommt beim Spielleiter ein Quizshow-Buzzer statt eines Pieps; beim Einschalten zum Probehören
 - Fernseher überarbeitet:
