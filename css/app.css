@@ -938,8 +938,8 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .round-live.has-cover .rl-ic{display:none}
 .round-live .rl-a small{display:inline;margin-left:.35em}
 /* 4.14.0: Tipps für alle, kleines Auge, Buzzer-Icon, Bingo der anderen, Vibrieren */
-.guess-head .guess-big.eye-mini{width:auto;height:30px;padding:0 10px;flex-direction:row;background:rgba(255,255,255,.08);border:1px solid var(--g-brd);
-  box-shadow:none;color:var(--muted);border-radius:99px}
+.guess-head .guess-big.eye-mini{width:58px;height:32px;padding:0;flex-direction:row;background:rgba(255,255,255,.08);border:1px solid var(--g-brd);
+  box-shadow:none;color:var(--muted);border-radius:12px}
 .guess-big.eye-mini span{display:none}
 .guess-big.eye-mini .ic{width:18px;height:18px}
 .guess-big:disabled{opacity:.5;box-shadow:none}
@@ -954,7 +954,7 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .vibe-row small{display:block;font-weight:500;color:var(--muted);font-size:.75rem}
 .nav-title:focus{outline:none}
 /* 4.14.1: Tipps ruhiger – kleiner Glühbirnen-Knopf mit Zahl, Tipps als eine Textzeile, Tipp-Feld einzeilig */
-.guess-big.hint-req{position:relative;width:58px;padding:0;background:rgba(255,176,32,.14);border:1px solid rgba(255,176,32,.45);color:#ffc04d;box-shadow:none}
+.guess-big.hint-req{position:relative;width:58px;padding:0;background:rgba(255,176,32,.14);border:1px solid rgba(255,176,32,.45);color:#ffc04d;box-shadow:none;border-radius:12px}
 .guess-big.hint-req .ic{width:26px;height:26px}
 .hint-req .hint-n{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;border-radius:99px;display:grid;place-items:center;
   background:#ffb020;color:#2a1600;font-size:.72rem;font-weight:900;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.35)}
@@ -974,3 +974,5 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 /* 4.14.3: neuer Tipp → Zeile leuchtet kurz auf statt Hinweis oben */
 .hints-line.new{animation:hintGlow 1.6s ease-out}
 @keyframes hintGlow{0%{color:#fff;text-shadow:0 0 12px #ffb020}100%{color:#ffd27a;text-shadow:none}}
+/* 4.14.4: Buzzer – etwas Luft zwischen Glocke und Schrift */
+.rl-buzz{gap:4px}

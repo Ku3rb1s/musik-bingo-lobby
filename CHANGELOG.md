@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.14.4 – 11.10.2026
+- Handys: Auge („Groß zeigen“) genauso breit wie der Tipp-Knopf, bündig darüber, gleiche Ecken; Buzzer-Glocke mit etwas Abstand zur Schrift
+
 ## 4.14.3 – 11.10.2026
 - Handys: Kein Hinweis oben mehr bei einem neuen Tipp – stattdessen leuchtet die Tipp-Zeile unter der Frage kurz auf
 
