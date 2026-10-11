@@ -42,7 +42,7 @@ function render() {
         ? `<button class="ghost" data-act="newgame">${ic('restart')}<span>${tx('Neu')}</span></button><button class="big" data-act="next">${ic('play')} ${tx('Weiterspielen')}</button>`
         : `<button class="big" data-act="start">${ic('play')} ${tx('Spiel starten')}</button>`,
     playing: `<button class="ghost" data-act="reveal">${ic('eye')}<span>${tx('Auflösen')}</span></button>
-              <button class="big" data-act="countdown">${ic('timer')} Countdown · ${state.settings.seconds} s</button>`,
+              <button class="big" data-act="countdown">${ic('timer')} ${tx('Countdown')} · ${tx('{n} s', { n: state.settings.seconds })}</button>`,
     countdown: `<button class="big pink" data-act="reveal">${ic('eye')} ${tx('Jetzt auflösen')}</button>`,
     revealed: `<button class="big" data-act="next">${ic('skip')} ${tx('Nächster Song')}</button>`,
   }[ph];

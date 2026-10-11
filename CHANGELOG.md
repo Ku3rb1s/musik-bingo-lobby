@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.6 – 11.10.2026
+- Spielleiter: Der Knopf „Countdown · 30 s“ ist jetzt auch auf Englisch, Französisch und Spanisch übersetzt
+- Tipps bei „Aus welchem Album?“: Fehlt das Album (z. B. CSV-Import ohne Album-Spalte), kommt kein sinnloser Tipp „beginnt mit ?“ mehr
+- Handys: Macht der Spielleiter einen gebuzzerten Countdown rückgängig, ist der Buzzer sofort wieder frei (vorher erst nach ein paar Sekunden)
+
 ## 4.13.5 – 11.10.2026
 - Fehler behoben: „Vorige Runde nachtragen“ kam seit 4.10.0 nicht mehr auf den Handys an (die Angabe wurde nicht mehr mitgeschickt) – wer das Markieren vergessen hat, kann jetzt wieder nachtragen, bis die nächste Runde aufgelöst ist
 - Handys: Wer die Lobby später wieder öffnet, sieht nicht mehr den abgegebenen Tipp einer früheren Runde im Tipp-Feld

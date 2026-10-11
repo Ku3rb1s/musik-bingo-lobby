@@ -405,6 +405,8 @@ async function lobbyMode(code, autoName = null) {
       // Karte: Felder hervorheben, die man gerade markieren darf
       // Countdown startet (Spielleiter oder Buzzer) → kurz vibrieren, damit es jeder merkt
       if (r?.ph === 'c' && lastPh === 'p' && keyOf(r) === lastPhKey) { try { navigator.vibrate?.(60); } catch {} }
+      // Spielleiter hat den Countdown rückgängig gemacht (Song läuft wieder) → Buzzer sofort wieder frei
+      if (r?.ph === 'p' && lastPh === 'c' && keyOf(r) === lastPhKey) { buzzSent = null; clearTimeout(buzzT); }
       lastPh = r?.ph ?? null; lastPhKey = keyOf(r);
       updMark();
       renderGuesses();
