@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.14.1 – 11.10.2026
+- Tipps ruhiger: Der Tipp-Knopf am Handy ist nur noch eine kleine Glühbirne mit der Anzahl im Eck; die aufgedeckten Tipps stehen als eine schlichte Zeile unter der Frage statt als Kästchen
+- Tipp-Feld wieder einzeilig mit fester Höhe: Bei langem Text wird die Schrift kleiner, danach scrollt der Text zur Seite (statt dass das Feld wächst)
+
 ## 4.14.0 – 11.10.2026
 - Tipps für alle: Mitspieler holen am Handy einen Tipp (Knopf neben dem Tipp-Feld, zeigt wie viele noch übrig sind). Jeder neue Tipp – auch vom Spielleiter – kommt bei allen oben als Hinweis an (das Cover unscharf als Bild), steht unter der Frage in der Runden-Box und auf dem Fernseher
 - Tipps pro Runde einstellbar (0–3): in den Einstellungen, beim Bingo-Einrichten und als Zeile unter „Regeln & Karten“ – gilt sofort, auch mitten im Spiel. Ersetzt den Schalter „Tipps erlauben“

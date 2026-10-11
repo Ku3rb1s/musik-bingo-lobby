@@ -592,8 +592,6 @@
     "🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …": "🎉 ¡{n} canta BINGO! El anfitrión está comprobando el cartón …",
     "💡 Tipp von {n}:": "💡 Pista de {n}:",
     "💡 Tipp:": "💡 Pista:",
-    "Kommt …": "Llega …",
-    "noch {n}": "quedan {n}",
     "keine mehr": "no quedan",
     "Keine": "Ninguna",
     "Aus": "Desactivado",

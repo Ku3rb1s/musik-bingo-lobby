@@ -355,10 +355,13 @@ function mountCard(b, el, onWin, sync = null) {
   };
 }
 
-// Tipp-Feld wächst mit dem Text (mehrere Zeilen) – so bleibt alles sichtbar und der Cursor lässt sich überall hinsetzen
+// Tipp-Feld bleibt einzeilig: Bei langem Text wird die Schrift kleiner (nicht unter 19 px – gut lesbar; unter 16 px würde das iPhone hineinzoomen),
+// erst danach scrollt der Text wie in jedem Eingabefeld zur Seite
 function fitGuess(el) {
-  el.style.height = '';
-  if (el.scrollHeight > el.clientHeight + 1) el.style.height = el.scrollHeight + 10 + 'px';
+  el.style.fontSize = '';
+  if (!el.value || !el.clientWidth) return;
+  let s = parseFloat(getComputedStyle(el).fontSize);
+  while (s > 19 && el.scrollWidth > el.clientWidth) { s -= 1; el.style.fontSize = s + 'px'; }
 }
 // „Groß zeigen“: ohne Lobby großer Knopf neben dem Tipp, in der Lobby nur ein kleines Auge oben rechts
 // (die anderen sehen die Tipps dort ohnehin live)

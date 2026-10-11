@@ -58,8 +58,13 @@ function answerHtml(r) {
 }
 
 // Aufgedeckte Tipps der laufenden Runde (Handys und Fernseher)
-const hintsHtml = (r, cls = 'rl-hints') => r.ph !== 'r' && r.h?.length
-  ? `<div class="${cls}">${r.h.map(h => h.cover ? `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">` : `<span>💡 ${esc(hintText(h))}</span>`).join('')}</div>` : '';
+// Handy: eine schlichte Zeile „💡 … · …“, Fernseher: einzelne Kästchen (dort ist Platz)
+function hintsHtml(r, tv = false) {
+  if (r.ph === 'r' || !r.h?.length) return '';
+  const img = h => `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">`;
+  return tv ? `<div class="tv-hints">${r.h.map(h => h.cover ? img(h) : `<span>💡 ${esc(hintText(h))}</span>`).join('')}</div>`
+    : `<div class="rl-hints">💡 ${r.h.map(h => h.cover ? img(h) : esc(hintText(h))).join(' · ')}</div>`;
+}
 // Ein anderer Mitspieler hat Bingo: großer Bildschirm (schließt sich nach ein paar Sekunden von selbst)
 function showOtherWin(text, won = false) {
   // Eigenes Bingo oder Spielende sind gerade offen → nur ein Hinweis
@@ -475,7 +480,10 @@ async function lobbyMode(code, autoName = null) {
       if (!show) return;
       const left = Math.max(0, hm - got), wait = hintSent === `${keyOf(r)}:${got}`;
       b.disabled = !left || wait;
-      b.innerHTML = `${ic('bulb')}<span>${wait ? tx('Kommt …') : tx('Tipp')}<small>${left ? tx('noch {n}', { n: left }) : tx('keine mehr')}</small></span>`;
+      b.classList.toggle('wait', wait);
+      b.innerHTML = ic('bulb') + (left ? `<b class="hint-n">${left}</b>` : '');
+      b.title = left ? `${tx('Tipp für alle holen')} (${left})` : tx('keine mehr');
+      b.setAttribute('aria-label', b.title);
     }
     $('#btnHintReq').onclick = () => {
       const r = curRound; if (!r || r.ph === 'r') return;
@@ -574,9 +582,9 @@ async function tvMode(code) {
     }
     const tips = '<div class="tv-tips" id="tvTips"></div>';
     if (r.ph === 'c' && r.end) {
-      show(k + cat + hintsHtml(r, 'tv-hints') + `<div class="tv-ring" style="--c:${esc(r.c)}"><b id="tvCount"></b></div>` + buzz + tips);
+      show(k + cat + hintsHtml(r, true) + `<div class="tv-ring" style="--c:${esc(r.c)}"><b id="tvCount"></b></div>` + buzz + tips);
       cdIv = runRing(box.querySelector('.tv-ring'), $('#tvCount'), cdEnd, r.dur);
-    } else show(k + cat + hintsHtml(r, 'tv-hints') + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
+    } else show(k + cat + hintsHtml(r, true) + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
     drawTips();
   };
   // „💬 3 / 8 haben getippt“ unter dem Countdown bzw. dem laufenden Song

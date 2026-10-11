@@ -592,8 +592,6 @@
     "🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …": "🎉 {n} crie BINGO ! L’animateur vérifie la carte …",
     "💡 Tipp von {n}:": "💡 Indice de {n} :",
     "💡 Tipp:": "💡 Indice :",
-    "Kommt …": "Arrive …",
-    "noch {n}": "encore {n}",
     "keine mehr": "plus aucun",
     "Keine": "Aucun",
     "Aus": "Désactivé",

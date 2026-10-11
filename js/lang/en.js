@@ -592,8 +592,6 @@
     "🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …": "🎉 {n} calls BINGO! The host is checking the card …",
     "💡 Tipp von {n}:": "💡 Hint from {n}:",
     "💡 Tipp:": "💡 Hint:",
-    "Kommt …": "Coming …",
-    "noch {n}": "{n} left",
     "keine mehr": "none left",
     "Keine": "None",
     "Aus": "Off",
