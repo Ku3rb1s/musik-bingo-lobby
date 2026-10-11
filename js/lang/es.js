@@ -612,8 +612,8 @@
     "🌑 OLED-Modus": "🌑 Modo OLED",
     "Echtes Schwarz – spart Akku": "Negro puro – ahorra batería",
     "✨ Leuchteffekte": "✨ Efectos de brillo",
-    "Pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Casillas que laten y anillo brillante de la cuenta atrás – gastan algo de batería",
-    "Pulsierende Felder – kosten etwas Akku": "Casillas que laten – gastan algo de batería",
+    "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Botones brillantes, casillas que laten y anillo brillante de la cuenta atrás – gastan algo de batería",
+    "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Botones brillantes y casillas que laten – gastan algo de batería",
     "Bei Bingo, Countdown und Markieren": "En bingo, cuenta atrás y al marcar",
   },
 };

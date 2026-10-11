@@ -612,8 +612,8 @@
     "🌑 OLED-Modus": "🌑 Mode OLED",
     "Echtes Schwarz – spart Akku": "Noir profond – économise la batterie",
     "✨ Leuchteffekte": "✨ Effets lumineux",
-    "Pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Cases qui pulsent et anneau lumineux du compte à rebours – consomment un peu de batterie",
-    "Pulsierende Felder – kosten etwas Akku": "Cases qui pulsent – consomment un peu de batterie",
+    "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Boutons lumineux, cases qui pulsent et anneau lumineux du compte à rebours – consomment un peu de batterie",
+    "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Boutons lumineux et cases qui pulsent – consomment un peu de batterie",
     "Bei Bingo, Countdown und Markieren": "Pour le bingo, le compte à rebours et les marques",
   },
 };

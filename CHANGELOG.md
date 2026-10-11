@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.15.3 – 11.10.2026
+- OLED: Der Schalter „Leuchteffekte“ bringt jetzt auch Lichtkanten, Glanz und Leucht-Schatten der Knöpfe, der Kategorie und der Felder zurück – wie bei den anderen Designs (Hintergrund bleibt schwarz). Gilt beim Spielleiter und bei den Mitspielern
+
 ## 4.15.2 – 11.10.2026
 - OLED: Die Platte dreht sich wieder; Pulsieren der Felder und Leuchtring am Countdown sind optional (Schalter „Leuchteffekte“, erscheint beim OLED-Design – Spielleiter unter Design, Mitspieler unten unter der Karte)
 - iPhone: Statt Vibrieren ein kurzes haptisches Klicken (seit iOS 18 möglich) – der Schalter „Vibrieren“ gibt es jetzt auch dort
