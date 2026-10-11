@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.15.1 – 11.10.2026
+- OLED stärker: Karten, Menüs und Kopfzeilen komplett schwarz (nur feine Ränder), keine Leucht-Schatten und Glanzeffekte, keine Dauer-Animationen (Platte dreht sich nicht, Felder pulsieren nicht, kein Leuchtschein am Countdown-Ring), Tipp-Zettel dunkel statt weiß, Bingo-Felder dunkler getönt (markierte bleiben voll farbig), „Groß zeigen“ als Umriss, Schrift minimal gedimmt
+
 ## 4.15.0 – 11.10.2026
 - Neues Design „OLED“: echtes Schwarz (auf OLED-Bildschirmen sind die Pixel dann aus), keine Farbflächen im Hintergrund und keine Unschärfe-Effekte – spart Akku und entlastet den Grafikchip. Beim Spielleiter unter Einstellungen → Design, bei den Mitspielern als Schalter „OLED-Modus“ ganz unten unter der Karte (beim Ausschalten kommt das vorherige Design zurück)
 

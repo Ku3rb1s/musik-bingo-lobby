@@ -989,3 +989,23 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 [data-theme="oled"] .alert,[data-theme="oled"] #toast{background:#151517}
 [data-theme="oled"] .win{background:rgba(0,0,0,.92)}
 .theme-pick[data-theme-pick="oled"] i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+/* 4.15.1: OLED stärker – keine grauen Flächen, keine Leucht-Schatten/Glanz, keine Dauer-Animationen, dunkler Tipp-Zettel,
+   dunkler getönte Bingo-Felder (markierte bleiben voll farbig), Schrift minimal gedimmt */
+[data-theme="oled"]{--text:#e4e4e9;--muted:#8a8a95;--cell:rgba(255,255,255,.035);--line:rgba(255,255,255,.08);
+  --g-bg:transparent;--g-brd:rgba(255,255,255,.11);--g-hi:0 0 #0000;--g-sheen:none;--g-blur:none;--glass:#000}
+[data-theme="oled"] .sheet,[data-theme="oled"] .sheet-head{background:#000}
+[data-theme="oled"] .glass{box-shadow:none}
+[data-theme="oled"] .glass::after{display:none}
+[data-theme="oled"] button.big,[data-theme="oled"] button.pink.big,[data-theme="oled"] button.mini,[data-theme="oled"] .seg button.on{box-shadow:none;background-image:none}
+[data-theme="oled"] .cat-badge,[data-theme="oled"] .cat-icon,[data-theme="oled"] .on-dot,[data-theme="oled"] .rl-buzz,[data-theme="oled"] .guess-big{box-shadow:none}
+[data-theme="oled"] .cat-badge{background-image:none;background-color:#000}
+[data-theme="oled"] .disc{box-shadow:none;animation:none}
+[data-theme="oled"] .ring-glow{display:none}
+[data-theme="oled"] .bcell:not(.free){background-image:none}
+[data-theme="oled"] .bcell:not(.on):not(.free){background-color:color-mix(in srgb,var(--c) 11%,#000)}
+[data-theme="oled"] .bcell:not(.hot):not(.line){box-shadow:none}
+[data-theme="oled"] .bcell.hot:not(.on)::before{animation:none;opacity:.5}
+[data-theme="oled"] .guess-input{background-color:#0b0b0e;background-image:repeating-linear-gradient(transparent 0 39px,rgba(130,150,220,.22) 39px 40px);color:#a9bcff;box-shadow:none}
+[data-theme="oled"] .guess-input::placeholder{color:#4f5874}
+[data-theme="oled"] .guess-clear{background:rgba(169,188,255,.12);color:#a9bcff}
+[data-theme="oled"] .guess-big:not(.hint-req):not(.eye-mini){background:transparent;border:1.5px solid var(--accent2);color:var(--accent2)}
