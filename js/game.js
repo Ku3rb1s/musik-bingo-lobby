@@ -70,7 +70,7 @@ async function playSnippet() {
   try { await Player.play(r.track, r.pos); }
   catch (e) {
     if (e.wake) return offerSpotifyWake(e.message);
-    return toast(tx('Wiedergabe-Fehler: {e}', { e: e.message }), 7000);
+    return toast(tx('Wiedergabe-Fehler: {e}', { e: e.message }), 9000, { label: tx('Wiedergabe einstellen'), fn: () => openSheet('sheetSettings', 'play') });
   }
   const lim = +state.settings.limit;
   if (lim) snippetT = setTimeout(() => {

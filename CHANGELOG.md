@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.3 – 11.10.2026
+- Hauptbildschirm: Knopf mit QR-Symbol und Lobby-Code oben neben „Runde …“ – öffnet direkt „Einladen“ (für alle, die später dazukommen). Auf sehr schmalen Handys weicht dafür „Songs übrig“.
+- Handys: „Partie 1/3 · 🏆 1“ steht klein unter der Kartennummer oben – die eigene Partie-Zeile fällt weg (erscheint nur noch am Spielende mit Sieger und Tabelle)
+- Wiedergabe-Fehler: Hinweis mit Knopf „Wiedergabe einstellen“; kein Gerät gefunden → am PC „Gerät wählen“ (öffnet die Wiedergabe-Seite), am Handy weiterhin „Spotify öffnen“
+
 ## 4.13.2 – 11.10.2026
 - Checkliste vor dem ersten Spiel wieder entfernt – Startseite wie vorher (der leere Verlauf bleibt ausgeblendet, bis eine Runde gespielt wurde)
 - Rückfragen (z. B. „Ohne Bingo spielen?“): Tippen neben das Fenster bricht ab und führt zurück zur Startseite

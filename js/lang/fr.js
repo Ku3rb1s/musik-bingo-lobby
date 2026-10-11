@@ -584,5 +584,10 @@
     "In der App unter „Settings“ die Client ID kopieren und hier einfügen:": "Dans l’app, sous « Settings », copie le Client ID et colle-le ici :",
     "Weitere Spielleiter freischalten: in deiner App unter „User Management“ Name und Spotify-E-Mail eintragen.": "Approuver d’autres animateurs : dans ton app, sous « User Management », saisis leur nom et leur e-mail Spotify.",
     "Anmelden kann sich nur, wer vom Ersteller freigeschaltet wurde – Spotify erlaubt höchstens 5 Spielleiter pro App. Zum Mitraten braucht niemand ein Konto. Mehr Spielleiter: „Eigene Spotify-App verwenden“ unten.": "Seules les personnes approuvées par le créateur peuvent se connecter – Spotify autorise au maximum 5 animateurs par app. Personne n’a besoin de compte pour jouer. Plus d’animateurs : « Utiliser ta propre appli Spotify » ci-dessous.",
+    "Partie {g}/{t}": "Partie {g}/{t}",
+    "Spiel vorbei": "Jeu terminé",
+    "Wiedergabe einstellen": "Réglages de lecture",
+    "Öffne die Spotify-App oder wähle ein Gerät aus.": "Ouvre l’appli Spotify ou choisis un appareil.",
+    "Gerät wählen": "Choisir l’appareil",
   },
 };

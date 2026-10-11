@@ -564,7 +564,7 @@ const Player = {
       } else { this.embed?.togglePlay(); this.playing = !this.playing; }
     } catch (e) {
       if (this.mode === 'connect' && e.status === 404) return offerSpotifyWake(tx('Spotify ist gerade nicht erreichbar.'));
-      toast(tx('Wiedergabe-Fehler: {e}', { e: e.message }));
+      toast(tx('Wiedergabe-Fehler: {e}', { e: e.message }), 9000, { label: tx('Wiedergabe einstellen'), fn: () => openSheet('sheetSettings', 'play') });
     }
     renderPlayState();
   },

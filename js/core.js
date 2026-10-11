@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.13.2', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.13.3', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -217,6 +217,10 @@ let wakeRetry = null;
 // Die Spotify-App schläft im Hintergrund gern ein → per Knopf öffnen, beim Zurückkommen automatisch weiterspielen
 function offerSpotifyWake(msg) {
   wakeRetry = round;   // auch wenn Spotify von Hand geöffnet wird, geht es beim Zurückkommen weiter
+  const mobile = document.documentElement.classList.contains('ios') || /Android/i.test(navigator.userAgent);
+  if (!mobile) return toast(msg + ' ' + tx('Öffne die Spotify-App oder wähle ein Gerät aus.'), 15000, {
+    label: tx('Gerät wählen'), fn: () => openSheet('sheetSettings', 'play'),
+  });
   toast(msg + ' ' + tx('Öffne kurz Spotify – danach geht es automatisch weiter.'), 15000, {
     label: tx('Spotify öffnen'),
     fn: () => { location.href = 'spotify://'; },

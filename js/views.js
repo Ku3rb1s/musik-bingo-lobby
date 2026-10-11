@@ -347,9 +347,13 @@ async function lobbyMode(code, autoName = null) {
     // Partie-Stand und Siege; neue Partie → Karte behalten oder neu wählen; Spiel vorbei → Spielende-Bildschirm
     f.onValue(f.at(`${base}/match`), s => {
       const m = s.val(), box = $('#matchLive');
-      box.classList.toggle('hidden', !m);
+      // Partie und eigene Siege klein oben unter der Kartennummer; die eigene Zeile gibt es nur noch am Spielende (Sieger, Tabelle)
+      $('#cardMatch').classList.toggle('hidden', !m);
+      box.classList.toggle('hidden', !m?.over);
       if (!m) return;
       m.wins ??= {}; m.names ??= {}; m.won ??= []; m.tips ??= {};
+      const myWins = m.wins[f.uid] || 0;
+      $('#cardMatch').textContent = (m.over ? tx('Spiel vorbei') : m.total ? tx('Partie {g}/{t}', { g: m.game, t: m.total }) : tx('Partie {g}', { g: m.game })) + (myWins ? ` · 🏆 ${myWins}` : '');
       box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
       if (lastGame !== null && !m.over && (m.game !== lastGame || lastOver)) showRepick(m);
       // Spiel vorbei: eine offene Kartenwahl (neue Partie) ist hinfällig

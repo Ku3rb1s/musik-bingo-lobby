@@ -917,3 +917,18 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 /* Eigene Spotify-App: Einleitung */
 .own-intro{padding:4px 16px 2px;font-size:.86rem;color:var(--muted);line-height:1.45}
 .own-intro p{margin:8px 0}
+/* Hauptbildschirm: QR-Knopf neben „Runde …“ (Einladen) */
+.round-meta{align-items:center}
+.round-meta .meta-l{display:flex;gap:8px;align-items:center;min-width:0}
+.qr-pill{display:inline-flex;align-items:center;gap:5px;cursor:pointer;color:var(--text);font-weight:800;letter-spacing:.06em;
+  background:rgba(255,255,255,.08);border:1px solid var(--g-brd)}
+.qr-pill .ic{width:1.15em;height:1.15em}
+.qr-pill:active{transform:scale(.95)}
+#remaining{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Handy: Kartennummer + Partie/Siege zweizeilig in einer Pille */
+.card-pill{display:inline-flex;flex-direction:column;align-items:flex-end;line-height:1.2}
+.card-pill small{font-size:.72em;font-weight:700;color:var(--accent);white-space:nowrap}
+.round-meta .meta-l{flex:none}
+/* Sehr schmale Handys: Für drei Anzeigen ist kein Platz – „Songs übrig“ weicht dem QR-Knopf (steht auch unter Playlists) */
+@media (max-width:360px){.round-meta:has(#qrBtn:not(.hidden)) #remaining{display:none}}
+.card-pill .cp-l{white-space:nowrap}

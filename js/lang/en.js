@@ -584,5 +584,10 @@
     "In der App unter „Settings“ die Client ID kopieren und hier einfügen:": "In the app under “Settings”, copy the Client ID and paste it here:",
     "Weitere Spielleiter freischalten: in deiner App unter „User Management“ Name und Spotify-E-Mail eintragen.": "Approve more hosts: in your app under “User Management”, enter their name and Spotify email.",
     "Anmelden kann sich nur, wer vom Ersteller freigeschaltet wurde – Spotify erlaubt höchstens 5 Spielleiter pro App. Zum Mitraten braucht niemand ein Konto. Mehr Spielleiter: „Eigene Spotify-App verwenden“ unten.": "Only people approved by the creator can log in – Spotify allows at most 5 hosts per app. Nobody needs an account to play along. More hosts: “Use your own Spotify app” below.",
+    "Partie {g}/{t}": "Game {g}/{t}",
+    "Spiel vorbei": "Game over",
+    "Wiedergabe einstellen": "Playback settings",
+    "Öffne die Spotify-App oder wähle ein Gerät aus.": "Open the Spotify app or choose a device.",
+    "Gerät wählen": "Choose device",
   },
 };
