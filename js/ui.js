@@ -232,11 +232,11 @@ function renderSettings() {
 function renderCats() {
   $('#catBingoNote').classList.toggle('hidden', !state.bingo);
   $('#catList').innerHTML = state.cats.map((c, i) => `
-    <label class="cell">
+    <label class="cell" for="catTg${i}">
       <span class="cell-ic" style="background:${catStyle(c)[1]}">${catStyle(c)[0]}</span>
       <span class="grow">${esc(tx(c.name))}<span class="sub">${tx('Auflösung: {a}', { a: tx(ANSWER_TYPES[c.answer]) })}${c.answer === 'range' ? tx(' (± {n} Jahre)', { n: c.tol }) : ''}</span></span>
       ${c.builtin ? '' : `<button class="icon-btn del" data-cat-del="${i}" aria-label="${tx('Löschen')}">${ic('trash')}</button>`}
-      <span class="switch"><input type="checkbox" data-cat-toggle="${i}" ${c.enabled ? 'checked' : ''}><span></span></span>
+      <span class="switch"><input type="checkbox" id="catTg${i}" data-cat-toggle="${i}" ${c.enabled ? 'checked' : ''}><span></span></span>
     </label>`).join('');
 }
 function renderAccount() {

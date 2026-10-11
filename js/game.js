@@ -338,15 +338,15 @@ function hintsFor(cat, t) {
   const cover = t.cover ? { cover: t.thumb || t.cover } : null;   // unscharfes Vorschaubild – klein reicht
   const list = {
     title: [H('Der Titel beginnt mit „{c}“', { c: first(t.title) }), H(words === 1 ? 'Der Titel hat {n} Wort' : 'Der Titel hat {n} Wörter', { n: words }), cover],
-    artist: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec }), cover],
-    year: [dec && H('Erschienen in den {d}', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
-    range: [dec && H('Erschienen in den {d}', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
+    artist: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}n', { d: dec }), cover],
+    year: [dec && H('Erschienen in den {d}n', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
+    range: [dec && H('Erschienen in den {d}n', { d: dec }), part && H('{p} der {d}', { p: part, d: dec })],
     decade: [y && H(y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) })],
-    album: [H('Das Album beginnt mit „{c}“', { c: first(t.album) }), dec && H('Erschienen in den {d}', { d: dec }), cover],
-    none: [dec && H('Erschienen in den {d}', { d: dec }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), cover],
+    album: [H('Das Album beginnt mit „{c}“', { c: first(t.album) }), dec && H('Erschienen in den {d}n', { d: dec }), cover],
+    none: [dec && H('Erschienen in den {d}n', { d: dec }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), cover],
     country: [artistFact(t, 'country') && H('Das Land beginnt mit „{c}“', { c: artistFact(t, 'country')[0] }), H('Der Interpret beginnt mit „{c}“', { c: first(artist0) })],
-    kind: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec })],
-    gender: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}', { d: dec })],
+    kind: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}n', { d: dec })],
+    gender: [H('Der Interpret beginnt mit „{c}“', { c: first(artist0) }), dec && H('Erschienen in den {d}n', { d: dec })],
   }[cat.answer] || [];
   return list.filter(Boolean).slice(0, 2);   // immer (höchstens) 2 Tipps pro Runde
 }

@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.12.7', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.12.8', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -46,6 +46,8 @@ const DEFAULT_CATS = [
   { id: 'country', name: 'Aus welchem Land kommt der Künstler?', answer: 'country', enabled: false, builtin: true },
   { id: 'kind', name: 'Band oder Solo?', answer: 'kind', enabled: false, builtin: true },
   { id: 'gender', name: 'Sänger oder Sängerin?', answer: 'gender', enabled: false, builtin: true },
+  // Neu (4.12.8): Album laut Spotify (bei Best-of/Sampler steht dort die Zusammenstellung) – von Haus aus ausgeschaltet
+  { id: 'album', name: 'Aus welchem Album?', answer: 'album', enabled: false, builtin: true },
 ];
 const ANSWER_TYPES = {
   title: 'Songtitel', artist: 'Interpret', year: 'Genaues Jahr', decade: 'Jahrzehnt',
