@@ -117,8 +117,12 @@ main{max-width:960px;margin:0 auto;padding:0 16px 40px}
 .disc-wrap.counting svg.ring-svg{opacity:1}
 .ring-svg circle{fill:none;stroke-width:5}
 .ring-svg .trk{stroke:rgba(255,255,255,.07)}
-.ring-svg .ring{stroke:var(--cat);stroke-linecap:round;filter:drop-shadow(0 0 6px var(--cat))}
-.disc-wrap.urgent .ring{stroke:var(--danger);filter:drop-shadow(0 0 8px var(--danger))}
+/* Ring + Schein: zweiter, breiter Ring mit wenig Deckkraft statt drop-shadow-Filter (der malte in Chrome ein dunkles
+   Quadrat vor das Milchglas und kostete bei jeder Aktualisierung Rechenleistung). Fortschritt über --len/--off. */
+.ring-svg .ring,.ring-svg .ring-glow{stroke:var(--cat);stroke-linecap:round;stroke-dasharray:var(--len,0);stroke-dashoffset:var(--off,0)}
+.ring-svg .ring-glow{stroke-width:11;opacity:.22}
+.disc-wrap.urgent .ring,.disc-wrap.urgent .ring-glow{stroke:var(--danger)}
+.disc-wrap.urgent .ring-glow{opacity:.32}
 .disc{position:absolute;inset:9%;border-radius:50%;
   background:
     radial-gradient(circle,transparent 0 31%,rgba(255,255,255,.05) 31.5% 32%,transparent 32.5% 40%,rgba(255,255,255,.04) 40.5% 41%,transparent 41.5% 52%,rgba(255,255,255,.05) 52.5% 53%,transparent 53.5% 66%,rgba(255,255,255,.04) 66.5% 67%,transparent 67.5%),
@@ -210,7 +214,8 @@ button.cell{transform:none!important;filter:none!important}
 .cell.danger{color:var(--danger)}
 .cell.col{flex-direction:column;align-items:stretch;gap:2px}
 .cell .grow{flex:1;min-width:0}
-.cell .sub{display:block;font-size:.8rem;color:var(--muted);font-weight:400;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Untertitel: bis zu 2 Zeilen (vorher einzeilig und abgeschnitten – z. B. „Lobby schließen – alle Mitspieler kommen zur Code-Ein…“) */
+.cell .sub{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;font-size:.8rem;color:var(--muted);font-weight:400;margin-top:1px;line-height:1.3}
 .cell .chev{color:rgba(255,255,255,.3);width:1.1em;height:1.1em}
 .cell .trail{color:var(--muted);display:grid;place-items:center;min-width:24px;font-weight:700}
 .cell .trail.ok{color:var(--accent)}
@@ -227,7 +232,9 @@ button.cell{transform:none!important;filter:none!important}
 .cell input.num{flex:none;width:64px;text-align:right}
 .cell .mini{padding:.5em .95em;border-radius:99px;font-size:.9rem}
 .icon-btn{background:none;color:var(--muted);padding:8px;border-radius:10px}
-.icon-btn.del{color:var(--danger)}
+.icon-btn.del{color:var(--muted);transition:color .15s}
+.icon-btn.del:active{color:var(--danger)}
+@media (hover:hover){.icon-btn.del:hover{color:var(--danger)}}
 .pl-cover{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none;background:rgba(0,0,0,.35);display:grid;place-items:center;color:var(--muted);font-size:1.2rem}
 .group.icons .pl-cover+.grow{margin-left:0}
 .loader{width:18px;height:18px;border:2px solid rgba(255,255,255,.18);border-top-color:var(--accent);border-radius:50%;animation:rot .8s linear infinite}
@@ -298,6 +305,7 @@ button.cell{transform:none!important;filter:none!important}
 .scorebar .sc.won{background:var(--accent2);color:#fff}
 .scorebar .sc.off{opacity:.45}
 .pl-row .rank{width:30px;text-align:center;font-size:1.1rem;flex:none}
+.on-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);vertical-align:middle}
 .pl-row .marks{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .pl-row.won{background:color-mix(in srgb,var(--accent2) 18%,transparent)}
 .lobby-code{text-align:center;font-size:2.4rem;font-weight:900;letter-spacing:.22em;margin:6px 0 0}
@@ -381,7 +389,8 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .guess-live{margin:-4px 0 12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:.85rem}
 .guess-live span{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:12px;padding:.35em .7em}
 .guess-live span.ok{border-color:var(--accent)}
-.guess-live b{color:var(--accent)}
+.guess-live b{color:var(--text)}
+.guess-live span.ok b{color:var(--accent)}
 .guess-list{margin-top:12px;text-align:left;background:rgba(255,255,255,.06);border:1px solid var(--g-brd);border-radius:18px;padding:10px 14px}
 .guess-list .gl-h{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
 .guess-list div{padding:3px 0;border-top:1px solid rgba(255,255,255,.06)}
@@ -854,7 +863,7 @@ body:not(.tv-mode) .tv-banner{display:none}
 .cell.rule{cursor:default}
 .rule-ic{width:30px;text-align:center;font-size:1.15rem;flex:none}
 .rule-v{font-weight:800;color:var(--accent);text-align:right;flex:none;max-width:45%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cell.rule .sub{white-space:normal}
+.cell.rule .sub{-webkit-line-clamp:4;line-clamp:4}
 /* Sprung aus „Regeln & Karten“: Zeile in den Einstellungen kurz aufleuchten lassen */
 .cell.flash{animation:cellFlash 1.6s ease}
 @keyframes cellFlash{0%,40%{background:color-mix(in srgb,var(--accent) 22%,transparent)}}
@@ -865,10 +874,24 @@ button.cell.rule{cursor:pointer}
 .nav-lang{min-height:36px;padding:.45em .95em}
 /* Suchergebnis „von Spotify“: lässt sich mit Entwickler-Apps meist nicht laden → zurückgenommen */
 .cell.pl-spotify{opacity:.6}
-.cell.pl-spotify .sub{white-space:normal}
+.cell.pl-spotify .sub{-webkit-line-clamp:3;line-clamp:3}
 /* Akku: Ist ein Menü oder Fenster offen, stehen Hintergrund und Platte dahinter still. Sonst muss die Milchglas-Unschärfe
    des Menüs bei drehender Platte 60× pro Sekunde neu berechnet werden – zu sehen ist dahinter ohnehin nur ein Schimmer. */
 body:has(dialog[open]) .bg i,body:has(dialog[open]) .disc,
 body:has(.win:not(.hidden)) .bg i,body:has(.win:not(.hidden)) .disc{animation-play-state:paused!important}
 /* „Bewegung reduzieren“ (Bedienungshilfen): Fernseher-Liste läuft nicht durch – die zweite Kopie bleibt dann versteckt */
 @media (prefers-reduced-motion:reduce){.tv-copy[aria-hidden]{display:none}.tv-players.rolling .tv-scroll{-webkit-mask-image:none;mask-image:none}}
+/* Einladen: Fernseher-Ansicht als eigene Zeile */
+a.cell{color:inherit;text-decoration:none}
+.tv-ic-s{width:22px;text-align:center;font-size:1.1rem;flex:none}
+/* Wer hat schon getippt: während der Runde eine Zeile (seitlich wischbar) – Fertige zuerst und grün, Wartende blass.
+   Der Zähler bleibt beim Wischen vorne stehen. Nach der Auflösung brechen die Tipps um. */
+.guess-live.row{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.guess-live.row::-webkit-scrollbar{display:none}
+.guess-live.row span{flex:none;white-space:nowrap}
+.guess-live span.cnt{position:sticky;left:0;z-index:1;background:rgba(var(--surf),.96);font-weight:700}
+.guess-live span.ok{color:var(--accent)}
+.guess-live span.wait{opacity:.55}
+/* Fernseher: abgegebene Tipps grün */
+.tv-players .tvp.ok .g{color:var(--accent);font-weight:700}

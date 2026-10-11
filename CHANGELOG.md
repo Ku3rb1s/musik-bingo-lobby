@@ -2,6 +2,16 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.4 – 11.10.2026
+- Hinweise blieben manchmal für immer stehen: Lief die App beim Erscheinen im Hintergrund (z. B. kurz zu Spotify gewechselt), wurde der Hinweis erst nach dem Ausblenden eingeblendet
+- Countdown-Ring (Spielleiter): dunkles Quadrat hinter dem Ring entfernt – der Leuchteffekt ist jetzt ein zweiter, weicher Ring statt eines Filters (auch sparsamer)
+- Bingo prüfen: „Trotzdem bestätigen“ erschien auch ohne volle Linie – jetzt nur bei voller Linie mit Bedenken; bei „mehr markiert als gespielt“ kommt jetzt auch die Rückfrage statt des normalen Bestätigens
+- Untertitel in Listen bis zu 2 Zeilen statt abgeschnitten (z. B. „Bingo beenden“, „Regeln & Karten“, andere Sprachen)
+- Mitspieler-Liste: grüner Online-Punkt statt „·“; Papierkörbe dezent grau (rot erst beim Antippen)
+- „Wer hat schon getippt“ (Handys, Meine Karte): während der Runde eine Zeile zum Wischen statt mehrerer Zeilen voller Chips – Fertige zuerst und grün, Wartende blass; nach der Auflösung stehen echte Tipps vorne
+- Fernseher: bei der Auflösung stehen Spieler mit Tipp oben, ihr Tipp ist grün
+- Einladen: „Fernseher-Ansicht öffnen“ auch hier (vorher nur unter Regeln & Karten)
+
 ## 4.12.3 – 11.10.2026
 - Countdown auf Handys/Fernseher: Verband sich der Spielleiter mitten im Countdown neu, konnte der Countdown dort von vorn beginnen – ein Countdown wird jetzt am Wechsel der Runde in die Countdown-Phase erkannt, nicht an der (leicht schwankenden) Endzeit
 - Fernseher mit „Bewegung reduzieren“ (Bedienungshilfen): Die Mitspieler-Liste stand doppelt da – läuft dann nicht durch und zeigt jeden Namen einmal

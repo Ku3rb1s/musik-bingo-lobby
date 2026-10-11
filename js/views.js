@@ -320,10 +320,11 @@ async function lobbyMode(code, autoName = null) {
       const list = Object.entries(allPlayers).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
       box.classList.toggle('hidden', !r || list.length < 2);
       if (!r || list.length < 2) return;
+      box.classList.toggle('row', r.ph !== 'r');   // während der Runde: eine Zeile, seitlich wischbar
       const has = p => p.guess?.n === keyOf(r) && p.guess.t;
       box.innerHTML = r.ph === 'r'
-        ? list.map(p => `<span class="${has(p) ? 'ok' : ''}"><b>${esc(p.name)}${p.id === f.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
-        : `<span>${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
+        ? [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}"><b>${esc(p.name)}${p.id === f.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
+        : `<span class="cnt">${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
     }
     // Alle Mitspieler: Tipps, und wer Bingo ruft oder gewonnen hat
     f.onValue(f.at(`${base}/players`), s => {
@@ -527,11 +528,12 @@ async function tvMode(code) {
     const list = Object.entries(players).filter(([, p]) => p?.name).map(([id, p]) => ({ id, ...p }));
     const done = p => r && p.guess?.n === key(r) && p.guess.t;
     const wins = id => match?.wins?.[id] || 0;
-    list.sort((a, b) => wins(b.id) - wins(a.id) || String(a.name).localeCompare(b.name));
+    // Nach der Auflösung zuerst, wer getippt hat; sonst nach Siegen, dann Name
+    list.sort((a, b) => (r?.ph === 'r' ? !!done(b) - !!done(a) : 0) || wins(b.id) - wins(a.id) || String(a.name).localeCompare(b.name));
     const box = $('#tvPlayers');
     if (!box.querySelector('.tv-track')) box.innerHTML = '<div class="tv-h"></div><div class="tv-scroll"><div class="tv-track"></div></div>';
     box.querySelector('.tv-h').textContent = `${r?.ph === 'r' ? tx('Tipps') : tx('Mitspieler')} · ${list.length}`;
-    const rows = list.map(p => `<div class="tvp"><span>${p.bingo ? '🎉 ' : ''}${esc(p.name)}${wins(p.id) ? ` <b>🏆${wins(p.id)}</b>` : ''}</span>` +
+    const rows = list.map(p => `<div class="tvp ${done(p) ? 'ok' : ''}"><span>${p.bingo ? '🎉 ' : ''}${esc(p.name)}${wins(p.id) ? ` <b>🏆${wins(p.id)}</b>` : ''}</span>` +
       (r?.ph === 'r' ? `<span class="g">${done(p) ? esc(p.guess.t) : '–'}</span>` : `<span class="g">${done(p) ? '<b>✓</b>' : ''}</span>`) + '</div>').join('') || `<div class="g">${tx('Noch niemand da – QR-Code scannen!')}</div>`;
     // Passen nicht alle auf den Bildschirm, läuft die Liste langsam endlos nach oben (zweite Kopie direkt dahinter = nahtlos).
     // Die Animation hängt am bleibenden .tv-track – neue Tipps tauschen nur den Inhalt, die Liste springt also nicht nach oben.
@@ -632,10 +634,11 @@ function renderMyLive() {
   const list = on ? lobbyList() : [], r = round, show = on && r && list.length >= 2;
   gl.classList.toggle('hidden', !show);
   if (!show) return;
+  gl.classList.toggle('row', r.phase !== 'revealed');
   const has = p => p.guess?.n === r.id && p.guess.t;
   gl.innerHTML = r.phase === 'revealed'
-    ? list.map(p => `<span class="${has(p) ? 'ok' : ''}"><b>${esc(p.name)}${p.id === Lobby.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
-    : `<span>${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + list.map(p => `<span class="${has(p) ? 'ok' : ''}">${has(p) ? '✓' : '…'} ${esc(p.name)}</span>`).join('');
+    ? [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}"><b>${esc(p.name)}${p.id === Lobby.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
+    : `<span class="cnt">${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
 }
 // Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
 function syncMyCard() {

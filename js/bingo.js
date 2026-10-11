@@ -124,7 +124,8 @@ async function renderBingo() {
   $('#joinUrlShort').textContent = (cardBase() + 'join').replace(/^https?:\/\//, '');
   $('#joinCodeBig').textContent = Lobby.code || '';
   $('#tvHint').classList.toggle('hidden', !Lobby.code);
-  if (Lobby.code) $('#tvLink').href = cardBase() + '?tv=' + Lobby.code;
+  if (Lobby.code) $('#tvLink').href = $('#tvLink2').href = cardBase() + '?tv=' + Lobby.code;
+  $('#tvLink2').classList.toggle('hidden', !Lobby.code);
   $('#btnBingoOff .sub').classList.toggle('hidden', !Lobby.code);
   $('#bingoNewSub').textContent = Lobby.code ? tx('Alle in der Lobby bekommen automatisch eine neue Karte') : tx('Alle müssen den neuen QR-Code scannen');
   if (Lobby.opening) { $('#qr').innerHTML = '<span class="loader"></span>'; return; }
@@ -227,10 +228,11 @@ function checkHtml(num, id) {
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
-    ${marks && (!who.host || Lobby.code) ? `<div class="chips" style="margin-top:6px">${who.ok
+    ${marks && (!who.host || Lobby.code) && (who.ok || fullLines.length) ? `<div class="chips" style="margin-top:6px">${who.ok
       ? `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>`
-      : win ? `<button class="chip-btn" data-confirm="${esc(id)}">${tx('✓ Bingo für {n} bestätigen', { n: esc(who.name) })}</button>`
-      // Die App hat Bedenken – der Spielleiter kann trotzdem bestätigen (mit Rückfrage)
+      : win && !over.length ? `<button class="chip-btn" data-confirm="${esc(id)}">${tx('✓ Bingo für {n} bestätigen', { n: esc(who.name) })}</button>`
+      // Volle Linie, aber die App hat Bedenken (zu wenige passende Runden / mehr markiert als gespielt) –
+      // der Spielleiter kann trotzdem bestätigen (mit Rückfrage). Ohne volle Linie gibt es nichts zu bestätigen.
       : `<button class="chip-btn force" data-confirm-force="${esc(id)}">${tx('Trotzdem bestätigen')}</button>`}</div>` : ''}</div>`;
   return { html, good: win && !over.length };
 }

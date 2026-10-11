@@ -247,7 +247,7 @@ function renderLobby() {
   $('#playerList').classList.toggle('hidden', !code);
   $('#playerList').innerHTML = list.map(p => `
     <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false && p.id !== Lobby.uid ? 'opacity:.5' : ''}">
-      <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : '·'}</span>
+      <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : `<i class="on-dot" title="${tx('online')}"></i>`}</span>
       <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">${tx('Karte Nr. {n}', { n: esc(p.num) })}${p.bingo ? (p.ok ? tx(' · Bingo bestätigt') : tx(' · ruft BINGO!')) : ''}</span></span>
       <span class="marks">${marksOf(p)} / ${b ? fieldCount(b) : '–'}</span>
       ${p.id === Lobby.uid ? '' : `<span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="${tx('Entfernen')}">${ic('trash')}</span>`}

@@ -111,13 +111,13 @@ function startCountdown(by = null) {
   round.phase = 'countdown'; round.timeUp = false; round.bz = by;
   const total = state.settings.seconds * 1000, end = Date.now() + total;
   round.end = end; round.dur = total; Lobby.syncRound();   // Fernseher-Ansicht zeigt den Countdown mit
-  const ring = $('#ring'), C = 2 * Math.PI * 56;
-  ring.style.strokeDasharray = C;
+  const ring = $('#ringSvg'), C = 2 * Math.PI * 56;
+  ring.style.setProperty('--len', C);
   let lastSec = null;
   render();
   const tick = () => {
     const rem = Math.max(0, end - Date.now()), s = Math.ceil(rem / 1000);
-    ring.style.strokeDashoffset = C * (1 - rem / total);
+    ring.style.setProperty('--off', (C * (1 - rem / total)).toFixed(2));
     if (s !== lastSec) {   // Zahl, Farbe und Ton nur bei neuer Sekunde
       $('#timerNum').textContent = s; $('#discWrap').classList.toggle('urgent', s <= 5);
       if (s <= 3 && s > 0) beep(880, .08);

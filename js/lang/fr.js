@@ -560,5 +560,7 @@
     "von {o}": "par {o}",
     "von Spotify – lässt sich evtl. nicht laden": "par Spotify – peut ne pas se charger",
     "Nichts gefunden": "Aucun résultat",
+    "online": "en ligne",
+    "Runde, Countdown, Tipps und QR-Code groß – z. B. am Laptop mit HDMI": "Manche, compte à rebours, réponses et QR code en grand – p. ex. sur un portable via HDMI",
   },
 };

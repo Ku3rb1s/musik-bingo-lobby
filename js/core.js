@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.12.3', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.12.4', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -136,7 +136,7 @@ const decLabel = d => tx('{d}er', { d: d < 2000 ? String(d).slice(2) : d });
 const decadeOf = y => y ? tx('{d}er', { d: Math.floor(y / 10) * 10 }) : '?';
 
 /* ---------------- UI-Helfer ---------------- */
-let toastT;
+let toastT, toastSeq = 0;
 // Hinweis unten/oben; optional mit Knopf: action = { label, fn }
 // Hinweis über geöffneten Menüs: ins offene Menü einhängen (sonst ist sein Knopf bei offenem Menü nicht antippbar)
 // und als Popover in die oberste Ebene holen (sonst läge er hinter dem Menü). Ohne Popover-Unterstützung reicht das Einhängen.
@@ -156,9 +156,12 @@ function toast(msg, ms = 3500, action = null) {
   btn.classList.toggle('hidden', !action);
   if (action) { btn.textContent = action.label; btn.onclick = () => { el.classList.remove('show'); action.fn(); }; }
   placeToast();
-  requestAnimationFrame(() => el.classList.add('show'));
+  // Einblenden im nächsten Bild. Läuft die App gerade im Hintergrund (z. B. kurz zu Spotify gewechselt), kommt dieses Bild
+  // erst nach dem Ausblenden – dann darf der Hinweis nicht mehr erscheinen (sonst bliebe er für immer stehen)
+  const seq = ++toastSeq;
+  requestAnimationFrame(() => { if (seq === toastSeq) el.classList.add('show'); });
   clearTimeout(toastT);
-  toastT = setTimeout(() => { el.classList.remove('show'); toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} }, 300); }, ms);
+  toastT = setTimeout(() => { toastSeq++; el.classList.remove('show'); toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} }, 300); }, ms);
 }
 // Hinweise wegwischen: nach oben schieben (wie beim iPhone), mit Finger oder Maus. Nach unten gibt er nur leicht nach.
 // Kurzes Antippen bleibt ein Antippen.
@@ -183,7 +186,7 @@ function toast(msg, ms = 3500, action = null) {
     x0 = null; el.style.transition = '';
     if (dy < -30) {                         // weit genug nach oben geschoben → wegfliegen lassen und schließen
       el.style.translate = `0 ${Math.min(dy * 3, -150)}px`; el.style.opacity = '0';
-      clearTimeout(toastT); el.classList.remove('show');
+      clearTimeout(toastT); toastSeq++; el.classList.remove('show');
       toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} el.style.translate = ''; el.style.opacity = ''; }, 300);
     } else { el.style.translate = ''; el.style.opacity = ''; }
   };
