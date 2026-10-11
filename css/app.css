@@ -759,17 +759,21 @@ html.ios .volume,html.ios .hint{display:none}
 .repick button,.pick-box button,.join-box button,.win button,.notice button,button.full{white-space:normal;line-height:1.25}
 /* Mitspieler auf sehr schmalen Handys: oben nur das Logo-Bild, damit Sprache und Kartennummer Platz haben */
 @media (max-width:350px){#cardApp .card-head .logo span{display:none}}
-/* Fernseher: nie höher als der Bildschirm (dort kann niemand scrollen); viele Mitspieler → zwei Spalten */
+/* Fernseher: nie höher als der Bildschirm (dort kann niemand scrollen). Passen nicht alle Mitspieler drauf,
+   läuft die Liste langsam endlos nach oben (zwei gleiche Kopien, um eine Hälfte verschoben = nahtlos) */
 #tvApp{height:100dvh;overflow:hidden}
 .tv-side{min-height:0;max-height:calc(100dvh - 6vw)}
 .tv-players{min-height:0;overflow:hidden}
-.tv-players.many{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:1.6vw;font-size:1.1vw}
-.tv-players.many .tv-h{grid-column:1/-1}
+.tv-scroll{flex:1 1 auto;min-height:0;overflow:hidden}
+.tv-copy{display:flex;flex-direction:column;gap:.5vw}
+.tv-players.rolling .tv-scroll{-webkit-mask-image:linear-gradient(transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(transparent,#000 8%,#000 92%,transparent)}
+.tv-players.rolling .tv-copy{padding-bottom:.5vw}
+.tv-players.rolling .tvp:last-child{border-bottom:1px solid var(--line)}
+.tv-players.rolling .tv-track{animation:tvRoll var(--d,20s) linear infinite;will-change:transform}
+@keyframes tvRoll{to{transform:translateY(-50%)}}
 .tv-players .tvp span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* QR-Code richtet sich auch nach der Höhe; bei vielen Mitspielern etwas kleiner, damit die Liste ganz sichtbar bleibt */
+/* QR-Code richtet sich auch nach der Höhe */
 .tv-qr{width:min(20vw,34vh,340px)}
-.tv-side:has(.tv-players.many) .tv-qr{width:min(14vw,24vh,260px)}
-.tv-side:has(.tv-players.many) #tvCode{font-size:3vw}
 /* Mitspieler-Leiste: weicher Rand, wenn links/rechts noch Namen kommen (zur Seite scrollbar); sehr lange Namen gekürzt */
 .scorebar{overscroll-behavior-x:contain;-webkit-user-select:none;user-select:none}
 .scorebar.fade-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent)}

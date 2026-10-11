@@ -446,11 +446,23 @@ async function tvMode(code) {
     const done = p => r && p.guess?.n === key(r) && p.guess.t;
     const wins = id => match?.wins?.[id] || 0;
     list.sort((a, b) => wins(b.id) - wins(a.id) || String(a.name).localeCompare(b.name));
-    $('#tvPlayers').classList.toggle('many', list.length > 8);   // viele Mitspieler: zwei Spalten, damit alle auf den Bildschirm passen
-    $('#tvPlayers').innerHTML = `<div class="tv-h">${r?.ph === 'r' ? tx('Tipps') : tx('Mitspieler')} · ${list.length}</div>` + (list.map(p => `<div class="tvp"><span>${p.bingo ? '🎉 ' : ''}${esc(p.name)}${wins(p.id) ? ` <b>🏆${wins(p.id)}</b>` : ''}</span>` +
-      (r?.ph === 'r' ? `<span class="g">${done(p) ? esc(p.guess.t) : '–'}</span>` : `<span class="g">${done(p) ? '<b>✓</b>' : ''}</span>`) + '</div>').join('') || `<div class="g">${tx('Noch niemand da – QR-Code scannen!')}</div>`);
+    const box = $('#tvPlayers');
+    if (!box.querySelector('.tv-track')) box.innerHTML = '<div class="tv-h"></div><div class="tv-scroll"><div class="tv-track"></div></div>';
+    box.querySelector('.tv-h').textContent = `${r?.ph === 'r' ? tx('Tipps') : tx('Mitspieler')} · ${list.length}`;
+    const rows = list.map(p => `<div class="tvp"><span>${p.bingo ? '🎉 ' : ''}${esc(p.name)}${wins(p.id) ? ` <b>🏆${wins(p.id)}</b>` : ''}</span>` +
+      (r?.ph === 'r' ? `<span class="g">${done(p) ? esc(p.guess.t) : '–'}</span>` : `<span class="g">${done(p) ? '<b>✓</b>' : ''}</span>`) + '</div>').join('') || `<div class="g">${tx('Noch niemand da – QR-Code scannen!')}</div>`;
+    // Passen nicht alle auf den Bildschirm, läuft die Liste langsam endlos nach oben (zweite Kopie direkt dahinter = nahtlos).
+    // Die Animation hängt am bleibenden .tv-track – neue Tipps tauschen nur den Inhalt, die Liste springt also nicht nach oben.
+    const track = box.querySelector('.tv-track'), view = track.parentElement;
+    track.innerHTML = `<div class="tv-copy">${rows}</div>`;
+    const h = track.firstChild.offsetHeight, over = h > view.clientHeight + 2;
+    if (over) track.insertAdjacentHTML('beforeend', `<div class="tv-copy" aria-hidden="true">${rows}</div>`);
+    box.classList.toggle('rolling', over);
+    const d = Math.round(h / 28) + 's';   // ca. 28 Pixel pro Sekunde
+    if (over && track.style.getPropertyValue('--d') !== d) track.style.setProperty('--d', d);
     $('#tvMatch').textContent = match ? matchTitle(match) : '';
   };
+  addEventListener('resize', () => drawSide());
   f.onValue(f.at(`${base}/round`), s => { r = s.val(); draw(); drawSide(); });
   f.onValue(f.at(`${base}/players`), s => { players = s.val() || {}; drawSide(); });
   f.onValue(f.at(`${base}/match`), s => {

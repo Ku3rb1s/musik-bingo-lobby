@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.5 – 11.10.2026
+- Fernseher: Mitspieler wieder in einer Spalte; passen nicht alle auf den Bildschirm, läuft die Liste langsam endlos nach oben (weicher Rand oben/unten). Neue Tipps lassen die Liste nicht zurückspringen.
+
 ## 4.9.4 – 11.10.2026
 - Mitspieler-Leiste: bei vielen Spielern zur Seite scrollbar – auf dem Handy wischen, am PC mit Mausrad oder Ziehen; ein weicher Rand zeigt, dass noch Namen kommen; sehr lange Namen werden gekürzt
 - Bingo-Felder bleiben immer quadratisch: lange Kategorien werden nach 3 Zeilen (5 × 5: 2) mit … gekürzt, statt das Feld zu strecken; „Sänger/in“, „Band/Solo“ brechen sauber nach dem „/“ um
