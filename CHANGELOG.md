@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.0 – 11.10.2026
+- Neu: Checkliste vor dem ersten Spiel statt leerer Platte – 1. Mit Spotify verbinden, 2. Playlist hinzufügen, 3. Bingo einrichten (optional). Erledigtes bekommt ein ✓, jeder Schritt führt direkt an die richtige Stelle. Oben „Willkommen!“ bzw. „Los geht’s!“; „Runde –“, „Keine Songs“ und der leere Verlauf sind bis dahin ausgeblendet.
+- Einstellungen aufgeräumt: Hauptseite mit Spotify, Design, Spiel (Countdown, Startpunkt, Song-Länge, Tipps, Automatisch auflösen), Töne, Kategorien. Selten Gebrauchtes unter „Erweitert“: Abspielen über/Gerät, Bei Auflösung pausieren, Originaljahr (MusicBrainz).
+- Lobby: Die Kategorien-Liste unter der Bingo-Karte ist weg (doppelt – die Felder zeigen sie schon); Karte und Tipp rücken näher zusammen
+
 ## 4.12.9 – 11.10.2026
 - Alle Songs gespielt → neu gemischt: Der Song, der gerade lief, kam manchmal sofort nochmal – jetzt nicht mehr
 - Speicher des Browsers voll (sehr große Bibliotheken): einmaliger Hinweis statt stillem Scheitern (sonst wären nach dem Neuladen z. B. Songs weg)

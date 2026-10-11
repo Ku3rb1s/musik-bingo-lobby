@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.12.9', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.13.0', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -302,7 +302,7 @@ function goPage(d, page, back) {
 }
 function onPage(id, page) {
   if (id === 'sheetSettings') {
-    if (page === 'main') renderSettings();
+    if (page === 'main' || page === 'adv') renderSettings();
     if (page === 'account') renderAccount();
     if (page === 'cats') renderCats();
   } else if (id === 'sheetGame') {
