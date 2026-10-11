@@ -241,11 +241,11 @@ function mbLookup(t) {
 // Dann den Künstler nachschlagen. Ergebnis je Künstler gespeichert ({} = MusicBrainz kennt ihn nicht).
 const ARTIST_FACTS = ['country', 'kind', 'gender'];
 const artistOf = t => (t.artists.split(',')[0] || '').trim();
-const REGION_NAMES = (() => { try { return new Intl.DisplayNames([LANG], { type: 'region' }); } catch { return null; } })();
+const REGION_NAMES = {};   // je Sprache (die Sprache kann beim Spielleiter während des Spiels wechseln)
 function regionName(code) {
   if (code === 'XE') return tx('Europa');
   if (code === 'XW') return tx('Weltweit');
-  try { return REGION_NAMES?.of(code) || code; } catch { return code; }
+  try { return (REGION_NAMES[LANG] ??= new Intl.DisplayNames([LANG], { type: 'region' })).of(code) || code; } catch { return code; }
 }
 const artistCountry = t => state.mbArtist[normStr(artistOf(t))]?.c || '';   // ISO-Code für die Handys (übersetzen selbst)
 const KIND_DE = { Person: 'Solo', Group: 'Band', Orchestra: 'Orchester', Choir: 'Chor' };

@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.1 – 11.10.2026
+- Sprache wechseln beim Spielleiter ohne Neuladen: laufende Runde, Musik und Countdown laufen weiter, alle Texte wechseln sofort (Mitspieler laden weiterhin neu – ihr Stand kommt vom Server zurück)
+- Rückfragen: lange Knopftexte brechen um statt über den Rand zu laufen; linker Knopf (Abbrechen bzw. zweite Wahl) weiß, Hauptaktion grün bzw. rot
+
 ## 4.9.0 – 11.10.2026
 - „Spiel starten“ ohne eingerichtetes Bingo fragt jetzt: „Ohne Bingo starten“ oder „Bingo einrichten“ (öffnet direkt die Einrichtung)
 - „Meine Karte“ (Spielleiter spielt mit): oben Partie-Stand mit Siegen und wer schon getippt hat – nach der Auflösung die Tipps selbst, wie bei den Mitspielern

@@ -494,9 +494,16 @@ function addCategory(nameEl, typeEl, tolEl) {
   toast(tx('Kategorie „{n}“ hinzugefügt', { n: cat.icon + ' ' + cat.name }));
   return true;
 }
+// Auswahl „Auflösung zeigt“ (Einstellungen und Bingo-Einrichten) – auch nach einem Sprachwechsel neu befüllen
+function fillAnswerTypes() {
+  for (const type of ['#newCatType', '#bcType']) {
+    const v = $(type).value || 'none';
+    $(type).innerHTML = Object.entries(ANSWER_TYPES).map(([k, t]) => `<option value="${k}">${tx(t)}</option>`).join('');
+    $(type).value = v;
+  }
+}
+fillAnswerTypes();
 for (const [type, tolRow] of [['#newCatType', '#tolRow'], ['#bcType', '#bcTolRow']]) {
-  $(type).innerHTML = Object.entries(ANSWER_TYPES).map(([k, v]) => `<option value="${k}">${tx(v)}</option>`).join('');
-  $(type).value = 'none';
   $(type).onchange = e => $(tolRow).classList.toggle('hidden', e.target.value !== 'range');
 }
 $('#btnBcAdd').onclick = () => { if (addCategory($('#bcName'), $('#bcType'), $('#bcTol'))) renderBingo(); };
@@ -519,6 +526,18 @@ $('#langSel').onchange = e => setLang(e.target.value);
   if (q.has('join')) return codeMode();
   const cardParam = q.get('b');
   if (cardParam) return cardMode(cardParam);
+  // Spielleiter: Sprache wechseln ohne Neuladen – alles in der neuen Sprache neu zeichnen, die Runde läuft weiter
+  self.liveLang = () => {
+    renderAll(); renderSettings(); renderAccount(); renderCats(); renderMyPlaylists(); renderAdd(); fillAnswerTypes();
+    if ($('#guessShow').open) $('#guessShow').close();
+    document.querySelectorAll('dialog.sheet[open]').forEach(d => {
+      const p = d.querySelector('.page.active');
+      if (p) d.querySelector('.nav-title').textContent = p.dataset.title;
+      onPage(d.id, d.dataset.page);
+    });
+    if (!$('#endScreen').classList.contains('hidden') && state.match?.over) showEndHost();
+    if (round?.phase === 'countdown') $('#timerNum').textContent = Math.max(0, Math.ceil((round.end - Date.now()) / 1000));
+  };
   Lobby.watch();
   if (location.protocol === 'file:') $('#fileWarn').classList.remove('hidden');
   let justLoggedIn = false;

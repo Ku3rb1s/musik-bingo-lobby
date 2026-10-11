@@ -260,8 +260,9 @@ button.cell{transform:none!important;filter:none!important}
 .alert p{margin:0;padding:20px 18px 6px;white-space:pre-line;line-height:1.4;font-size:.95rem}
 .alert input{width:calc(100% - 32px);margin:10px 16px 4px;text-align:center}
 .alert-btns{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);margin-top:16px}
-.alert-btns button{background:none;border-radius:0;color:var(--accent);padding:14px;font-weight:700;font-size:1rem;transform:none!important}
-.alert-btns button:first-child{font-weight:500;border-right:1px solid var(--line)}
+.alert-btns button{background:none;border-radius:0;color:var(--accent);padding:14px 10px;font-weight:700;font-size:1rem;transform:none!important;white-space:normal;line-height:1.25}
+/* Linker Knopf (Abbrechen bzw. zweite Wahl) weiß, rechter (Hauptaktion) grün bzw. rot – so sind beide gut zu unterscheiden */
+.alert-btns button:first-child{font-weight:500;color:var(--text);border-right:1px solid var(--line)}
 .alert-btns button.danger{color:var(--danger)}
 
 /* Hinweis liegt als Popover in der obersten Ebene – auch über geöffneten Menüs */
