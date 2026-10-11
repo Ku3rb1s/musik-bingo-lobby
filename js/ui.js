@@ -10,7 +10,7 @@ function render() {
   $('#buzzBy').textContent = round?.bz ? '🔔 ' + round.bz : '';
   $('#buzzBy').classList.toggle('hidden', !round?.bz);
   $('#remaining').classList.toggle('hidden', !!round?.bz);
-  $('#remaining').textContent = state.tracks.length ? tx('{a} / {b} Songs übrig', { a: left, b: state.tracks.length }) : tx('Keine Songs');
+  renderMetaRight(left);
   $('#catLabel').textContent = round ? tx('Kategorie dieser Runde') : 'Musik-Bingo';
   $('#cat').classList.toggle('idle', !round);
   if (!spinning) {
@@ -60,6 +60,15 @@ function render() {
   $('#actionRow').innerHTML = acts.join('');
   renderPlayState(); renderScorebar();
   updHostMark();   // eigene Karte: Felder hervorheben, die man gerade markieren darf
+}
+// Oben rechts: mit Lobby die laufende Partie (z. B. „Partie 1/3“), sonst wie viele Songs übrig sind
+function renderMetaRight(left) {
+  const m = Lobby.code && state.bingo && state.match, el = $('#remaining');
+  if (left == null) { const played = new Set(state.played); left = state.tracks.reduce((n, t) => n + !played.has(t.id), 0); }
+  el.textContent = m ? (m.over ? tx('🏁 Spiel vorbei') : m.total ? tx('Partie {g}/{t}', { g: m.game, t: m.total }) : tx('Partie {g}', { g: m.game }))
+    : state.tracks.length ? tx('{a} / {b} Songs übrig', { a: left, b: state.tracks.length }) : tx('Keine Songs');
+  el.classList.toggle('songs', !m);
+  el.classList.toggle('partie', !!m);
 }
 function renderPlayState() {
   const dw = $('#discWrap');

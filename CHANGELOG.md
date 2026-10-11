@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.4 – 11.10.2026
+- Handys, Runden-Box nach der Auflösung: Cover rechts (wo vorher der Countdown lief) statt des Kategorie-Symbols links; „(richtig: 1970–1976)“ klein direkt neben der Jahreszahl
+- Spielleiter: Mit Lobby steht oben rechts die laufende Partie („Partie 1/3“, „🏁 Spiel vorbei“) statt „Songs übrig“ (die Song-Anzahl steht unter Playlists)
+
 ## 4.13.3 – 11.10.2026
 - Hauptbildschirm: Knopf mit QR-Symbol und Lobby-Code oben neben „Runde …“ – öffnet direkt „Einladen“ (für alle, die später dazukommen). Auf sehr schmalen Handys weicht dafür „Songs übrig“.
 - Handys: „Partie 1/3 · 🏆 1“ steht klein unter der Kartennummer oben – die eigene Partie-Zeile fällt weg (erscheint nur noch am Spielende mit Sieger und Tabelle)

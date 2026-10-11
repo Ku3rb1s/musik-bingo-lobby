@@ -260,7 +260,7 @@ function renderLobby() {
     : b ? tx('Diese Bingo-Runde läuft ohne Lobby – die Karten kommen über den QR-Code, ohne Live-Sync.')
     : tx('Erstelle Bingo-Karten – mit Lobby treten alle per QR-Code oder Code bei und alles läuft live.');
   $('#bingoSub').textContent = b ? tx('{s} × {s} Karten', { s: b.s }) + (hasJoker(b) ? tx(' mit Joker') : '') + (hasBuzz(b) && code ? ' · ' + tx('🔔 Buzzer') : '') + tx(' · {n} Kategorien', { n: b.k.length }) + (code ? tx(' · antippen zum Einladen') : '') : '';
-  renderScorebar(); renderMatch(); renderQrBtn();
+  renderScorebar(); renderMatch(); renderQrBtn(); renderMetaRight();
 }
 // Kleiner Knopf oben auf dem Hauptbildschirm: QR-Symbol + Lobby-Code → Einladen (für alle, die später dazukommen)
 function renderQrBtn() {

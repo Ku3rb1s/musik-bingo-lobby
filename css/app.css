@@ -930,5 +930,10 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .card-pill small{font-size:.72em;font-weight:700;color:var(--accent);white-space:nowrap}
 .round-meta .meta-l{flex:none}
 /* Sehr schmale Handys: Für drei Anzeigen ist kein Platz – „Songs übrig“ weicht dem QR-Knopf (steht auch unter Playlists) */
-@media (max-width:360px){.round-meta:has(#qrBtn:not(.hidden)) #remaining{display:none}}
+@media (max-width:360px){.round-meta:has(#qrBtn:not(.hidden)) #remaining.songs{display:none}}
+#remaining.partie{color:var(--accent);font-weight:700}
 .card-pill .cp-l{white-space:nowrap}
+/* Handy: Runden-Box nach der Auflösung – Cover rechts statt Symbol links, „(richtig …)“ klein neben der Jahreszahl */
+.round-live .rl-cover{flex:none;width:62px;height:62px;border-radius:12px;object-fit:cover;box-shadow:0 6px 16px -6px #000}
+.round-live.has-cover .rl-ic{display:none}
+.round-live .rl-a small{display:inline;margin-left:.35em}

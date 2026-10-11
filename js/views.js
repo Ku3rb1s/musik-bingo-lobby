@@ -418,7 +418,10 @@ async function lobbyMode(code, autoName = null) {
       box.style.borderColor = r.c;
       const cd = r.ph === 'c' && r.end, canBuzz = r.ph === 'p' && hasBuzz(curB), sent = buzzSent === keyOf(r);
       const st = r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · Countdown') : tx(' · läuft');
+      const cover = r.ph === 'r' && r.cv;   // nach der Auflösung: Cover auf dem Platz des Countdowns
+      box.classList.toggle('has-cover', !!cover);
       const side = cd ? `<div class="rl-timer" style="--c:${esc(r.c)}" role="timer"><b class="rl-cd"></b></div>`
+        : cover ? `<img class="rl-cover" src="${esc(r.cv)}" alt="">`
         : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">🔔<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
         <div class="rl-n">${esc(tx(r.q))}</div>${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
