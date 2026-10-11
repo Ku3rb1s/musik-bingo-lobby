@@ -217,9 +217,15 @@ async function searchPlaylists() {
   const my = ++plSearch.seq;
   plSearch.q = q; plSearch.list = null; plSearch.busy = true; renderPlSearch();
   try {
-    const r = await api('/search?type=playlist&limit=20&q=' + encodeURIComponent(q));
+    // Spotify erlaubt Entwickler-Apps nur wenige Treffer pro Anfrage („Invalid limit“ bei mehr) → 10 versuchen,
+    // sonst 5; dazu eine zweite Seite (optional)
+    const page = (off, lim) => api(`/search?type=playlist&limit=${lim}&offset=${off}&q=` + encodeURIComponent(q));
+    let lim = 10;
+    const r1 = await page(0, lim).catch(e => { if (!/limit/i.test(e.message)) throw e; lim = 5; return page(0, lim); });
+    const r2 = r1?.playlists?.next ? await page(lim, lim).catch(() => null) : null;
     if (my !== plSearch.seq) return;
-    const list = (r?.playlists?.items || []).filter(p => p?.id).map(p => ({
+    const items = [...(r1?.playlists?.items || []), ...(r2?.playlists?.items || [])];
+    const list = [...new Map(items.filter(p => p?.id).map(p => [p.id, p])).values()].map(p => ({
       id: p.id, name: p.name, cover: p.images?.[0]?.url || '', total: (p.tracks || p.items)?.total ?? null,
       owner: p.owner?.display_name || p.owner?.id || '', spotify: p.owner?.id === 'spotify',
     }));

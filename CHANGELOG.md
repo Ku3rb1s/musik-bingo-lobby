@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.1 – 11.10.2026
+- Playlist-Suche: „Suche fehlgeschlagen: Invalid limit“ behoben – Spotify erlaubt Entwickler-Apps nur wenige Treffer pro Anfrage. Jetzt 2 × 10 Treffer (notfalls 2 × 5).
+- Hinweise wieder oben – auf allen Geräten – und nur nach oben wegwischbar wie beim iPhone (nach unten federn sie zurück)
+
 ## 4.12.0 – 11.10.2026
 - Neu: Playlist suchen (Playlists → Hinzufügen, ganz oben) – findet alle öffentlichen Playlists auf Spotify, nicht nur die eigenen. Antippen lädt sie ins Spiel. Playlists von Spotify selbst stehen hinten und sind gekennzeichnet (lassen sich mit Entwickler-Apps meist nicht laden).
 - Sprache in den Einstellungen (Handy): Die Auswahlliste öffnete sich nicht immer – am iPhone zoomte die Seite beim Antippen (zu kleine Schrift der unsichtbaren Liste), und ein gerade sichtbarer Hinweis lag oben über der Kopfzeile. Jetzt: 16-px-Liste, größere Tippfläche, und bei offenem Menü erscheinen Hinweise auf dem Handy unten.

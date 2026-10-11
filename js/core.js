@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.12.0', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.12.1', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -160,7 +160,8 @@ function toast(msg, ms = 3500, action = null) {
   clearTimeout(toastT);
   toastT = setTimeout(() => { el.classList.remove('show'); toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} }, 300); }, ms);
 }
-// Hinweise wegwischen: in eine beliebige Richtung ziehen (Finger oder Maus). Kurzes Antippen bleibt ein Antippen.
+// Hinweise wegwischen: nach oben schieben (wie beim iPhone), mit Finger oder Maus. Nach unten gibt er nur leicht nach.
+// Kurzes Antippen bleibt ein Antippen.
 (() => {
   const el = $('#toast');
   let x0 = null, y0 = 0, dx = 0, dy = 0;
@@ -173,14 +174,15 @@ function toast(msg, ms = 3500, action = null) {
   el.addEventListener('pointermove', e => {
     if (x0 == null) return;
     dx = e.clientX - x0; dy = e.clientY - y0;
-    el.style.translate = `${dx}px ${dy}px`;
-    el.style.opacity = String(Math.max(.25, 1 - Math.hypot(dx, dy) / 220));
+    const y = dy < 0 ? dy : dy / 4;   // nach unten: Gummiband
+    el.style.translate = `0 ${y}px`;
+    el.style.opacity = String(Math.max(.25, 1 + Math.min(0, dy) / 120));
   });
   const end = () => {
     if (x0 == null) return;
     x0 = null; el.style.transition = '';
-    if (Math.hypot(dx, dy) > 45) {          // weit genug gezogen → wegfliegen lassen und schließen
-      el.style.translate = `${dx * 3}px ${dy * 3}px`; el.style.opacity = '0';
+    if (dy < -30) {                         // weit genug nach oben geschoben → wegfliegen lassen und schließen
+      el.style.translate = `0 ${Math.min(dy * 3, -150)}px`; el.style.opacity = '0';
       clearTimeout(toastT); el.classList.remove('show');
       toastT = setTimeout(() => { try { el.hidePopover?.(); } catch {} el.style.translate = ''; el.style.opacity = ''; }, 300);
     } else { el.style.translate = ''; el.style.opacity = ''; }
