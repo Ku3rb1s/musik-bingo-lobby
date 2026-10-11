@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.12.0 – 11.10.2026
+- Neu: Playlist suchen (Playlists → Hinzufügen, ganz oben) – findet alle öffentlichen Playlists auf Spotify, nicht nur die eigenen. Antippen lädt sie ins Spiel. Playlists von Spotify selbst stehen hinten und sind gekennzeichnet (lassen sich mit Entwickler-Apps meist nicht laden).
+- Sprache in den Einstellungen (Handy): Die Auswahlliste öffnete sich nicht immer – am iPhone zoomte die Seite beim Antippen (zu kleine Schrift der unsichtbaren Liste), und ein gerade sichtbarer Hinweis lag oben über der Kopfzeile. Jetzt: 16-px-Liste, größere Tippfläche, und bei offenem Menü erscheinen Hinweise auf dem Handy unten.
+
 ## 4.11.3 – 11.10.2026
 - Countdown auf Handys und Fernseher unabhängig von der Uhr des Geräts: Bisher rechnete jedes Gerät mit seiner eigenen Uhr – ging ein Handy z. B. 10 s falsch, zeigte es einen ganz anderen Countdown. Jetzt zählt der Moment, in dem der Start ankommt; nur wer mitten im Countdown dazukommt, rechnet über die Server-Zeit. Sendet der Spielleiter die Runde während des Countdowns nochmal (z. B. Jahr nachgeschlagen), startet nichts neu.
 - Gemeinsamer Countdown-Ring für Handys und Fernseher (vorher doppelter Code)

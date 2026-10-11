@@ -26,7 +26,8 @@ if (missingEn.length) { problems += missingEn.length; console.log(`\nen: ${missi
 // Nur ein Hinweis: Manche Texte entstehen erst zur Laufzeit (z. B. tx(KIND_DE[x])) – die stehen aber als Text im Code.
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8').replace(/\s+/g, ' ');
 const flat = code.replace(/\\n/g, '\n');
-const unused = master.filter(k => !flat.includes(k) && !html.includes(k.replace(/\s+/g, ' ')) && !html.includes(k.replace(/\s+/g, ' ').replace(/&/g, '&amp;')));
+const dynamic = /^Jahr ± \d+$/;   // entsteht zur Laufzeit (shortCat: `Jahr ± ${tol}`)
+const unused = master.filter(k => !dynamic.test(k) && !flat.includes(k) && !html.includes(k.replace(/\s+/g, ' ')) && !html.includes(k.replace(/\s+/g, ' ').replace(/&/g, '&amp;')));
 if (unused.length) { console.log(`\nHinweis – in en.js, aber nicht mehr benutzt (${unused.length}):`); unused.forEach(k => console.log('  - ' + JSON.stringify(k))); }
 
 for (const [code2, p] of Object.entries(packs)) {

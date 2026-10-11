@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.11.3">
+<link rel="stylesheet" href="css/app.css?v=4.12.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -54,6 +54,7 @@
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/></symbol>
   <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5L20 18M8 16.5L20 6"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></symbol>
 </svg>
 <div class="bg"><i></i><i></i><i></i></div>
@@ -136,6 +137,17 @@
       <div id="addNeedLogin" class="notice hidden">
         <p>Um Playlists zu laden, verbinde zuerst dein Spotify-Konto.</p>
         <button data-open="sheetSettings:account">Mit Spotify verbinden</button>
+      </div>
+      <div id="plSearchBox">
+        <div class="group-h">Playlist suchen</div>
+        <div class="group">
+          <div class="cell">
+            <svg class="ic muted"><use href="#i-search"/></svg>
+            <input id="plSearch" class="bare" type="search" placeholder="z. B. 80er Hits, Party, Rock" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+          </div>
+        </div>
+        <div class="group icons hidden" id="plSearchRes" style="margin-top:8px"></div>
+        <div class="group-f">Findet alle öffentlichen Playlists auf Spotify – nicht nur deine eigenen.</div>
       </div>
       <div class="group-h">Link einfügen</div>
       <div class="group">
@@ -615,16 +627,16 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.11.3"></script>
-<script src="js/lang/fr.js?v=4.11.3"></script>
-<script src="js/lang/es.js?v=4.11.3"></script>
-<script src="js/i18n.js?v=4.11.3"></script>
-<script src="js/core.js?v=4.11.3"></script>
-<script src="js/spotify.js?v=4.11.3"></script>
-<script src="js/game.js?v=4.11.3"></script>
-<script src="js/lobby.js?v=4.11.3"></script>
-<script src="js/bingo.js?v=4.11.3"></script>
-<script src="js/views.js?v=4.11.3"></script>
-<script src="js/ui.js?v=4.11.3"></script>
+<script src="js/lang/en.js?v=4.12.0"></script>
+<script src="js/lang/fr.js?v=4.12.0"></script>
+<script src="js/lang/es.js?v=4.12.0"></script>
+<script src="js/i18n.js?v=4.12.0"></script>
+<script src="js/core.js?v=4.12.0"></script>
+<script src="js/spotify.js?v=4.12.0"></script>
+<script src="js/game.js?v=4.12.0"></script>
+<script src="js/lobby.js?v=4.12.0"></script>
+<script src="js/bingo.js?v=4.12.0"></script>
+<script src="js/views.js?v=4.12.0"></script>
+<script src="js/ui.js?v=4.12.0"></script>
 </body>
 </html>

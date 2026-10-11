@@ -553,5 +553,12 @@
     "Beides kannst du jederzeit in den Einstellungen ändern.": "You can change both at any time in the settings.",
     "Antippen zum Ändern (Einstellungen)": "Tap to change (settings)",
     "Los geht’s!": "Let’s go!",
+    "Playlist suchen": "Search playlists",
+    "z. B. 80er Hits, Party, Rock": "e.g. 80s hits, party, rock",
+    "Findet alle öffentlichen Playlists auf Spotify – nicht nur deine eigenen.": "Finds all public playlists on Spotify – not just your own.",
+    "Suche fehlgeschlagen: {e}": "Search failed: {e}",
+    "von {o}": "by {o}",
+    "von Spotify – lässt sich evtl. nicht laden": "by Spotify – may not load",
+    "Nichts gefunden": "Nothing found",
   },
 };

@@ -553,5 +553,12 @@
     "Beides kannst du jederzeit in den Einstellungen ändern.": "Puedes cambiar ambos en cualquier momento en los ajustes.",
     "Antippen zum Ändern (Einstellungen)": "Toca para cambiar (ajustes)",
     "Los geht’s!": "¡Vamos!",
+    "Playlist suchen": "Buscar playlists",
+    "z. B. 80er Hits, Party, Rock": "p. ej. éxitos de los 80, fiesta, rock",
+    "Findet alle öffentlichen Playlists auf Spotify – nicht nur deine eigenen.": "Encuentra todas las playlists públicas de Spotify, no solo las tuyas.",
+    "Suche fehlgeschlagen: {e}": "La búsqueda falló: {e}",
+    "von {o}": "de {o}",
+    "von Spotify – lässt sich evtl. nicht laden": "de Spotify – puede que no cargue",
+    "Nichts gefunden": "No se encontró nada",
   },
 };

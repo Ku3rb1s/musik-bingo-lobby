@@ -553,5 +553,12 @@
     "Beides kannst du jederzeit in den Einstellungen ändern.": "Tu peux modifier les deux à tout moment dans les réglages.",
     "Antippen zum Ändern (Einstellungen)": "Toucher pour modifier (réglages)",
     "Los geht’s!": "C’est parti !",
+    "Playlist suchen": "Chercher une playlist",
+    "z. B. 80er Hits, Party, Rock": "p. ex. tubes des années 80, fête, rock",
+    "Findet alle öffentlichen Playlists auf Spotify – nicht nur deine eigenen.": "Trouve toutes les playlists publiques sur Spotify – pas seulement les tiennes.",
+    "Suche fehlgeschlagen: {e}": "Échec de la recherche : {e}",
+    "von {o}": "par {o}",
+    "von Spotify – lässt sich evtl. nicht laden": "par Spotify – peut ne pas se charger",
+    "Nichts gefunden": "Aucun résultat",
   },
 };

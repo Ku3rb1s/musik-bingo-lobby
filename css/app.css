@@ -861,3 +861,15 @@ body:not(.tv-mode) .tv-banner{display:none}
 .cell.flash{animation:cellFlash 1.6s ease}
 @keyframes cellFlash{0%,40%{background:color-mix(in srgb,var(--accent) 22%,transparent)}}
 button.cell.rule{cursor:pointer}
+/* Sprachknopf in den Einstellungen: größere Tippfläche; Auswahlliste mit 16 px – sonst zoomt das iPhone beim Antippen
+   in die Seite, und die Liste öffnet sich oft nicht */
+.lang-pill select{font-size:16px}
+.nav-lang{min-height:36px;padding:.45em .95em}
+/* Handy mit offenem Menü: Hinweise unten statt oben – oben liegt die Kopfzeile mit Sprache, Zurück und Fertig */
+@media (max-width:640px){
+  dialog.sheet[open] #toast{top:auto;bottom:calc(var(--sab) + 20px);transform:translateX(-50%) translateY(30px)}
+  dialog.sheet[open] #toast.show{transform:translateX(-50%) translateY(0)}
+}
+/* Suchergebnis „von Spotify“: lässt sich mit Entwickler-Apps meist nicht laden → zurückgenommen */
+.cell.pl-spotify{opacity:.6}
+.cell.pl-spotify .sub{white-space:normal}

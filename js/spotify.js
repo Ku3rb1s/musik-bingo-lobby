@@ -152,7 +152,7 @@ async function loadPlaylist(id) {
   loadingPl.add(id); renderMyPlaylists();
   const btn = $('#btnLoadPl');
   try {
-    const meta = myPlaylists?.find(p => p.id === id);
+    const meta = myPlaylists?.find(p => p.id === id) || plSearch.list?.find(p => p.id === id);
     let name = meta?.name, cover = meta?.cover;
     if (!name) { try { const p = await api(`/playlists/${id}?fields=name,images`); name = p?.name; cover = p?.images?.[0]?.url || ''; } catch {} }
     let page;
@@ -205,6 +205,30 @@ async function loadMyPlaylists(force) {
     myPlaylists = out;
   } catch (e) { myPlaylists = []; toast(tx('Deine Playlists konnten nicht geladen werden: {e}', { e: e.message }), 6000); }
   finally { myPlLoading = false; renderMyPlaylists(); }
+}
+
+// Öffentliche Playlists suchen. Playlists von Spotify selbst (Owner „spotify“) lassen sich mit Entwickler-Apps meist
+// nicht laden – sie stehen deshalb hinten und sind gekennzeichnet.
+const plSearch = { q: '', list: null, busy: false, seq: 0, t: null };
+async function searchPlaylists() {
+  const q = $('#plSearch').value.trim();
+  if (!state.tok || q.length < 2) return renderPlSearch();
+  if (q === plSearch.q && plSearch.list) return renderPlSearch();
+  const my = ++plSearch.seq;
+  plSearch.q = q; plSearch.list = null; plSearch.busy = true; renderPlSearch();
+  try {
+    const r = await api('/search?type=playlist&limit=20&q=' + encodeURIComponent(q));
+    if (my !== plSearch.seq) return;
+    const list = (r?.playlists?.items || []).filter(p => p?.id).map(p => ({
+      id: p.id, name: p.name, cover: p.images?.[0]?.url || '', total: (p.tracks || p.items)?.total ?? null,
+      owner: p.owner?.display_name || p.owner?.id || '', spotify: p.owner?.id === 'spotify',
+    }));
+    plSearch.list = [...list.filter(p => !p.spotify), ...list.filter(p => p.spotify)];
+  } catch (e) {
+    if (my !== plSearch.seq) return;
+    plSearch.list = []; plSearch.q = '';
+    toast(tx('Suche fehlgeschlagen: {e}', { e: e.message }), 6000);
+  } finally { if (my === plSearch.seq) { plSearch.busy = false; renderPlSearch(); } }
 }
 
 function parseCSV(text) {
