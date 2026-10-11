@@ -50,7 +50,7 @@ function bcell(b, f, cls = '', attrs = '') {
   if (f === '*') return `<div class="bcell free ${cls}" ${attrs}><span class="bi">★</span><span>${tx('Joker')}</span></div>`;
   const k = b.k.find(x => x.i === f) || { a: 'none', n: '?' };
   const [icon, color] = kStyle(k);
-  return `<div class="bcell ${cls}" style="--c:${color}" ${attrs}><span class="bi">${icon}</span><span>${esc(tx(k.n))}</span></div>`;
+  return `<div class="bcell ${cls}" style="--c:${color}" ${attrs}><span class="bi">${icon}</span><span>${esc(tx(k.n)).replace(/\//g, '/<wbr>')}</span></div>`;   // „Sänger/in“: Umbruch nach dem Schrägstrich
 }
 const catChip = c => `<span class="cat-chip" style="--c:${catStyle(c)[1]}">${catStyle(c)[0]} ${esc(tx(shortCat(c)))}</span>`;
 

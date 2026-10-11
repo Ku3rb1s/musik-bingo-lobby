@@ -333,6 +333,36 @@ document.addEventListener('click', async e => {
     if (await ask(tx('Kategorie „{n}“ löschen?', { n: state.cats[i].name }), { ok: tx('Löschen'), danger: true })) { state.cats.splice(i, 1); saveCats(); }
   }
 });
+// Mitspieler-Leiste: bei vielen Namen zur Seite scrollbar – auf dem Handy wischen, am PC mit Mausrad oder Ziehen.
+// Ein weicher Rand links/rechts zeigt, dass dort noch Namen kommen.
+(() => {
+  const bar = $('#scorebar');
+  let drag = null, moved = false;
+  const edges = () => {
+    const max = bar.scrollWidth - bar.clientWidth;
+    bar.classList.toggle('fade-l', max > 2 && bar.scrollLeft > 2);
+    bar.classList.toggle('fade-r', max > 2 && bar.scrollLeft < max - 2);
+  };
+  bar.addEventListener('scroll', edges, { passive: true });
+  new ResizeObserver(edges).observe(bar);
+  new MutationObserver(edges).observe(bar, { childList: true });
+  bar.addEventListener('wheel', e => {
+    if (bar.scrollWidth <= bar.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault(); bar.scrollLeft += e.deltaY;
+  }, { passive: false });
+  bar.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || bar.scrollWidth <= bar.clientWidth) return;
+    drag = { x: e.clientX, l: bar.scrollLeft }; moved = false;
+  });
+  addEventListener('pointermove', e => {
+    if (!drag) return;
+    if (Math.abs(e.clientX - drag.x) > 5) moved = true;
+    if (moved) bar.scrollLeft = drag.l - (e.clientX - drag.x);
+  });
+  addEventListener('pointerup', () => { drag = null; });
+  // Nach dem Ziehen keinen Namen „anklicken“
+  bar.addEventListener('click', e => { if (moved) { e.stopPropagation(); moved = false; } }, true);
+})();
 document.addEventListener('change', e => {
   const tg = e.target.closest('[data-cat-toggle]');
   if (tg) { state.cats[+tg.dataset.catToggle].enabled = tg.checked; saveCats(); }

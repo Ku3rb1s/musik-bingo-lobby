@@ -261,6 +261,6 @@ function renderScorebar() {
   const done = p => round && p.guess?.n === round.id && p.guess.t;
   bar.innerHTML = code ? list.map(p => {
     const wins = state.match?.wins?.[p.id];
-    return `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}" data-lobby-check="${esc(p.id)}" role="button" title="${tx('Karte von {n} ansehen', { n: esc(p.name) })}">${p.bingo ? '🎉' : ''} ${esc(p.name)}${wins ? ` 🏆${wins}` : ''}${done(p) ? ' <b>✓</b>' : ''}</span>`;
+    return `<span class="sc ${p.bingo ? 'won' : ''} ${p.on === false && p.id !== Lobby.uid ? 'off' : ''}" data-lobby-check="${esc(p.id)}" role="button" title="${tx('Karte von {n} ansehen', { n: esc(p.name) })}">${p.bingo ? '🎉' : ''}<span class="nm">${esc(p.name)}</span>${wins ? ` 🏆${wins}` : ''}${done(p) ? ' <b>✓</b>' : ''}</span>`;
   }).join('') : '';
 }

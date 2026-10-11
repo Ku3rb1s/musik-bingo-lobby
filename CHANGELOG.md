@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.9.4 – 11.10.2026
+- Mitspieler-Leiste: bei vielen Spielern zur Seite scrollbar – auf dem Handy wischen, am PC mit Mausrad oder Ziehen; ein weicher Rand zeigt, dass noch Namen kommen; sehr lange Namen werden gekürzt
+- Bingo-Felder bleiben immer quadratisch: lange Kategorien werden nach 3 Zeilen (5 × 5: 2) mit … gekürzt, statt das Feld zu strecken; „Sänger/in“, „Band/Solo“ brechen sauber nach dem „/“ um
+- Cover nach der Auflösung auf dem Handy deutlich größer (150–240 px statt ca. 96 px), auf dem iPad hochkant ebenfalls größer
+
 ## 4.9.3 – 11.10.2026
 - Komplett-Prüfung der Darstellung (automatisch: Text, der aus seinem Kasten oder über den Rand ragt) – alle Ansichten, alle 4 Sprachen, Handy 320/375 px, iPad hoch/quer, PC, Fernseher 720p/1080p. Behoben:
   - 5 × 5-Karten ragten auf schmalen Handys über den Rand, wenn ein Feld einen langen Namen hat (Meine Karte, Bingo prüfen, Mitspieler)

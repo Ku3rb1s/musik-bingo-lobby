@@ -729,7 +729,7 @@ html.ios .volume,html.ios .hint{display:none}
 }
 /* Schmal/hochkant (iPad hochkant, kleine Fenster): Platte bei der Auflösung klein, Lösung darunter */
 @media (min-width:641px) and (max-width:899px){
-  .stage.revealed .disc-wrap{width:min(62vw,clamp(110px,calc(100dvh - 1000px),300px));margin:12px auto 10px}
+  .stage.revealed .disc-wrap{width:min(50vw,clamp(170px,calc(100dvh - 760px),300px));margin:12px auto 10px}
   .stage.revealed .reveal{margin:10px auto 10px}
 }
 /* Kompakte Auflösung auf niedrigen Bildschirmen: Album/Datum und Jahres-Chips weg (die Antwort steht ja oben) */
@@ -747,7 +747,8 @@ html.ios .volume,html.ios .hint{display:none}
   .below .mycard-btn .lg{display:none}
   .below .scorebar{padding:8px 10px}
   .disc-wrap{width:min(64vw,clamp(130px,calc(100dvh - 505px),260px))}
-  .stage.revealed .disc-wrap{width:min(50vw,clamp(96px,calc(100dvh - 760px),200px))}
+  /* Cover nach der Auflösung gut erkennbar (mind. 150 px), auf großen Handys bis 240 px */
+  .stage.revealed .disc-wrap{width:min(60vw,clamp(150px,calc(100dvh - 620px),240px))}
   .stage.revealed .reveal{margin:12px auto 8px}
 }
 /* Joker-Feld in den Logo-Farben (muss nach dem Glas-Look stehen, der background-image der Felder setzt) */
@@ -769,3 +770,13 @@ html.ios .volume,html.ios .hint{display:none}
 .tv-qr{width:min(20vw,34vh,340px)}
 .tv-side:has(.tv-players.many) .tv-qr{width:min(14vw,24vh,260px)}
 .tv-side:has(.tv-players.many) #tvCode{font-size:3vw}
+/* Mitspieler-Leiste: weicher Rand, wenn links/rechts noch Namen kommen (zur Seite scrollbar); sehr lange Namen gekürzt */
+.scorebar{overscroll-behavior-x:contain;-webkit-user-select:none;user-select:none}
+.scorebar.fade-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent)}
+.scorebar.fade-l{-webkit-mask-image:linear-gradient(90deg,transparent,#000 34px);mask-image:linear-gradient(90deg,transparent,#000 34px)}
+.scorebar.fade-l.fade-r{-webkit-mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent)}
+.scorebar .sc .nm{max-width:11em;overflow:hidden;text-overflow:ellipsis}
+/* Bingo-Felder bleiben quadratisch – lange Kategorien werden nach 3 (5×5: 2) Zeilen mit … gekürzt statt das Feld zu strecken */
+.bcell{min-height:0}
+.bcell>span:not(.bi){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;max-width:100%}
+.bgrid.n5 .bcell>span:not(.bi){-webkit-line-clamp:2;line-clamp:2}
