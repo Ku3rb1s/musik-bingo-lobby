@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.13.1', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.13.2', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -320,8 +320,16 @@ document.querySelectorAll('dialog').forEach(d => {
     if (!document.querySelector('dialog.sheet[open]')) document.body.classList.remove('locked');
     if (d.contains($('#toast')) && $('#toast').classList.contains('show')) placeToast();
   });
-  // Tippen neben das Sheet schließt es
-  d.addEventListener('click', e => { if (e.target === d && d.classList.contains('sheet')) d.close(); });
+  // Tippen neben das Menü bzw. die Rückfrage schließt es (Rückfrage = abbrechen). Der Klick muss außerhalb des
+  // Fensters liegen – ein Klick in den Innenabstand des Fensters selbst zählt nicht.
+  d.addEventListener('click', e => {
+    if (e.target !== d) return;
+    if (d.classList.contains('sheet')) return d.close();
+    if (d.id === 'dlgAsk') {
+      const r = d.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) { d.returnValue = ''; d.close(); }
+    }
+  });
 });
 // Sheets wie in iOS nach unten wegwischen: an der Kopfzeile oder am Inhalt, wenn er ganz oben ist
 document.querySelectorAll('dialog.sheet').forEach(d => {

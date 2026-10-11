@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.13.2 – 11.10.2026
+- Checkliste vor dem ersten Spiel wieder entfernt – Startseite wie vorher (der leere Verlauf bleibt ausgeblendet, bis eine Runde gespielt wurde)
+- Rückfragen (z. B. „Ohne Bingo spielen?“): Tippen neben das Fenster bricht ab und führt zurück zur Startseite
+
 ## 4.13.1 – 11.10.2026
 - Einstellungen: „Wiedergabe“ wieder weit oben (direkt unter Spotify-Konto), mit Anzeige, worüber die Musik gerade läuft, und eigener Seite: Auswahl, Gerät und „So klappt’s“ für PC, iPhone/iPad/Android (Spotify-App einmal öffnen und kurz einen Song anspielen), Box/Alexa/Sonos/Fernseher und ohne Premium
 - „Eigene Spotify-App verwenden“ verständlich erklärt: wozu (Spotify erlaubt im Entwicklermodus höchstens 5 Spielleiter pro App), was man braucht (Premium) und Schritt für Schritt bis zum Freischalten weiterer Spielleiter

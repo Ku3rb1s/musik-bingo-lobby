@@ -18,18 +18,11 @@ function render() {
     else {
       $('#catIcon').innerHTML = '<img src="icon-192.png?v=5" alt="">';
       document.documentElement.style.setProperty('--cat', '#ffa03c');
-      // Vor dem ersten Spiel sagt die Checkliste, was zu tun ist – oben nur eine Begrüßung
-      $('#catName').textContent = !state.history.length ? (state.tracks.length ? tx('Los geht’s!') : tx('Willkommen!'))
-        : !state.tracks.length ? tx('Füge eine Playlist hinzu')
+      $('#catName').textContent = !state.tracks.length ? tx('Füge eine Playlist hinzu')
         : state.history.length ? tx(state.history.length === 1 ? '{n} Runde gespielt' : '{n} Runden gespielt', { n: state.history.length }) : tx('Los geht’s!');
     }
   }
-  // Vor dem ersten Spiel: Checkliste (Spotify → Playlist → Bingo optional) statt der Schallplatte
-  const setup = !round && !state.history.length;
-  $('.stage').classList.toggle('setup', setup);
-  $('#histBox').classList.toggle('hidden', !state.history.length);
-  $('#setupSteps').classList.toggle('hidden', !setup);
-  if (setup) $('#setupSteps').innerHTML = setupSteps();
+  $('#histBox').classList.toggle('hidden', !state.history.length);   // leerer Verlauf: ausgeblendet
   // Bei der Auflösung dreht sich die Platte um und zeigt das Cover
   const dw = $('#discWrap');
   dw.classList.toggle('flipped', ph === 'revealed');
@@ -67,19 +60,6 @@ function render() {
   $('#actionRow').innerHTML = acts.join('');
   renderPlayState(); renderScorebar();
   updHostMark();   // eigene Karte: Felder hervorheben, die man gerade markieren darf
-}
-// Checkliste vor dem ersten Spiel: erledigte Schritte mit ✓, jeder Schritt führt direkt an die richtige Stelle
-function setupSteps() {
-  const n = state.tracks.length, b = state.bingo;
-  const steps = [
-    { done: !!state.tok, t: tx('Mit Spotify verbinden'), sub: state.tok ? (state.me?.name ? tx('Verbunden als {n}', { n: state.me.name }) : tx('Verbunden')) : tx('Für deine Playlists und die Musik'), open: 'sheetSettings:account' },
-    { done: n > 0, t: tx('Playlist hinzufügen'), sub: n ? tx('{n} Songs im Spiel', { n }) : tx('Eigene Playlist, Suche oder Link'), open: state.tok ? 'sheetLib:add' : 'sheetLib:main' },
-    { done: !!b, t: tx('Bingo einrichten'), opt: true, sub: b ? (Lobby.code ? tx('Lobby {c} ist offen', { c: Lobby.code }) : tx('Karten sind bereit')) : tx('Jeder bekommt eine Karte aufs Handy'), open: b ? 'sheetGame:main' : 'sheetGame:setup' },
-  ];
-  return steps.map((s, i) => `<button class="step ${s.done ? 'done' : ''}" data-open="${s.open}">
-      <span class="n">${s.done ? ic('check') : i + 1}</span>
-      <span class="grow">${esc(s.t)}${s.opt && !s.done ? ` <small class="opt">${tx('optional')}</small>` : ''}<span class="sub">${esc(s.sub)}</span></span>
-      ${ic('chev')}</button>`).join('');
 }
 function renderPlayState() {
   const dw = $('#discWrap');
