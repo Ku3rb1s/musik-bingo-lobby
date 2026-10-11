@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.11.0', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.11.1', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -95,7 +95,7 @@ const state = {
   sources: LS.get('sources', []),
   played: LS.get('played', []),
   cats: LS.get('cats', null) || structuredClone(DEFAULT_CATS),
-  settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzSound: true, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
+  settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzSound: false, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
     limit: 0, hints: true, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
   bingo: LS.get('bingo', null)?.k ? LS.get('bingo', null) : null,   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
   lobby: LS.get('lobby', null),     // Code der eigenen Lobby (Firebase), solange Bingo läuft
@@ -109,6 +109,8 @@ const state = {
 };
 // Ältere eigene Kategorien (noch ohne eigene Farbe) nachträglich einfärben
 LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
+// 4.11.1: Buzzer-Ton ist jetzt standardmäßig aus – einmalig auch bei allen, die ihn mit 4.10.x automatisch an hatten
+if (!LS.get('buzzOff1', false)) { state.settings.buzzSound = false; LS.set('settings', state.settings); LS.set('buzzOff1', true); }
 // Neue Standard-Kategorien auch bei bestehenden Spielern ergänzen – so, wie sie ausgeliefert werden (Herkunftsland: aus)
 if (DEFAULT_CATS.some(d => !state.cats.some(c => c.id === d.id))) {
   for (const d of DEFAULT_CATS) if (!state.cats.some(c => c.id === d.id)) state.cats.push(structuredClone(d));

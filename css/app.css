@@ -864,3 +864,7 @@ body:not(.tv-mode) .tv-banner{display:none}
 .rule-ic{width:30px;text-align:center;font-size:1.15rem;flex:none}
 .rule-v{font-weight:800;color:var(--accent);text-align:right;flex:none;max-width:45%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cell.rule .sub{white-space:normal}
+/* Sprung aus „Regeln & Karten“: Zeile in den Einstellungen kurz aufleuchten lassen */
+.cell.flash{animation:cellFlash 1.6s ease}
+@keyframes cellFlash{0%,40%{background:color-mix(in srgb,var(--accent) 22%,transparent)}}
+button.cell.rule{cursor:pointer}

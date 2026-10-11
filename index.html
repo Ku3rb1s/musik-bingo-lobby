@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.11.0">
+<link rel="stylesheet" href="css/app.css?v=4.11.1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -187,15 +187,15 @@
 
       <div class="group-h">Spiel</div>
       <div class="group">
-        <div class="cell col">
+        <div class="cell col" id="rowSec">
           <div class="row-b"><span>Countdown</span><b id="secVal"></b></div>
           <input type="range" id="setSec" min="5" max="120" step="5" aria-label="Countdown-Zeit">
         </div>
-        <label class="cell"><span class="grow">Startposition</span>
+        <label class="cell" id="rowStart"><span class="grow">Song startet<span class="sub">Wo die Musik einsetzt</span></span>
           <select id="setStart">
-            <option value="begin">Vom Anfang</option>
+            <option value="begin">Am Anfang</option>
             <option value="s30">Ab 0:30</option>
-            <option value="random">Zufällig</option>
+            <option value="random">Zufällige Stelle</option>
           </select>
         </label>
         <label class="cell"><span class="grow">Töne beim Countdown</span><span class="switch"><input type="checkbox" id="setBeep"><span></span></span></label>
@@ -412,6 +412,21 @@
         <div class="group" style="margin-top:14px">
           <label class="cell"><span class="grow">Ich spiele selbst mit<span class="sub">Eigene Karte für den Spielleiter</span></span><span class="switch"><input type="checkbox" class="set-host-plays"><span></span></span></label>
         </div>
+        <div class="group-h">Countdown</div>
+        <div class="seg" id="bingoSecSeg">
+          <button data-sec="15">15 s<small>flott</small></button>
+          <button data-sec="20">20 s<small>zügig</small></button>
+          <button data-sec="30">30 s<small>normal</small></button>
+          <button data-sec="45">45 s<small>ruhig</small></button>
+          <button data-sec="60">60 s<small>lang</small></button>
+        </div>
+        <div class="group-h">Song startet</div>
+        <div class="seg" id="bingoStartSeg">
+          <button data-start="begin">Am Anfang<small>leichter</small></button>
+          <button data-start="s30">Ab 0:30<small>mittendrin</small></button>
+          <button data-start="random">Zufällig<small>schwerer</small></button>
+        </div>
+        <div class="group-f" style="text-align:center;margin-top:6px">Beides kannst du jederzeit in den Einstellungen ändern.</div>
         <div class="group-h">Felder</div>
         <div class="chip-scroll" id="bingoCats"></div>
         <div class="group-f" style="text-align:center;margin-top:2px" id="bingoCatsNote"></div>
@@ -600,16 +615,16 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.11.0"></script>
-<script src="js/lang/fr.js?v=4.11.0"></script>
-<script src="js/lang/es.js?v=4.11.0"></script>
-<script src="js/i18n.js?v=4.11.0"></script>
-<script src="js/core.js?v=4.11.0"></script>
-<script src="js/spotify.js?v=4.11.0"></script>
-<script src="js/game.js?v=4.11.0"></script>
-<script src="js/lobby.js?v=4.11.0"></script>
-<script src="js/bingo.js?v=4.11.0"></script>
-<script src="js/views.js?v=4.11.0"></script>
-<script src="js/ui.js?v=4.11.0"></script>
+<script src="js/lang/en.js?v=4.11.1"></script>
+<script src="js/lang/fr.js?v=4.11.1"></script>
+<script src="js/lang/es.js?v=4.11.1"></script>
+<script src="js/i18n.js?v=4.11.1"></script>
+<script src="js/core.js?v=4.11.1"></script>
+<script src="js/spotify.js?v=4.11.1"></script>
+<script src="js/game.js?v=4.11.1"></script>
+<script src="js/lobby.js?v=4.11.1"></script>
+<script src="js/bingo.js?v=4.11.1"></script>
+<script src="js/views.js?v=4.11.1"></script>
+<script src="js/ui.js?v=4.11.1"></script>
 </body>
 </html>

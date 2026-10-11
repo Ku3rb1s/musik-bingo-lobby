@@ -101,6 +101,8 @@ async function renderBingo() {
     $('#bingoLobbyBox').classList.toggle('hidden', !hasFirebase());
     document.querySelectorAll('#bingoLobbySeg button').forEach(x => x.classList.toggle('on', (x.dataset.lobby === '1') === (state.settings.lobby !== false)));
     $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
+    document.querySelectorAll('#bingoSecSeg button').forEach(x => x.classList.toggle('on', +x.dataset.sec === +state.settings.seconds));
+    document.querySelectorAll('#bingoStartSeg button').forEach(x => x.classList.toggle('on', x.dataset.start === state.settings.start));
     document.querySelectorAll('#bingoGamesSeg button').forEach(x => x.classList.toggle('on', +x.dataset.games === (state.settings.games ?? 0)));
     document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
     // Alle Kategorien als Schalter: antippen = an/aus (gleiche Einstellung wie unter Einstellungen → Kategorien)
@@ -138,13 +140,17 @@ function renderRules() {
   const b = state.bingo; if (!b) return;
   const code = Lobby.code, m = state.match, plays = state.settings.hostPlays !== false;
   const row = (ic, label, val, sub = '') => `<div class="cell rule"><span class="rule-ic">${ic}</span><span class="grow">${label}${sub ? `<span class="sub">${sub}</span>` : ''}</span><span class="rule-v">${val}</span></div>`;
+  // Countdown und Song-Start gelten nicht fest – antippen springt in die Einstellungen
+  const link = (ic, label, val, to) => `<button class="cell tap rule" data-goto-set="${to}"><span class="rule-ic">${ic}</span><span class="grow">${label}<span class="sub">${tx('Antippen zum Ändern (Einstellungen)')}</span></span><span class="rule-v">${val}</span><svg class="ic chev"><use href="#i-chev"/></svg></button>`;
+  const START = { begin: 'Am Anfang', s30: 'Ab 0:30', random: 'Zufällige Stelle' };
   $('#bingoRules').innerHTML = [
     row('🃏', tx('Karten'), `${b.s} × ${b.s}${hasJoker(b) ? ' · ★ ' + tx('Joker') : ''}`, tx('{n} Felder zum Markieren', { n: fieldCount(b) })),
     row('📡', tx('Lobby'), code ? esc(code) : tx('ohne'), code ? tx('Live – Markierungen und Tipps kommen sofort an') : tx('Karten nur per QR-Code, ohne Live-Sync')),
     code && m ? row('🏆', tx('Partien'), m.total ? tx('{g} von {t}', { g: m.game, t: m.total }) : tx('endlos'), tx('Nach jedem bestätigten Bingo geht es mit der nächsten Partie weiter')) : '',
     code ? row('✅', tx('Markieren'), tx('1 pro Runde'), tx('Nach der Auflösung, nur die Kategorie der Runde')) : row('✅', tx('Markieren'), tx('selbst'), tx('Jeder markiert auf seinem Handy, du prüfst bei „Bingo!“')),
     code ? row('🔔', tx('Buzzer'), hasBuzz(b) ? tx('an') : tx('aus'), hasBuzz(b) ? tx('Mitspieler starten den Countdown') : '') : '',
-    row('⏱️', tx('Countdown'), tx('{n} s', { n: state.settings.seconds }), tx('Jederzeit in den Einstellungen änderbar')),
+    link('⏱️', tx('Countdown'), tx('{n} s', { n: state.settings.seconds }), 'rowSec'),
+    link('▶️', tx('Song startet'), tx(START[state.settings.start] || START.begin), 'rowStart'),
     `<div class="cell rule"><span class="rule-ic">⭐</span><span class="grow">${tx('Spielleiter')}<span class="sub">${plays ? tx('Du spielst mit eigener Karte mit') : tx('Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“')}</span></span>`
       + (plays ? `<span class="rule-v">${tx('spielt mit')}</span>` : `<button class="mini" data-host-join>${tx('Mitspielen')}</button>`) + '</div>',
   ].join('');

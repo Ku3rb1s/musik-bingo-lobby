@@ -2,6 +2,13 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.11.1 – 11.10.2026
+- Buzzer-Ton standardmäßig aus (einmalig auch bei allen, bei denen er seit 4.10.1 automatisch an war) – einschalten unter Einstellungen
+- Bingo einrichten: Countdown (15/20/30/45/60 s, Standard 30 s) und „Song startet“ (am Anfang / ab 0:30 / zufällig, Standard am Anfang) direkt einstellbar – dieselben Einstellungen wie unter Einstellungen, dort jederzeit änderbar
+- Regeln & Karten: Countdown und „Song startet“ antippen → springt in die Einstellungen zur passenden Zeile (leuchtet kurz auf)
+- „Startposition“ heißt jetzt „Song startet“ (Am Anfang / Ab 0:30 / Zufällige Stelle), mit kurzer Erklärung
+- Startbildschirm: „Alles bereit – los geht’s!“ statt „Bereit für das Spiel?“
+
 ## 4.11.0 – 11.10.2026
 - „Bingo-Einstellungen“ heißt jetzt „Regeln & Karten“ und zeigt, was in diesem Bingo gilt: Karten (Größe, Joker, Felder), Lobby, Partien (z. B. 2 von 3), Markier-Regel, Buzzer, Countdown, Spielleiter. Die Regeln stehen fest, solange das Bingo läuft – zum Ändern Bingo beenden und neu einrichten. Neue Karten und Fernseher-Ansicht bleiben dort.
 - Spielleiter: Aussteigen mitten im Bingo geht nicht mehr (Karte, Markierungen und Siege gingen verloren) – der Schalter ist weg, und beim eigenen Eintrag in der Mitspieler-Liste gibt es keinen Papierkorb mehr. Wer nicht mitspielt, kann aber jederzeit noch einsteigen („Mitspielen“ → direkt zur Kartenwahl), wie jeder andere auch.

@@ -19,7 +19,7 @@ function render() {
       $('#catIcon').innerHTML = '<img src="icon-192.png?v=5" alt="">';
       document.documentElement.style.setProperty('--cat', '#ffa03c');
       $('#catName').textContent = !state.tracks.length ? tx('Füge eine Playlist hinzu')
-        : state.history.length ? tx(state.history.length === 1 ? '{n} Runde gespielt' : '{n} Runden gespielt', { n: state.history.length }) : tx('Bereit für das Spiel?');
+        : state.history.length ? tx(state.history.length === 1 ? '{n} Runde gespielt' : '{n} Runden gespielt', { n: state.history.length }) : tx('Alles bereit – los geht’s!').replace(/ (\S+)$/, '\u00a0$1');   // letztes Wort nicht allein umbrechen
     }
   }
   // Bei der Auflösung dreht sich die Platte um und zeigt das Cover
@@ -313,6 +313,12 @@ document.addEventListener('click', async e => {
     newMatch(state.match?.total); state.match.game = 0; state.match.over = false; nextGame();
     $('#endScreen').classList.add('hidden'); document.querySelectorAll('dialog[open]').forEach(d => d.close());
   }
+  const gs = t.closest('[data-goto-set]');
+  if (gs) {   // Regeln & Karten → passende Zeile in den Einstellungen, kurz hervorgehoben
+    openSheet('sheetSettings');
+    const row = $('#' + gs.dataset.gotoSet);
+    setTimeout(() => { row.scrollIntoView({ behavior: 'smooth', block: 'center' }); row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }, 350);
+  }
   if (t.closest('[data-host-join]')) {   // Spielleiter steigt nachträglich ein → gleich zur Kartenwahl
     state.settings.hostPlays = true; LS.set('settings', state.settings);
     renderMyCardBtn(); renderBingo(); goPage($('#sheetGame'), 'mycard');
@@ -464,6 +470,14 @@ $('#bingoLobbySeg').onclick = e => {
 };
 $('#setJoker').onchange = e => { state.settings.joker = e.target.checked; LS.set('settings', state.settings); };
 $('#setBuzz').onchange = e => { state.settings.buzz = e.target.checked; LS.set('settings', state.settings); };
+$('#bingoSecSeg').onclick = e => {
+  const b = e.target.closest('[data-sec]'); if (!b) return;
+  state.settings.seconds = +b.dataset.sec; saveSettings(); renderBingo();
+};
+$('#bingoStartSeg').onclick = e => {
+  const b = e.target.closest('[data-start]'); if (!b) return;
+  state.settings.start = b.dataset.start; saveSettings(); renderBingo();
+};
 $('#bingoSizeSeg').onclick = e => {
   const b = e.target.closest('[data-size]'); if (!b) return;
   bingoSize = +b.dataset.size; renderBingo();
