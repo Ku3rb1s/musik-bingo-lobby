@@ -971,3 +971,6 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 .hints-line img{width:18px;height:18px;border-radius:4px;object-fit:cover;vertical-align:-4px;filter:blur(2px)}
 #myHints{margin:10px 4px 0}
 #myHints .hints-line{margin:0;font-size:.85rem}
+/* 4.14.3: neuer Tipp → Zeile leuchtet kurz auf statt Hinweis oben */
+.hints-line.new{animation:hintGlow 1.6s ease-out}
+@keyframes hintGlow{0%{color:#fff;text-shadow:0 0 12px #ffb020}100%{color:#ffd27a;text-shadow:none}}

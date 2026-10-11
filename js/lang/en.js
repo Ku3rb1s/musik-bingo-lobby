@@ -590,8 +590,6 @@
     "Tipps sind ausgeschaltet (Einstellungen → Tipps pro Runde)": "Hints are turned off (Settings → Hints per round)",
     "💡 {n} hat einen Tipp geholt": "💡 {n} took a hint",
     "🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …": "🎉 {n} calls BINGO! The host is checking the card …",
-    "💡 Tipp von {n}:": "💡 Hint from {n}:",
-    "💡 Tipp:": "💡 Hint:",
     "keine mehr": "none left",
     "Keine": "None",
     "Aus": "Off",

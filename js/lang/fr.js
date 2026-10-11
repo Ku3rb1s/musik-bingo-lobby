@@ -590,8 +590,6 @@
     "Tipps sind ausgeschaltet (Einstellungen → Tipps pro Runde)": "Les indices sont désactivés (Réglages → Indices par manche)",
     "💡 {n} hat einen Tipp geholt": "💡 {n} a pris un indice",
     "🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …": "🎉 {n} crie BINGO ! L’animateur vérifie la carte …",
-    "💡 Tipp von {n}:": "💡 Indice de {n} :",
-    "💡 Tipp:": "💡 Indice :",
     "keine mehr": "plus aucun",
     "Keine": "Aucun",
     "Aus": "Désactivé",

@@ -273,7 +273,7 @@ async function lobbyMode(code, autoName = null) {
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
     let lastPh = null, lastPhKey = null, buzzSent = null, buzzT = null;   // Runden-Box: Countdown-Start erkennen, Buzzer gedrückt
-    let hintSent = null, hintT = null, hintSeen = null;                  // Tipp-Knopf gedrückt, zuletzt gesehene Tipps { key, n }
+    let hintSent = null, hintT = null, hintSeen = null, hintNew = false;                  // Tipp-Knopf gedrückt, zuletzt gesehene Tipps { key, n }
     const cdEndOf = cdClock(); let roundSeen = false, cdEnd = 0;          // Countdown-Ende auf der eigenen Uhr
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const curMark = () => curRound && markable({ key: keyOf(curRound), ph: curRound.ph, i: curRound.i, q: curRound.q, pv: curRound.pv, old: curRound.old }, (i, q) => curB?.k.find(k => k.i === i)?.n || q);
@@ -439,13 +439,9 @@ async function lobbyMode(code, autoName = null) {
       // Spielleiter hat den Countdown rückgängig gemacht (Song läuft wieder) → Buzzer sofort wieder frei
       if (r?.ph === 'p' && lastPh === 'c' && keyOf(r) === lastPhKey) { buzzSent = null; clearTimeout(buzzT); }
       lastPh = r?.ph ?? null; lastPhKey = keyOf(r);
-      // Neuer Tipp (vom Spielleiter oder einem Mitspieler) → kommt oben als Hinweis bei allen an
+      // Neuer Tipp (vom Spielleiter oder einem Mitspieler) → die Tipp-Zeile leuchtet kurz auf (kein Hinweis oben)
       const hn = r?.h?.length || 0;
-      if (r && hintSeen?.key === keyOf(r) && hn > hintSeen.n) {
-        const h = r.h[hn - 1];
-        toast((h.by ? tx('💡 Tipp von {n}:', { n: h.by }) : tx('💡 Tipp:')) + ' ' + (h.cover ? tx('Unscharfes Cover') : hintText(h)), 7000, null, h.cover || null);
-        vib(25);
-      }
+      hintNew = !!r && hintSeen?.key === keyOf(r) && hn > hintSeen.n;
       hintSeen = r ? { key: keyOf(r), n: hn } : null;
       updMark();
       renderGuesses();
@@ -469,6 +465,7 @@ async function lobbyMode(code, autoName = null) {
       box.innerHTML = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
         <div class="rl-n">${esc(tx(r.q))}</div>${hintsHtml(r)}${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
       if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
+      if (hintNew) { box.querySelector('.hints-line')?.classList.add('new'); hintNew = false; }
       drawHintBtn();
     }
     // Tipp-Knopf (neben dem Tipp-Feld): holt den nächsten Tipp für alle – der Spielleiter deckt ihn auf.

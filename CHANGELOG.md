@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.14.3 – 11.10.2026
+- Handys: Kein Hinweis oben mehr bei einem neuen Tipp – stattdessen leuchtet die Tipp-Zeile unter der Frage kurz auf
+
 ## 4.14.2 – 11.10.2026
 - Tipps noch knapper: In der Zeile unter der Frage (Handys, Fernseher) stehen Kurzformen wie „Titel: Q… · 80er · 3 Wörter“ – der Hinweis oben zeigt weiterhin den ganzen Satz
 - Spielleiter spielt mit: Die Tipps der Runde stehen jetzt auch auf „Meine Karte“

@@ -590,8 +590,6 @@
     "Tipps sind ausgeschaltet (Einstellungen → Tipps pro Runde)": "Las pistas están desactivadas (Ajustes → Pistas por ronda)",
     "💡 {n} hat einen Tipp geholt": "💡 {n} ha pedido una pista",
     "🎉 {n} ruft BINGO! Der Spielleiter prüft gerade die Karte …": "🎉 ¡{n} canta BINGO! El anfitrión está comprobando el cartón …",
-    "💡 Tipp von {n}:": "💡 Pista de {n}:",
-    "💡 Tipp:": "💡 Pista:",
     "keine mehr": "no quedan",
     "Keine": "Ninguna",
     "Aus": "Desactivado",
