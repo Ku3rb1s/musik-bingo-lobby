@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.15.2 – 11.10.2026
+- OLED: Die Platte dreht sich wieder; Pulsieren der Felder und Leuchtring am Countdown sind optional (Schalter „Leuchteffekte“, erscheint beim OLED-Design – Spielleiter unter Design, Mitspieler unten unter der Karte)
+- iPhone: Statt Vibrieren ein kurzes haptisches Klicken (seit iOS 18 möglich) – der Schalter „Vibrieren“ gibt es jetzt auch dort
+- Leistung: Handys laden das Cover in Handy-Größe (ca. 300 statt 640 Pixel; der Fernseher weiterhin groß), Mitspieler-Liste und Tipp-Liste werden nur bei Änderungen neu gezeichnet, der Fernseher rechnet beim Größenändern erst, wenn die Größe steht
+
 ## 4.15.1 – 11.10.2026
 - OLED stärker: Karten, Menüs und Kopfzeilen komplett schwarz (nur feine Ränder), keine Leucht-Schatten und Glanzeffekte, keine Dauer-Animationen (Platte dreht sich nicht, Felder pulsieren nicht, kein Leuchtschein am Countdown-Ring), Tipp-Zettel dunkel statt weiß, Bingo-Felder dunkler getönt (markierte bleiben voll farbig), „Groß zeigen“ als Umriss, Schrift minimal gedimmt
 

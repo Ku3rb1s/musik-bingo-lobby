@@ -263,8 +263,8 @@ async function lobbyMode(code, autoName = null) {
     $('#cardLobbyInfo').textContent = `Lobby ${code} · ${me.name}`;
     // „Groß zeigen“ nur noch als kleines Auge oben rechts – auf seinem Platz sitzt der Tipp-Knopf
     placeEye($('#btnGuessShow'), true);
-    // Vibrieren: an jedem Handy einzeln abschaltbar (nur wo das Handy es kann – iPhones erlauben es Websites nicht)
-    $('#vibeRow').classList.toggle('hidden', !('vibrate' in navigator));
+    // Vibrieren: an jedem Handy einzeln abschaltbar (Android vibriert, iPhone klickt kurz haptisch)
+    $('#vibeRow').classList.toggle('hidden', !canVibe());
     $('#setVibe').checked = vibeOn();
     $('#setVibe').onchange = e => { LS.set('vibe', e.target.checked); vib(40); };
     // Lobby von sich aus verlassen (Knopf auf dem Spielende-Bildschirm)
@@ -368,9 +368,10 @@ async function lobbyMode(code, autoName = null) {
       if (!r || list.length < 2) return;
       box.classList.toggle('row', r.ph !== 'r');   // während der Runde: eine Zeile, seitlich wischbar
       const has = p => p.guess?.n === keyOf(r) && p.guess.t;
-      box.innerHTML = r.ph === 'r'
+      const html = r.ph === 'r'
         ? [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}"><b>${esc(p.name)}${p.id === f.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
         : `<span class="cnt">${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
+      if (box._html !== html) { box._html = html; box.innerHTML = html; }   // nur bei Änderung (Wischposition bleibt)
     }
     // Alle Mitspieler: Tipps, und wer Bingo ruft oder gewonnen hat
     f.onValue(f.at(`${base}/players`), s => {
@@ -583,7 +584,7 @@ async function tvMode(code) {
     const buzz = r.bz ? `<div class="tv-buzz">${tx('🔔 {n} hat gebuzzert!', { n: esc(r.bz) })}</div>` : '';
     if (r.ph === 'r') {
       const title = r.ti ?? r.s, artist = r.ar ?? '';
-      return show(k + cat + `<div class="tv-rev">${r.cv ? `<img class="tv-cover" src="${esc(r.cv)}" alt="">` : '<div class="tv-cover tv-nocover">♪</div>'}
+      return show(k + cat + `<div class="tv-rev">${r.cv ? `<img class="tv-cover" src="${esc(r.cvb || r.cv)}" alt="">` : '<div class="tv-cover tv-nocover">♪</div>'}
         <div class="tv-rev-t"><div class="tv-answer">${answerHtml(r)}</div><div class="tv-title">${esc(title)}</div>
         <div class="tv-artist"><span>${esc(artist)}</span>${r.y ? `<span class="rv-year">${artist ? '· ' : ''}${esc(r.y)}</span>` : ''}</div></div></div>` + buzz);
     }
@@ -632,7 +633,7 @@ async function tvMode(code) {
     if (over && track.style.getPropertyValue('--d') !== d) track.style.setProperty('--d', d);
     $('#tvMatch').textContent = match ? matchTitle(match) : '';
   };
-  addEventListener('resize', () => drawSide());
+  let rsT; addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(drawSide, 200); });   // erst wenn die Größe steht
   f.onValue(f.at(`${base}/round`), s => {
     r = s.val();
     cdEnd = cdEndOf(r, roundSeen);

@@ -999,12 +999,12 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 [data-theme="oled"] button.big,[data-theme="oled"] button.pink.big,[data-theme="oled"] button.mini,[data-theme="oled"] .seg button.on{box-shadow:none;background-image:none}
 [data-theme="oled"] .cat-badge,[data-theme="oled"] .cat-icon,[data-theme="oled"] .on-dot,[data-theme="oled"] .rl-buzz,[data-theme="oled"] .guess-big{box-shadow:none}
 [data-theme="oled"] .cat-badge{background-image:none;background-color:#000}
-[data-theme="oled"] .disc{box-shadow:none;animation:none}
-[data-theme="oled"] .ring-glow{display:none}
+[data-theme="oled"] .disc{box-shadow:none}
+[data-theme="oled"]:not(.oled-fx) .ring-glow{display:none}
 [data-theme="oled"] .bcell:not(.free){background-image:none}
 [data-theme="oled"] .bcell:not(.on):not(.free){background-color:color-mix(in srgb,var(--c) 11%,#000)}
 [data-theme="oled"] .bcell:not(.hot):not(.line){box-shadow:none}
-[data-theme="oled"] .bcell.hot:not(.on)::before{animation:none;opacity:.5}
+[data-theme="oled"]:not(.oled-fx) .bcell.hot:not(.on)::before{animation:none;opacity:.5}
 [data-theme="oled"] .guess-input{background-color:#0b0b0e;background-image:repeating-linear-gradient(transparent 0 39px,rgba(130,150,220,.22) 39px 40px);color:#a9bcff;box-shadow:none}
 [data-theme="oled"] .guess-input::placeholder{color:#4f5874}
 [data-theme="oled"] .guess-clear{background:rgba(169,188,255,.12);color:#a9bcff}

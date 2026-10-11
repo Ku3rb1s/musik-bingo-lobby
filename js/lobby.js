@@ -140,7 +140,7 @@ const Lobby = {
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc
       ...(rev ? { a: withLang('de', () => plainText(answerFor(round.cat, t))), at: round.cat.answer, s: `${t.artists} – ${t.title}`, ti: t.title, ar: t.artists,
         ...(round.cat.answer === 'country' && artistCountry(t) ? { cc: artistCountry(t) } : {}),
-        ...(yearOf(t) ? { y: yearOf(t) } : {}), ...(t.cover ? { cv: t.cover } : {}) } : {}) });
+        ...(yearOf(t) ? { y: yearOf(t) } : {}), ...(t.cover ? { cv: t.thumb || t.cover, cvb: t.cover } : {}) } : {}) });
     this.touch();
   },
   close() {
@@ -251,7 +251,7 @@ function renderLobby() {
   $('#playerHead').textContent = code ? tx('Mitspieler ({n})', { n: list.length }) : tx('Mitspieler');
   $('#playerHead').classList.toggle('hidden', !code);
   $('#playerList').classList.toggle('hidden', !code);
-  $('#playerList').innerHTML = list.map(p => `
+  const pl = list.map(p => `
     <button class="cell tap pl-row ${p.bingo ? 'won' : ''}" data-lobby-check="${esc(p.id)}" style="${p.on === false && p.id !== Lobby.uid ? 'opacity:.5' : ''}">
       <span class="rank">${p.bingo ? (p.ok ? '✅' : '🎉') : p.on === false && p.id !== Lobby.uid ? '💤' : `<i class="on-dot" title="${tx('online')}"></i>`}</span>
       <span class="grow">${esc(p.name)}${state.match?.wins?.[p.id] ? ` · 🏆 ${state.match?.wins?.[p.id]}` : ''}<span class="sub">${tx('Karte Nr. {n}', { n: esc(p.num) })}${p.bingo ? (p.ok ? tx(' · Bingo bestätigt') : tx(' · ruft BINGO!')) : ''}</span></span>
@@ -260,6 +260,7 @@ function renderLobby() {
         : `<span class="icon-btn del" data-player-del="${esc(p.id)}" role="button" aria-label="${tx('Aus der Lobby entfernen')}" title="${tx('Aus der Lobby entfernen')}">${ic('kick')}</span>`}
     </button>`).join('')
     || `<div class="cell muted">${code ? tx('Noch niemand beigetreten.') : tx('Noch keine Lobby.')}</div>`;
+  if ($('#playerList')._html !== pl) { $('#playerList')._html = pl; $('#playerList').innerHTML = pl; }   // nur bei Änderung neu zeichnen
   $('#playerNote').textContent = !hasFirebase()
     ? 'Für Lobbys mit Live-Sync muss im Code noch das Firebase-Projekt eingetragen werden (FIREBASE_CONFIG). Bis dahin funktionieren die Karten wie bisher über den QR-Code.'
     : code ? tx('Antippen, um die Karte eines Mitspielers zu prüfen. Markierungen und „Bingo!“ kommen hier live an.')

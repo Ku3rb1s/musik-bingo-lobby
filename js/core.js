@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.15.1', APP_DATE = '11.10.2026';
+const APP_VERSION = '4.15.2', APP_DATE = '11.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -294,9 +294,33 @@ function buzzSound(level = state.settings.buzzVol) {
     }
   } catch {}
 }
-// Vibrieren (geht nur auf Android – iPhones erlauben das Websites nicht). Am Handy der Mitspieler abschaltbar.
+// Vibrieren: Android über die Vibrations-Funktion. iPhones erlauben Websites kein Vibrieren – seit iOS 18 gibt es aber ein
+// kurzes haptisches Klicken, wenn ein Schalter umgelegt wird. Dafür liegt ein unsichtbarer Schalter bereit.
+// Am Handy der Mitspieler und in den Einstellungen abschaltbar.
 const vibeOn = () => LS.get('vibe', true) !== false;
-const vib = p => { if (vibeOn()) try { navigator.vibrate?.(p); } catch {} };
+const isIOS = document.documentElement.classList.contains('ios');
+const canVibe = () => 'vibrate' in navigator || isIOS;
+let hapEl = null;
+function iosTick() {
+  if (!hapEl) {
+    hapEl = document.createElement('label');
+    hapEl.setAttribute('aria-hidden', 'true');
+    hapEl.style.cssText = 'position:fixed;left:-200px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+    hapEl.innerHTML = '<input type="checkbox" switch tabindex="-1">';
+    hapEl.addEventListener('click', e => e.stopPropagation());   // nicht als Klick in der App zählen
+    document.body.appendChild(hapEl);
+  }
+  try { hapEl.click(); } catch {}
+}
+const vib = p => {
+  if (!vibeOn()) return;
+  if ('vibrate' in navigator) { try { navigator.vibrate(p); } catch {} return; }
+  if (!isIOS) return;
+  // Muster (z. B. [60, 50, 60]) → ein bis drei kurze Klicks
+  const n = Array.isArray(p) ? Math.min(3, Math.ceil(p.length / 2)) : 1;
+  iosTick();
+  for (let k = 1; k < n; k++) setTimeout(iosTick, k * 140);
+};
 function fillRange(el) { el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); }
 
 /* ---------------- Sheets mit Unterseiten ---------------- */

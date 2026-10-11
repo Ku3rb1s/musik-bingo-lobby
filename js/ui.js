@@ -232,7 +232,7 @@ function renderSettings() {
   const r = $('#setSec'); r.value = s.seconds; fillRange(r); $('#secVal').textContent = s.seconds + ' s';
   $('#setStart').value = s.start; $('#setMode').value = s.mode;
   $('#setBeep').checked = s.beep; $('#setBuzzVol').value = String(s.buzzVol || 0); $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
-  $('#rowVibe').classList.toggle('hidden', !('vibrate' in navigator)); $('#setVibeHost').checked = vibeOn();
+  $('#rowVibe').classList.toggle('hidden', !canVibe()); $('#setVibeHost').checked = vibeOn();
   $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setMb').checked = s.mb;
   renderThemes();
   $('#appVersion').textContent = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}`;
@@ -551,11 +551,17 @@ const THEMES = [['graphit', 'Graphit', '#3a4252', '#1f3a32'], ['ozean', 'Ozean',
 function applyTheme() {
   const th = THEMES.find(x => x[0] === state.settings.theme) ? state.settings.theme : 'graphit';
   document.documentElement.dataset.theme = th;
+  // OLED: Pulsieren der Felder und Leuchtring am Countdown nur, wenn eingeschaltet (kostet Akku)
+  document.documentElement.classList.toggle('oled-fx', !!state.settings.oledFx);
+  $('#oledFxRow')?.classList.toggle('hidden', th !== 'oled');
+  $('#oledFxRowP')?.classList.toggle('hidden', th !== 'oled');
+  for (const id of ['#setOledFx', '#setOledFxP']) if ($(id)) $(id).checked = !!state.settings.oledFx;
   document.querySelector('meta[name=theme-color]')?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 }
 function renderThemes() {
   $('#themeRow').innerHTML = THEMES.map(([id, name, a, b]) => `<button class="theme-pick ${state.settings.theme === id ? 'on' : ''}" data-theme-pick="${id}"><i style="background:linear-gradient(135deg,${a},${b})"></i>${tx(name)}</button>`).join('');
 }
+for (const id of ['#setOledFx', '#setOledFxP']) $(id).onchange = e => { state.settings.oledFx = e.target.checked; LS.set('settings', state.settings); applyTheme(); };
 $('#themeRow').onclick = e => {
   const b = e.target.closest('[data-theme-pick]'); if (!b) return;
   if (b.dataset.themePick === 'oled' && state.settings.theme !== 'oled') state.settings.themePrev = state.settings.theme;
