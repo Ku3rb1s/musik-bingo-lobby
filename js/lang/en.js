@@ -611,5 +611,7 @@
     "vor 2000": "before 2000",
     "ab 2000": "from 2000",
     "Bei Bingo, Countdown und Markieren – nur auf Android": "For bingo, countdown and marking – Android only",
+    "🌑 OLED-Modus": "🌑 OLED mode",
+    "Echtes Schwarz – spart Akku": "True black – saves battery",
   },
 };

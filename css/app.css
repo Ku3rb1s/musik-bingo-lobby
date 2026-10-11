@@ -614,7 +614,7 @@ button.big{font-family:Outfit,-apple-system,system-ui,sans-serif;letter-spacing:
   font-weight:600;font-size:.88rem;padding:.6em 1.05em;border-radius:99px;gap:.45em}
 .pill-btn .ic{width:1.1em;height:1.1em}
 /* Themen-Auswahl */
-.theme-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:8px}
+.theme-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}
 .theme-pick{flex-direction:column;gap:6px;background:none;color:var(--muted);font-weight:600;font-size:.78rem;padding:6px 2px;border-radius:14px;
   min-width:0;white-space:normal;hyphens:auto;overflow-wrap:anywhere;line-height:1.15;text-align:center}
 .theme-pick i{width:46px;height:46px;border-radius:50%;display:block;border:2px solid transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
@@ -976,3 +976,16 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 @keyframes hintGlow{0%{color:#fff;text-shadow:0 0 12px #ffb020}100%{color:#ffd27a;text-shadow:none}}
 /* 4.14.4: Buzzer – etwas Luft zwischen Glocke und Schrift */
 .rl-buzz{gap:4px}
+/* 4.15.0: OLED – echtes Schwarz (Pixel aus), keine Farbflächen im Hintergrund und keine Unschärfe-Effekte.
+   Spart auf OLED-Bildschirmen Akku und entlastet den Grafikchip. */
+[data-theme="oled"]{--bg:#000;--sheet:#000;--surf:16,16,18;--deep:0,0,0;--blob1:#000;--blob2:#000;--text:#f4f4f6;--muted:#9b9ba6;
+  --g-bg:rgba(255,255,255,.045);--g-brd:rgba(255,255,255,.13)}
+[data-theme="oled"] body{background:#000}
+[data-theme="oled"] .bg{display:none}
+[data-theme="oled"] *,[data-theme="oled"] *::before,[data-theme="oled"] *::after,[data-theme="oled"] ::backdrop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+[data-theme="oled"] .sheet{background:#09090a}
+[data-theme="oled"] .sheet-head{background:#09090a}
+[data-theme="oled"] dialog::backdrop{background:rgba(0,0,0,.8)}
+[data-theme="oled"] .alert,[data-theme="oled"] #toast{background:#151517}
+[data-theme="oled"] .win{background:rgba(0,0,0,.92)}
+.theme-pick[data-theme-pick="oled"] i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}

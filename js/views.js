@@ -80,6 +80,16 @@ function showOtherWin(text, won = false) {
 }
 $('#otherWin').onclick = () => $('#otherWin').classList.add('hidden');
 
+// OLED-Modus am Handy (ganz unten unter der Karte): gleiche Einstellung wie das Design „OLED“ beim Spielleiter.
+// Beim Ausschalten kommt das vorherige Design zurück.
+$('#setOled').checked = state.settings.theme === 'oled';
+$('#setOled').onchange = e => {
+  const s = state.settings;
+  if (e.target.checked) { if (s.theme !== 'oled') s.themePrev = s.theme; s.theme = 'oled'; }
+  else s.theme = s.themePrev && s.themePrev !== 'oled' ? s.themePrev : 'graphit';
+  LS.set('settings', s); applyTheme();
+};
+
 /* Karten-Ansicht für Mitspieler: läuft komplett auf deren Handy, ohne Spotify */
 function cardMode(param) {
   mountGuess($('#guessText'), $('#btnGuessShow'), $('#btnGuessClear'));

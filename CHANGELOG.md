@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.15.0 – 11.10.2026
+- Neues Design „OLED“: echtes Schwarz (auf OLED-Bildschirmen sind die Pixel dann aus), keine Farbflächen im Hintergrund und keine Unschärfe-Effekte – spart Akku und entlastet den Grafikchip. Beim Spielleiter unter Einstellungen → Design, bei den Mitspielern als Schalter „OLED-Modus“ ganz unten unter der Karte (beim Ausschalten kommt das vorherige Design zurück)
+
 ## 4.14.4 – 11.10.2026
 - Handys: Auge („Groß zeigen“) genauso breit wie der Tipp-Knopf, bündig darüber, gleiche Ecken; Buzzer-Glocke mit etwas Abstand zur Schrift
 

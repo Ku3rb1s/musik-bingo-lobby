@@ -547,7 +547,7 @@ $('#setLimit').onchange = e => { state.settings.limit = +e.target.value; saveSet
 const setHintMax = n => { state.settings.hintMax = n; saveSettings(); Lobby.syncRound(); };
 $('#setHints').onchange = e => setHintMax(+e.target.value);
 $('#setMb').onchange = e => { state.settings.mb = e.target.checked; saveSettings(); renderHist(); };
-const THEMES = [['graphit', 'Graphit', '#3a4252', '#1f3a32'], ['ozean', 'Ozean', '#0b4f75', '#0d6e66'], ['wald', 'Wald', '#1d5a3a', '#4c5b1a'], ['abend', 'Abend', '#7a2e1c', '#7d1f4a'], ['lila', 'Lila', '#4a22a0', '#8a1458']];
+const THEMES = [['graphit', 'Graphit', '#3a4252', '#1f3a32'], ['ozean', 'Ozean', '#0b4f75', '#0d6e66'], ['wald', 'Wald', '#1d5a3a', '#4c5b1a'], ['abend', 'Abend', '#7a2e1c', '#7d1f4a'], ['lila', 'Lila', '#4a22a0', '#8a1458'], ['oled', 'OLED', '#000', '#000']];
 function applyTheme() {
   const th = THEMES.find(x => x[0] === state.settings.theme) ? state.settings.theme : 'graphit';
   document.documentElement.dataset.theme = th;
@@ -558,6 +558,7 @@ function renderThemes() {
 }
 $('#themeRow').onclick = e => {
   const b = e.target.closest('[data-theme-pick]'); if (!b) return;
+  if (b.dataset.themePick === 'oled' && state.settings.theme !== 'oled') state.settings.themePrev = state.settings.theme;
   state.settings.theme = b.dataset.themePick; LS.set('settings', state.settings);
   applyTheme(); renderThemes();
 };
