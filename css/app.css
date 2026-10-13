@@ -1064,3 +1064,6 @@ body.lobby-mode .live-panel>.guess-wrap{margin:0}
 /* 4.17.1: Regeln & Karten – ruhiger: Werte schlicht grau statt grün und fett, keine Untertitel */
 .rule-v{font-weight:600;color:var(--muted)}
 .cell.rule .grow{font-weight:600}
+/* 4.17.2: Kategorie-Kästchen leuchtet in seiner Farbe (im OLED-Design nur mit „Leuchteffekte“) */
+.live-panel>.round-live .rl-ic{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rc,#888) 55%,transparent),0 0 20px 1px color-mix(in srgb,var(--rc,#888) 60%,transparent),0 0 6px color-mix(in srgb,var(--rc,#888) 50%,transparent);transition:box-shadow .4s,background .4s}
+[data-theme="oled"]:not(.oled-fx) .live-panel>.round-live .rl-ic{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rc,#888) 55%,transparent)}

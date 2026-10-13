@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.2 – 13.10.2026
+- Handys: Das Kategorie-Kästchen links in der Runden-Zeile leuchtet in der Farbe der Kategorie (im OLED-Design nur mit „Leuchteffekte“)
+
 ## 4.17.1 – 13.10.2026
 - Handys: Der gemeinsame Rahmen ist wieder neutral – die Kategorie-Farbe steckt nur noch im getönten Kästchen hinter dem Symbol
 - Regeln & Karten aufgeräumt: zwei Gruppen „Dieses Bingo“ (fest) und „Jederzeit änderbar“ (antippen → Einstellungen), keine Untertitel mehr, Werte schlicht grau statt grün und fett; die Markier-Regel steht einmal als kurzer Satz darunter
