@@ -6,7 +6,7 @@ $('#langCode').textContent = LANG.toUpperCase();
 $('#langSelP').innerHTML = langOptions();
 $('#langSelP').onchange = e => setLang(e.target.value);
 // Unter der Karte (⚙️ Einstellungen): Sprache – die Auswahl oben gibt es nur vor dem Beitreten
-$('#langSelP2').innerHTML = langOptions();
+$('#langSelP2').innerHTML = Object.entries(LANGS).map(([k, l]) => `<option value="${k}" ${k === LANG ? 'selected' : ''}>${l.name}</option>`).join('');
 $('#langSelP2').onchange = e => setLang(e.target.value);
 // Bildschirm bleibt an (Mitspieler): die Karte bleibt offen, kein Entsperren und neu Verbinden zwischen den Runden
 const wakeOn = () => LS.get('wake', true) !== false;

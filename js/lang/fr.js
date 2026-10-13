@@ -622,5 +622,7 @@
     "🌐 Sprache": "🌐 Langue",
     "📱 Bildschirm bleibt an": "📱 Écran toujours allumé",
     "Das Handy geht während des Spiels nicht in den Standby": "Le téléphone ne se met pas en veille pendant la partie",
+    "Ablauf": "Déroulement",
+    "Schwierigkeit": "Difficulté",
   },
 };

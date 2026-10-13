@@ -622,5 +622,7 @@
     "🌐 Sprache": "🌐 Language",
     "📱 Bildschirm bleibt an": "📱 Keep screen on",
     "Das Handy geht während des Spiels nicht in den Standby": "Your phone won’t go to sleep during the game",
+    "Ablauf": "Flow",
+    "Schwierigkeit": "Difficulty",
   },
 };

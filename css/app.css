@@ -1033,6 +1033,10 @@ body:has(.win:not(.hidden)) .bcell.hot::before,body:has(dialog[open]) .bcell.hot
 .card-opts .vibe-row:first-of-type{margin-top:8px}
 /* 4.16.0: Handy – Sprache in den Einstellungen unter der Karte (oben nur noch vor dem Beitreten) */
 body:has(#cardLive:not(.hidden)) #cardApp .card-head .lang-pill{display:none}
-.vibe-row select{flex:none;width:auto;max-width:55%;padding:.4em .7em;border-radius:10px;font-size:16px}
+.vibe-row select{flex:none;width:auto;max-width:55%;font-size:16px;background-color:transparent;border:0;border-radius:0;color:var(--muted);
+  padding:6px 22px 6px 0;text-align:right;text-align-last:right;-webkit-appearance:none;appearance:none;cursor:pointer;font-weight:600;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a49dc6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10l4-4 4 4M8 14l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right center;background-size:16px}
+.vibe-row select:focus{outline:none}
 /* Spielleiter: „Nächster Song · 8“ (Automatisch weiter) */
 #controls .an{font-variant-numeric:tabular-nums;opacity:.85}

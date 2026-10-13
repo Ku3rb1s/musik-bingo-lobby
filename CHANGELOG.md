@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.16.1 – 13.10.2026
+- Spielleiter: Einstellungen „Spiel“ aufgeteilt in „Ablauf“ (Countdown, Automatisch auflösen, Automatisch weiter) und „Schwierigkeit“ (Startpunkt, Song-Länge, Tipps pro Runde)
+- Handys: Sprachauswahl unter ⚙️ Einstellungen schlicht wie die übrigen Auswahlfelder (grau, rechtsbündig, ohne Flagge – Windows zeigte nur „DE“)
+
 ## 4.16.0 – 13.10.2026
 - Neu: Automatisch weiter – nach der Auflösung startet der nächste Song nach 5/10/15/20/30 Sekunden (Einstellungen → Spiel, auch unter Regeln & Karten). Der Knopf zählt herunter („Nächster Song · 8“), daneben „Warten“ hält an; bei offenem Menü, ungeprüftem Bingo-Ruf oder Spielende bleibt die Zeit stehen
 - Handys: „Bildschirm bleibt an“ (Schalter unter ⚙️ Einstellungen, standardmäßig an) – kein Entsperren und neu Verbinden zwischen den Runden
