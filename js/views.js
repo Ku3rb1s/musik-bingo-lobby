@@ -5,6 +5,22 @@
 $('#langCode').textContent = LANG.toUpperCase();
 $('#langSelP').innerHTML = langOptions();
 $('#langSelP').onchange = e => setLang(e.target.value);
+// Unter der Karte (⚙️ Einstellungen): Sprache – die Auswahl oben gibt es nur vor dem Beitreten
+$('#langSelP2').innerHTML = langOptions();
+$('#langSelP2').onchange = e => setLang(e.target.value);
+// Bildschirm bleibt an (Mitspieler): die Karte bleibt offen, kein Entsperren und neu Verbinden zwischen den Runden
+const wakeOn = () => LS.get('wake', true) !== false;
+function applyWake() {
+  if (wakeOn()) keepScreenOn();
+  else { try { wakeLock?.release(); } catch {} }
+}
+function mountWake() {
+  $('#wakeRow').classList.toggle('hidden', !('wakeLock' in navigator));
+  $('#setWake').checked = wakeOn();
+  $('#setWake').onchange = e => { LS.set('wake', e.target.checked); applyWake(); };
+  applyWake();
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && wakeOn()) keepScreenOn(); });   // nach dem Zurückkommen erneut
+}
 
 // Lösung vom Spielleiter (kommt immer auf Deutsch, siehe Lobby.syncRound) in der eigenen Sprache anzeigen.
 // Titel/Interpret/Album/Jahr bleiben, Land kommt als Code, feste Sätze und Jahrzehnte werden übersetzt.
@@ -99,6 +115,7 @@ function cardMode(param) {
   document.body.classList.add('card-mode');
   $('#cardApp').classList.remove('hidden');
   $('#btnWinClose').onclick = () => $('#bingoWin').classList.add('hidden');
+  mountWake();
   mountCard(b, { grid: $('#cardGrid'), no: $('#cardNo'), hits: $('#cardHits'), legend: $('#cardLegend'), clear: $('#btnCardClear') }, (num, initial) => {
     if (num == null) return;
     $('#winNo').textContent = num;
@@ -263,6 +280,7 @@ async function lobbyMode(code, autoName = null) {
     $('#cardLobbyInfo').textContent = `Lobby ${code} · ${me.name}`;
     // „Groß zeigen“ nur noch als kleines Auge oben rechts – auf seinem Platz sitzt der Tipp-Knopf
     placeEye($('#btnGuessShow'), true);
+    mountWake();
     // Vibrieren: an jedem Handy einzeln abschaltbar (Android vibriert, iPhone klickt kurz haptisch)
     $('#vibeRow').classList.toggle('hidden', !canVibe());
     $('#setVibe').checked = vibeOn();

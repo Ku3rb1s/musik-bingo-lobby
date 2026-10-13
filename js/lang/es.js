@@ -616,5 +616,11 @@
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Botones brillantes y casillas que laten – gastan algo de batería",
     "Bei Bingo, Countdown und Markieren": "En bingo, cuenta atrás y al marcar",
     "⚙️ Einstellungen": "⚙️ Ajustes",
+    "Automatisch weiter": "Siguiente automático",
+    "Nach der Auflösung startet der nächste Song von selbst": "Tras revelar, la siguiente canción empieza sola",
+    "Warten": "Esperar",
+    "🌐 Sprache": "🌐 Idioma",
+    "📱 Bildschirm bleibt an": "📱 Pantalla siempre encendida",
+    "Das Handy geht während des Spiels nicht in den Standby": "El móvil no entra en reposo durante la partida",
   },
 };

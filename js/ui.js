@@ -44,7 +44,8 @@ function render() {
     playing: `<button class="ghost" data-act="reveal">${ic('eye')}<span>${tx('Auflösen')}</span></button>
               <button class="big" data-act="countdown">${ic('timer')} ${tx('Countdown')} · ${tx('{n} s', { n: state.settings.seconds })}</button>`,
     countdown: `<button class="big pink" data-act="reveal">${ic('eye')} ${tx('Jetzt auflösen')}</button>`,
-    revealed: `<button class="big" data-act="next">${ic('skip')} ${tx('Nächster Song')}</button>`,
+    revealed: (autoNextT ? `<button class="ghost" data-act="holdNext">${ic('pause')}<span>${tx('Warten')}</span></button>` : '')
+      + `<button class="big" data-act="next">${ic('skip')} ${tx('Nächster Song')}<span class="an">${autoNextLabel()}</span></button>`,
   }[ph];
   $('#controls').innerHTML = c;
   // Unter der Platte: kleine, beschriftete Zusatzknöpfe passend zur Phase
@@ -231,6 +232,7 @@ function renderSettings() {
   const s = state.settings;
   const r = $('#setSec'); r.value = s.seconds; fillRange(r); $('#secVal').textContent = s.seconds + ' s';
   $('#setStart').value = s.start; $('#setMode').value = s.mode;
+  $('#setAutoNext').value = String(s.autoNext || 0);
   $('#setBeep').checked = s.beep; $('#setBuzzVol').value = String(s.buzzVol || 0); $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
   $('#rowVibe').classList.toggle('hidden', !canVibe()); $('#setVibeHost').checked = vibeOn();
   $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setMb').checked = s.mb;
@@ -306,6 +308,7 @@ document.addEventListener('click', async e => {
   else if (a === 'hint') giveHint();
   else if (a === 'lib') needSongs();
   else if (a === 'fixYear') fixYear();
+  else if (a === 'holdNext') { stopAutoNext(); render(); }
 
   const go = t.closest('[data-go]');
   if (go) goPage(go.closest('dialog'), go.dataset.go);
@@ -470,6 +473,7 @@ $('#plSearch').oninput = () => { clearTimeout(plSearch.t); plSearch.t = setTimeo
 $('#plSearch').onkeydown = e => { if (e.key === 'Enter') { clearTimeout(plSearch.t); $('#plSearch').blur(); searchPlaylists(); } };
 $('#csvFile').onchange = async e => { const f = e.target.files[0]; if (f) importCSV(await f.text(), f.name); e.target.value = ''; };
 function resetGame() {
+  stopAutoNext();
   $('#endScreen').classList.add('hidden');
   state.played = []; state.history = []; LS.set('played', []); LS.set('history', []); state.lastRev = null; LS.del('lastRev');
   state.partieFrom = 0; LS.set('partieFrom', 0);   // Verlauf beginnt neu → Bingo-Prüfung zählt wieder ab Runde 1
@@ -593,6 +597,10 @@ $('#btnDevRefresh').onclick = e => { e.preventDefault(); renderDevices(); };
 $('#setVibeHost').onchange = e => { LS.set('vibe', e.target.checked); vib(40); };
 $('#setBeep').onchange = e => { state.settings.beep = e.target.checked; saveSettings(); };
 $('#setBuzzVol').onchange = e => { state.settings.buzzVol = +e.target.value; saveSettings(); buzzSound(); };   // zum Probehören
+$('#setAutoNext').onchange = e => {
+  state.settings.autoNext = +e.target.value; LS.set('settings', state.settings);
+  if (round?.phase === 'revealed') startAutoNext(); else render();   // gilt sofort, auch für die gerade aufgelöste Runde
+};
 $('#setAuto').onchange = e => { state.settings.autoReveal = e.target.checked; saveSettings(); };
 $('#setPause').onchange = e => { state.settings.pauseOnReveal = e.target.checked; saveSettings(); };
 

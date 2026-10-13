@@ -616,5 +616,11 @@
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Glowing buttons and pulsing fields – cost a little battery",
     "Bei Bingo, Countdown und Markieren": "For bingo, countdown and marking",
     "⚙️ Einstellungen": "⚙️ Settings",
+    "Automatisch weiter": "Auto next",
+    "Nach der Auflösung startet der nächste Song von selbst": "After the reveal, the next song starts by itself",
+    "Warten": "Wait",
+    "🌐 Sprache": "🌐 Language",
+    "📱 Bildschirm bleibt an": "📱 Keep screen on",
+    "Das Handy geht während des Spiels nicht in den Standby": "Your phone won’t go to sleep during the game",
   },
 };

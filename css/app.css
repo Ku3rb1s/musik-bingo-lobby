@@ -1031,3 +1031,8 @@ body:has(.win:not(.hidden)) .bcell.hot::before,body:has(dialog[open]) .bcell.hot
 .card-opts summary .ic{width:16px;height:16px;transform:rotate(90deg);transition:transform .2s}
 .card-opts[open] summary .ic{transform:rotate(-90deg)}
 .card-opts .vibe-row:first-of-type{margin-top:8px}
+/* 4.16.0: Handy – Sprache in den Einstellungen unter der Karte (oben nur noch vor dem Beitreten) */
+body:has(#cardLive:not(.hidden)) #cardApp .card-head .lang-pill{display:none}
+.vibe-row select{flex:none;width:auto;max-width:55%;padding:.4em .7em;border-radius:10px;font-size:16px}
+/* Spielleiter: „Nächster Song · 8“ (Automatisch weiter) */
+#controls .an{font-variant-numeric:tabular-nums;opacity:.85}

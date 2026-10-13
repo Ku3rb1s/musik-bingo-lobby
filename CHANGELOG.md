@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.16.0 – 13.10.2026
+- Neu: Automatisch weiter – nach der Auflösung startet der nächste Song nach 5/10/15/20/30 Sekunden (Einstellungen → Spiel, auch unter Regeln & Karten). Der Knopf zählt herunter („Nächster Song · 8“), daneben „Warten“ hält an; bei offenem Menü, ungeprüftem Bingo-Ruf oder Spielende bleibt die Zeit stehen
+- Handys: „Bildschirm bleibt an“ (Schalter unter ⚙️ Einstellungen, standardmäßig an) – kein Entsperren und neu Verbinden zwischen den Runden
+- Handys: Sprache unter ⚙️ Einstellungen unter der Karte; oben nur noch vor dem Beitreten
+
 ## 4.15.5 – 13.10.2026
 - Handys froren teils ein: deutlich weniger Last für den Grafikchip – Farbflächen im Hintergrund als weicher Verlauf statt mit Unschärfe-Filter (sieht gleich aus), auf Handys und Fernseher stehen sie still, Bingo-/Spielende-Einblendungen ohne Unschärfe dahinter, leuchtende Felder pausieren während Einblendungen, 60 statt 90 Konfetti-Schnipsel
 - Handys und Fernseher: Nach Standby oder Hintergrund wird die Live-Verbindung frisch aufgebaut (iOS ließ sie sonst manchmal hängen – keine Updates mehr)

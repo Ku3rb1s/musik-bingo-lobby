@@ -21,7 +21,29 @@ function roundCats() {
   const both = fromCard.filter(c => c.enabled);
   return both.length ? both : fromCard.length ? fromCard : en;
 }
+/* Automatisch weiter: nach der Auflösung startet der nächste Song nach x Sekunden (Einstellungen). Ist der Spielleiter
+   beschäftigt (Menü oder Rückfrage offen, Bingo-Ruf noch nicht geprüft, Spielende), bleibt die Zeit stehen. */
+let autoNextT = null, autoNextEnd = 0, autoNextLast = 0;
+function startAutoNext() {
+  stopAutoNext();
+  const s = +state.settings.autoNext || 0;
+  if (!s || !round || round.phase !== 'revealed') return;
+  autoNextEnd = Date.now() + s * 1000; autoNextLast = Date.now();
+  autoNextT = setInterval(tickAutoNext, 250);
+}
+function stopAutoNext() { clearInterval(autoNextT); autoNextT = null; }
+const autoNextBusy = () => !!document.querySelector('dialog[open]') || !$('#endScreen').classList.contains('hidden') || pendingCallers().length > 0;
+const autoNextLabel = () => autoNextT ? ` · ${Math.max(0, Math.ceil((autoNextEnd - Date.now()) / 1000))}` : '';
+function tickAutoNext() {
+  const now = Date.now();
+  if (!round || round.phase !== 'revealed') { stopAutoNext(); return render(); }
+  if (autoNextBusy()) autoNextEnd += now - autoNextLast;   // pausiert
+  autoNextLast = now;
+  const el = $('#controls .an'); if (el) el.textContent = autoNextLabel();
+  if (now >= autoNextEnd) { stopAutoNext(); nextRound(); }
+}
 async function nextRound() {
+  stopAutoNext();
   if (needSongs()) return;
   const cats = roundCats();
   if (!cats.length) return toast(tx('Keine Kategorie aktiv – siehe Einstellungen'));
@@ -54,7 +76,7 @@ async function nextRound() {
 }
 // Zurück zur vorherigen Runde (versehentlich „Nächster Song“ oder „Überspringen“ getippt)
 function undoNext(prev) {
-  stopTimer(); clearTimeout(snippetT); cancelSpin();
+  stopAutoNext(); stopTimer(); clearTimeout(snippetT); cancelSpin();
   round = prev.round;
   if (round.phase === 'countdown') { round.phase = 'playing'; round.bz = null; }
   state.played = prev.played; LS.set('played', state.played);
@@ -157,6 +179,7 @@ function reveal() {
   state.lastRev = { id: round.id, i: round.cat.id, q: round.cat.name, n: round.n }; LS.set('lastRev', state.lastRev);
   if (state.settings.pauseOnReveal) Player.pause();
   beep(1046, .25);
+  startAutoNext();
   render(); renderHist(); Lobby.syncRound();
   if (ARTIST_FACTS.includes(round.cat.answer)) artistLookup(t);
   // Statistik fürs Spielende: gespielte Songs und wer wie oft getippt hat

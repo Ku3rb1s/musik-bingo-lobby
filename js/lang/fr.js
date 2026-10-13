@@ -616,5 +616,11 @@
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Boutons lumineux et cases qui pulsent – consomment un peu de batterie",
     "Bei Bingo, Countdown und Markieren": "Pour le bingo, le compte à rebours et les marques",
     "⚙️ Einstellungen": "⚙️ Réglages",
+    "Automatisch weiter": "Suivant automatique",
+    "Nach der Auflösung startet der nächste Song von selbst": "Après la révélation, le morceau suivant démarre tout seul",
+    "Warten": "Attendre",
+    "🌐 Sprache": "🌐 Langue",
+    "📱 Bildschirm bleibt an": "📱 Écran toujours allumé",
+    "Das Handy geht während des Spiels nicht in den Standby": "Le téléphone ne se met pas en veille pendant la partie",
   },
 };
