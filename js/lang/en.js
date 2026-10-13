@@ -615,5 +615,6 @@
     "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Glowing buttons, pulsing fields and glowing countdown ring – cost a little battery",
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Glowing buttons and pulsing fields – cost a little battery",
     "Bei Bingo, Countdown und Markieren": "For bingo, countdown and marking",
+    "⚙️ Einstellungen": "⚙️ Settings",
   },
 };

@@ -129,7 +129,7 @@ function mergeTracks(list, src) {
     if (ex) ex.srcs = [...new Set([...(ex.srcs || []), src])];
     else { t.srcs = [src]; state.tracks.push(t); byId.set(t.id, t); added++; }
   }
-  saveLib(); renderAll();
+  saveLib(); renderAll(); mbKick();   // Originaljahre der neuen Songs im Hintergrund nachschlagen
   return added;
 }
 function upsertSource(s) {

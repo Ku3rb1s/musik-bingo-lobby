@@ -273,6 +273,14 @@ async function lobbyMode(code, autoName = null) {
       f.onDisconnect(f.at(`${base}/players/${f.uid}/on`)).cancel().catch(() => {})
         .then(() => f.remove(meRef)).catch(() => {}).finally(() => location.replace(location.pathname + '?join'));
     };
+    // Handy war im Standby oder im Hintergrund: Live-Verbindung frisch aufbauen – iOS lässt sie sonst manchmal hängen,
+    // dann kommen keine Updates mehr und die Seite wirkt eingefroren
+    let hiddenAt = 0;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { hiddenAt = Date.now(); return; }
+      if (hiddenAt && Date.now() - hiddenAt > 15000) { try { f.goOffline(f.db); f.goOnline(f.db); } catch {} }
+      hiddenAt = 0;
+    });
     // Online-Status für den Spielleiter
     f.onValue(f.at('.info/connected'), s => {
       if (!s.val()) return;
@@ -571,6 +579,14 @@ async function tvMode(code) {
   loadQrLib().then(qrcode => { const q = qrcode(0, 'L'); q.addData(lobbyUrl(code)); q.make(); $('#tvQr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }).catch(() => {});
   const base = `lobbies/${code}`;
   let r = null, players = {}, match = null, cdIv = null, ended = false;
+  // Handy war im Standby oder im Hintergrund: Live-Verbindung frisch aufbauen – iOS lässt sie sonst manchmal hängen,
+  // dann kommen keine Updates mehr und die Seite wirkt eingefroren
+  let hiddenAt = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (hiddenAt && Date.now() - hiddenAt > 15000) { try { f.goOffline(f.db); f.goOnline(f.db); } catch {} }
+    hiddenAt = 0;
+  });
   const cdEndOf = cdClock(); let roundSeen = false, cdEnd = 0;   // Countdown-Ende auf der eigenen Uhr
   const key = x => x ? x.id ?? x.n : null;
   // Hauptfläche: Warten → Song läuft → Countdown (Ring, wer gebuzzert hat) → Auflösung (Cover links, Lösung rechts).

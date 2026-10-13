@@ -223,11 +223,52 @@ function baseTitle(s) {
     .trim();
 }
 const normStr = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]/gu, '');
-let mbBusy = Promise.resolve();
+/* MusicBrainz-Warteschlange: höchstens etwa eine Anfrage pro Sekunde (Vorgabe von MusicBrainz).
+   - Der Song der laufenden Runde kommt nach vorn (urgent).
+   - Jede Anfrage bricht nach 12 s ab – vorher konnte eine hängende Verbindung die Warteschlange für den ganzen Abend
+     blockieren, danach wurde kein Jahr mehr korrigiert.
+   - Ist nichts zu tun, werden im Hintergrund nach und nach die übrigen Songs nachgeschlagen – so steht das
+     Originaljahr meist schon fest, bevor der Song drankommt. */
+const mbJobs = [];
+let mbRunning = false, mbPauseUntil = 0;
+function mbQueue(job, urgent = false) {
+  urgent ? mbJobs.unshift(job) : mbJobs.push(job);
+  mbKick();
+}
+function mbKick() { if (!mbRunning) mbWork(); }
+async function mbWork() {
+  mbRunning = true;
+  try {
+    for (let job; (job = mbJobs.shift() || mbPrefetchJob());) {
+      try { await job(); } catch {}
+    }
+  } finally { mbRunning = false; }
+}
+// Hintergrund: nächster Song ohne Originaljahr (noch nicht gespielte zuerst). Nicht bei verstecktem Tab, nicht nach Fehlern
+// (dann 2 Minuten Pause), jeder Song höchstens zweimal versucht.
+function mbPrefetchJob() {
+  if (!state.settings.mb || document.hidden || Date.now() < mbPauseUntil || !state.tracks.length) return null;
+  const played = new Set(state.played);
+  const todo = t => !(t.id in state.mb) && (t._mbTries || 0) < 2;
+  const t = state.tracks.find(x => todo(x) && !played.has(x.id)) || state.tracks.find(todo);
+  return t ? mbYearJob(t) : null;
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) mbKick(); });
+async function mbJson(url) {
+  const ac = new AbortController(), to = setTimeout(() => ac.abort(), 12000);
+  try {
+    let r = await fetch(url, { signal: ac.signal });
+    if (r.status === 503) { await sleep(2500); r = await fetch(url, { signal: ac.signal }); }   // kurz überlastet / Ratenlimit
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } finally { clearTimeout(to); }
+}
 function mbLookup(t) {
   if (!state.settings.mb || t.id in state.mb) return;
-  // MusicBrainz erlaubt ca. 1 Anfrage pro Sekunde → Anfragen nacheinander
-  mbBusy = mbBusy.then(async () => {
+  mbQueue(mbYearJob(t), true);
+}
+function mbYearJob(t) {
+  return async () => {
     if (t.id in state.mb) return;
     const title = baseTitle(t.title), artist = (t.artists.split(',')[0] || '').trim();
     if (!normStr(title) || !normStr(artist)) { state.mb[t.id] = 0; return; }
@@ -235,11 +276,8 @@ function mbLookup(t) {
       // Nur Aufnahmen suchen, die vor dem Spotify-Jahr erschienen sind – bekannte Songs haben sonst Hunderte Treffer
       let q = `recording:"${title.replace(/"/g, '')}" AND artist:"${artist.replace(/"/g, '')}"`;
       if (t.year) q += ` AND firstreleasedate:[1900 TO ${t.year - 1}]`;
-      const url = 'https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q);
-      let r = await fetch(url);
-      if (r.status === 503) { await sleep(2500); r = await fetch(url); }   // kurz überlastet / Ratenlimit
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const j = await r.json();
+      t._mbTries = (t._mbTries || 0) + 1;
+      const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
       let best = null;
       for (const rec of j.recordings || []) {
         if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(title)) continue;
@@ -258,9 +296,9 @@ function mbLookup(t) {
           renderReveal(); Lobby.syncRound();   // Handys und Fernseher bekommen das richtige Jahr
         }
       }
-    } catch { /* offline o. ä. – beim nächsten Mal erneut versuchen */ }
+    } catch { mbPauseUntil = Date.now() + 120000; /* offline o. ä. – später erneut versuchen */ }
     await sleep(1100);
-  });
+  };
 }
 
 /* ---------------- Künstler über MusicBrainz: Land, Band/Solo, Sänger/Sängerin ---------------- */
@@ -288,16 +326,10 @@ function artistFact(t, what) {
   if (what === 'gender') return a.t && a.t !== 'Person' ? tx('🤔 {k} – ihr entscheidet selbst', { k: tx(KIND_DE[a.t] || 'Gruppe') }) : GENDER_DE[a.g] ? tx(GENDER_DE[a.g]) + guest : '';
   return '';
 }
-async function mbJson(url) {
-  let r = await fetch(url);
-  if (r.status === 503) { await sleep(2500); r = await fetch(url); }   // kurz überlastet / Ratenlimit
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return r.json();
-}
 function artistLookup(t) {
   const name = artistOf(t), k = normStr(name);
   if (!k || k in state.mbArtist) return;
-  mbBusy = mbBusy.then(async () => {
+  mbQueue(async () => {
     if (k in state.mbArtist) return;
     try {
       const MB = 'https://musicbrainz.org/ws/2/';
@@ -327,7 +359,7 @@ function artistLookup(t) {
       }
     } catch { /* offline o. ä. – beim nächsten Mal erneut versuchen */ }
     await sleep(1100);
-  });
+  }, true);
 }
 
 /* ---------------- Tipps ---------------- */

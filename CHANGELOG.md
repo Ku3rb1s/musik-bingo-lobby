@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.15.5 – 13.10.2026
+- Handys froren teils ein: deutlich weniger Last für den Grafikchip – Farbflächen im Hintergrund als weicher Verlauf statt mit Unschärfe-Filter (sieht gleich aus), auf Handys und Fernseher stehen sie still, Bingo-/Spielende-Einblendungen ohne Unschärfe dahinter, leuchtende Felder pausieren während Einblendungen, 60 statt 90 Konfetti-Schnipsel
+- Handys und Fernseher: Nach Standby oder Hintergrund wird die Live-Verbindung frisch aufgebaut (iOS ließ sie sonst manchmal hängen – keine Updates mehr)
+- Originaljahr (MusicBrainz): Abfragen brechen nach 12 s ab – vorher konnte eine hängende Verbindung die Warteschlange für den Rest des Abends blockieren; der laufende Song kommt zuerst dran, und im Hintergrund werden die übrigen Songs vorab nachgeschlagen
+- Handys: Einstellungen unter der Karte (OLED, Leuchteffekte, Vibrieren) zum Aufklappen mit Pfeil
+
 ## 4.15.4 – 11.10.2026
 - Fehler behoben: Kam am Handy genau beim Antippen des Buzzers ein Update (z. B. ein Tipp), konnte der Druck verloren gehen; die Runden-Box wird jetzt nur bei sichtbaren Änderungen neu aufgebaut – auch der laufende Countdown-Ring startet dadurch nicht mehr neu
 - Fehler behoben: Beim Spielleiter konnte ein Tipp auf „Nächste Partie starten“ oder auf einen Spieler-Chip beim Prüfen verloren gehen, wenn gerade ein Mitspieler markierte – beides wird nur noch bei Änderungen neu gezeichnet

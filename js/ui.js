@@ -546,7 +546,7 @@ $('#setLimit').onchange = e => { state.settings.limit = +e.target.value; saveSet
 // Tipps pro Runde: gilt sofort, auch für die laufende Runde (Handys sehen, wie viele es noch gibt)
 const setHintMax = n => { state.settings.hintMax = n; saveSettings(); Lobby.syncRound(); };
 $('#setHints').onchange = e => setHintMax(+e.target.value);
-$('#setMb').onchange = e => { state.settings.mb = e.target.checked; saveSettings(); renderHist(); };
+$('#setMb').onchange = e => { state.settings.mb = e.target.checked; saveSettings(); renderHist(); mbKick(); };
 const THEMES = [['graphit', 'Graphit', '#3a4252', '#1f3a32'], ['ozean', 'Ozean', '#0b4f75', '#0d6e66'], ['wald', 'Wald', '#1d5a3a', '#4c5b1a'], ['abend', 'Abend', '#7a2e1c', '#7d1f4a'], ['lila', 'Lila', '#4a22a0', '#8a1458'], ['oled', 'OLED', '#000', '#000']];
 function applyTheme() {
   const th = THEMES.find(x => x[0] === state.settings.theme) ? state.settings.theme : 'graphit';
@@ -656,6 +656,7 @@ $('#langSel').onchange = e => setLang(e.target.value);
   let justLoggedIn = false;
   try { justLoggedIn = await handleCallback(); } catch (e) { toast(tx('Login-Fehler: {e}', { e: e.message }), 6000); }
   renderAll();
+  setTimeout(mbKick, 4000);   // Originaljahre im Hintergrund nachschlagen (nachdem die Seite geladen ist)
   if (state.tok && !state.me) loadMe();
   if (!state.tok) openSheet('sheetSettings', 'account');
   else if (!state.tracks.length || justLoggedIn && !state.tracks.length) openSheet('sheetLib', 'add');

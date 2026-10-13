@@ -1010,3 +1010,24 @@ body.lobby-mode #cardLegend,#myCardLegend{display:none}
 [data-theme="oled"] .guess-big:not(.hint-req):not(.eye-mini){background:transparent;border:1.5px solid var(--accent2);color:var(--accent2)}
 /* 4.15.3: „Leuchteffekte“ im OLED-Design bringt auch Lichtkanten, Glanz und Leucht-Schatten der Knöpfe zurück (wie bei den anderen Designs) */
 [data-theme="oled"]:not(.oled-fx){--g-hi:0 0 #0000;--g-sheen:none}
+/* 4.15.5: Weniger Last für den Grafikchip (auf iPhones fror die Mitspieler-Ansicht teils ein) */
+/* Farbflächen als weicher Verlauf statt mit Unschärfe-Filter – sieht gleich aus, kostet aber fast nichts */
+.bg i{filter:none;background:radial-gradient(closest-side,var(--bc) 0%,color-mix(in srgb,var(--bc) 60%,transparent) 40%,transparent 100%)!important}
+.bg i:nth-child(1){--bc:var(--blob1)}
+.bg i:nth-child(2){--bc:var(--blob2)}
+.bg i:nth-child(3){--bc:var(--cat)}
+/* Handys und Fernseher: Farbflächen stehen still – sonst müssen alle Glas-Flächen ständig ihre Unschärfe neu berechnen */
+body.card-mode .bg i,body.tv-mode .bg i{animation:none}
+/* Ganzseitige Einblendungen (Bingo, Spielende) ohne Unschärfe dahinter – nur abgedunkelt */
+.win{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(var(--deep),.9)}
+body.card-mode dialog::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
+/* Während einer Einblendung oder eines Fensters pausieren die leuchtenden Felder */
+body:has(.win:not(.hidden)) .bcell.hot::before,body:has(dialog[open]) .bcell.hot::before{animation-play-state:paused}
+/* Handy: Einstellungen unter der Karte zum Aufklappen */
+.card-opts{margin-top:10px;border-top:1px solid var(--line)}
+.card-opts summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px 2px;cursor:pointer;
+  font-size:.85rem;font-weight:700;color:var(--muted)}
+.card-opts summary::-webkit-details-marker{display:none}
+.card-opts summary .ic{width:16px;height:16px;transform:rotate(90deg);transition:transform .2s}
+.card-opts[open] summary .ic{transform:rotate(-90deg)}
+.card-opts .vibe-row:first-of-type{margin-top:8px}

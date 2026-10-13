@@ -293,7 +293,7 @@ function showEndHost() {
 function confetti() {
   const c = document.createElement('div'); c.className = 'confetti';
   const cols = ['#1ed760', '#ff4fa3', '#ffb020', '#8b6cff', '#22d3ee'];
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 60; i++) {
     const s = document.createElement('i');
     s.style.left = Math.random() * 100 + 'vw'; s.style.background = cols[i % cols.length];
     s.style.animationDelay = Math.random() * .6 + 's'; s.style.animationDuration = 2 + Math.random() * 1.6 + 's';
