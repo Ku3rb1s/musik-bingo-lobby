@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.3 – 13.10.2026
+- Fehler behoben: Künstler, die Spotify mit Zusatz in Klammern führt (z. B. „Olly Alexander (Years & Years)“), fand MusicBrainz nicht – Herkunftsland, Band/Solo und Originaljahr blieben „unbekannt“. Jetzt wird nach allen Namensvarianten gesucht; früher als „unbekannt“ gespeicherte Künstler werden erneut nachgeschlagen
+
 ## 4.17.2 – 13.10.2026
 - Handys: Das Kategorie-Kästchen links in der Runden-Zeile leuchtet in der Farbe der Kategorie (im OLED-Design nur mit „Leuchteffekte“)
 

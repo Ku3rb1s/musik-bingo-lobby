@@ -286,6 +286,14 @@ async function mbJson(url) {
     return await r.json();
   } finally { clearTimeout(to); }
 }
+// Spotify schreibt manche Künstler mit Zusatz in Klammern, z. B. „Olly Alexander (Years & Years)“ – MusicBrainz kennt dann nur
+// „Years & Years“ (bzw. „Olly Alexander“). Gesucht wird nach allen Varianten.
+function artistVariants(name) {
+  const v = [name], m = String(name).match(/^(.*?)\s*\((.+)\)\s*$/);
+  if (m) v.push(m[2], m[1]);
+  return [...new Set(v.map(s => s.trim()).filter(s => normStr(s)))];
+}
+const artistQuery = vs => '(' + vs.map(v => `artist:"${v.replace(/"/g, '')}"`).join(' OR ') + ')';
 function mbLookup(t) {
   if (!state.settings.mb || t.id in state.mb) return;
   mbQueue(mbYearJob(t), true);
@@ -297,7 +305,8 @@ function mbYearJob(t) {
     if (!normStr(title) || !normStr(artist)) { state.mb[t.id] = 0; return; }
     try {
       // Nur Aufnahmen suchen, die vor dem Spotify-Jahr erschienen sind – bekannte Songs haben sonst Hunderte Treffer
-      let q = `recording:"${title.replace(/"/g, '')}" AND artist:"${artist.replace(/"/g, '')}"`;
+      const vs = artistVariants(artist);
+      let q = `recording:"${title.replace(/"/g, '')}" AND ${artistQuery(vs)}`;
       if (t.year) q += ` AND firstreleasedate:[1900 TO ${t.year - 1}]`;
       t._mbTries = (t._mbTries || 0) + 1;
       const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
@@ -305,7 +314,7 @@ function mbYearJob(t) {
       for (const rec of j.recordings || []) {
         if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(title)) continue;
         const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
-        if (!credit.includes(normStr(artist)) && !normStr(artist).includes(credit)) continue;
+        if (!vs.some(v => credit.includes(normStr(v)) || (credit && normStr(v).includes(credit)))) continue;
         const y = parseInt(rec['first-release-date']);
         if (y >= 1900 && (!best || y < best)) best = y;
       }
@@ -341,7 +350,7 @@ const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-b
 // Antwort für country/kind/gender: null = noch nicht nachgeschlagen, '' = unbekannt, sonst Text
 function artistFact(t, what) {
   const a = state.mbArtist[normStr(artistOf(t))];
-  if (a === undefined) return null;
+  if (!a || !Object.keys(a).length) return null;
   const guest = t.artists.includes(',') ? ' · ' + tx('mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
   if (what === 'country') return a.c ? regionName(a.c) : '';
   if (what === 'kind') return KIND_DE[a.t] ? tx(KIND_DE[a.t]) + guest : '';
@@ -349,28 +358,31 @@ function artistFact(t, what) {
   if (what === 'gender') return a.t && a.t !== 'Person' ? tx('🤔 {k} – ihr entscheidet selbst', { k: tx(KIND_DE[a.t] || 'Gruppe') }) : GENDER_DE[a.g] ? tx(GENDER_DE[a.g]) + guest : '';
   return '';
 }
+// Bekannt = nachgeschlagen (mit Ergebnis oder als „nicht gefunden“ markiert). Leere Einträge älterer Versionen werden erneut versucht.
+const mbArtistKnown = k => Object.keys(state.mbArtist[k] || {}).length > 0;
 function artistLookup(t) {
   const name = artistOf(t), k = normStr(name);
-  if (!k || k in state.mbArtist) return;
+  if (!k || mbArtistKnown(k)) return;
   mbQueue(async () => {
-    if (k in state.mbArtist) return;
+    if (mbArtistKnown(k)) return;
+    const vs = artistVariants(name), keys = vs.map(normStr);
     try {
       const MB = 'https://musicbrainz.org/ws/2/';
-      const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND artist:"${name.replace(/"/g, '')}"`;
+      const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND ${artistQuery(vs)}`;
       const j = await mbJson(MB + 'recording?fmt=json&limit=15&query=' + encodeURIComponent(q));
       let id = null;
       for (const rec of j.recordings || []) {
         if ((rec.score ?? 0) < 85) continue;
-        const ac = (rec['artist-credit'] || []).find(x => normStr(x.artist?.name) === k || normStr(x.name) === k);
+        const ac = (rec['artist-credit'] || []).find(x => keys.includes(normStr(x.artist?.name)) || keys.includes(normStr(x.name)));
         if (ac?.artist?.id) { id = ac.artist.id; break; }
       }
       await sleep(1100);
       if (!id) {   // Aufnahme nicht gefunden → Künstler direkt suchen (gleicher Name)
-        const s = await mbJson(MB + 'artist?fmt=json&limit=5&query=' + encodeURIComponent(`artist:"${name.replace(/"/g, '')}"`));
-        id = (s.artists || []).find(x => (x.score ?? 0) >= 90 && normStr(x.name) === k)?.id || null;
+        const s = await mbJson(MB + 'artist?fmt=json&limit=5&query=' + encodeURIComponent(artistQuery(vs)));
+        id = (s.artists || []).find(x => (x.score ?? 0) >= 90 && keys.includes(normStr(x.name)))?.id || null;
         await sleep(1100);
       }
-      let info = {};
+      let info = { n: 1 };   // n = nachgeschlagen, aber nicht gefunden
       if (id) {
         const x = await mbJson(MB + 'artist/' + id + '?fmt=json');
         info = { c: x.country || x.area?.['iso-3166-1-codes']?.[0] || '', t: x.type || '', g: x.gender || '' };
