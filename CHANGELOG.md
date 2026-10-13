@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.0 – 13.10.2026
+- Handys: Runde, Tipp und Bingo-Karte stehen in einem gemeinsamen Rahmen (in der Farbe der Kategorie) mit dünnen Trennlinien statt in drei einzelnen Kästen – ruhiger, und die Karte rückt nach oben
+- Einheitliche Linien-Symbole statt Emojis: Handy-Einstellungen (Zahnrad, Sprache, Bildschirm, OLED, Leuchteffekte, Vibrieren), Sprach-Knöpfe, Regeln & Karten, Wiedergabe-Hilfe, „gebuzzert von“, „Fertig: 2 / 5“, Tipps und „haben getippt“ am Fernseher; in den Einstellungen des Spielleiters stehen die Zeilen ohne Emoji
+
 ## 4.16.1 – 13.10.2026
 - Spielleiter: Einstellungen „Spiel“ aufgeteilt in „Ablauf“ (Countdown, Automatisch auflösen, Automatisch weiter) und „Schwierigkeit“ (Startpunkt, Song-Länge, Tipps pro Runde)
 - Handys: Sprachauswahl unter ⚙️ Einstellungen schlicht wie die übrigen Auswahlfelder (grau, rechtsbündig, ohne Flagge – Windows zeigte nur „DE“)

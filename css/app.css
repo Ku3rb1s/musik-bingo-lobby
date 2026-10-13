@@ -1028,8 +1028,7 @@ body:has(.win:not(.hidden)) .bcell.hot::before,body:has(dialog[open]) .bcell.hot
 .card-opts summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px 2px;cursor:pointer;
   font-size:.85rem;font-weight:700;color:var(--muted)}
 .card-opts summary::-webkit-details-marker{display:none}
-.card-opts summary .ic{width:16px;height:16px;transform:rotate(90deg);transition:transform .2s}
-.card-opts[open] summary .ic{transform:rotate(-90deg)}
+
 .card-opts .vibe-row:first-of-type{margin-top:8px}
 /* 4.16.0: Handy – Sprache in den Einstellungen unter der Karte (oben nur noch vor dem Beitreten) */
 body:has(#cardLive:not(.hidden)) #cardApp .card-head .lang-pill{display:none}
@@ -1040,3 +1039,22 @@ body:has(#cardLive:not(.hidden)) #cardApp .card-head .lang-pill{display:none}
 .vibe-row select:focus{outline:none}
 /* Spielleiter: „Nächster Song · 8“ (Automatisch weiter) */
 #controls .an{font-variant-numeric:tabular-nums;opacity:.85}
+/* 4.17.0: Handy – Runde, Tipp und Karte in einem gemeinsamen Rahmen (Kategorie-Farbe am Rahmen), dünne Trennlinien */
+.live-panel{padding:0;margin-bottom:14px;transition:border-color .4s}
+.live-panel>.round-live,.live-panel>.guess-wrap{margin:0;border-radius:0}
+.live-panel>.round-live,.live-panel>.guess-wrap{border-bottom:1px solid var(--line)}
+.live-panel>.guess-live{margin:0;padding:10px 14px 0}
+.live-panel>.card-wrap{padding:14px 16px 16px}
+body.lobby-mode .live-panel>.guess-wrap{margin:0}
+/* 4.17.0: Linien-Symbole statt Emojis */
+.lang-pill .ic{width:15px;height:15px}
+.vibe-row>span:first-child>.ic,.card-opts summary>span>.ic{width:18px;height:18px;margin-right:8px;vertical-align:-4px;color:var(--muted)}
+.card-opts summary>span{display:inline-flex;align-items:center}
+.card-opts summary>span>.ic{vertical-align:0}
+.card-opts summary .ic.chev,.card-opts summary>.ic{width:16px;height:16px;transform:rotate(90deg);transition:transform .2s;margin:0}
+.card-opts[open] summary>.ic{transform:rotate(-90deg)}
+.rule-ic .ic{width:20px;height:20px;color:var(--muted);vertical-align:middle}
+.play-help .ph-ic .ic{width:22px;height:22px;color:var(--muted)}
+.rl-by .ic,.buzz-by .ic{width:1em;height:1em;margin-right:3px;vertical-align:-2px}
+.guess-live span.cnt .ic{width:14px;height:14px;margin-right:4px;vertical-align:-2px}
+.tv-buzz .ic,.tv-tips .ic,.tv-hints span .ic{width:1em;height:1em;margin-right:.3em;vertical-align:-.12em}

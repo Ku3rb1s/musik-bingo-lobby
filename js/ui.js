@@ -7,7 +7,7 @@ function render() {
   $('#roundNo').textContent = round ? tx('Runde {n}', { n: round.n }) : tx('Runde –');
   const playedSet = new Set(state.played), left = state.tracks.reduce((n, t) => n + !playedSet.has(t.id), 0);
   // Hat ein Mitspieler gebuzzert, steht sein Name statt „Songs übrig“ oben (bis zur nächsten Runde)
-  $('#buzzBy').textContent = round?.bz ? '🔔 ' + round.bz : '';
+  $('#buzzBy').innerHTML = round?.bz ? ic('bell') + esc(round.bz) : '';
   $('#buzzBy').classList.toggle('hidden', !round?.bz);
   $('#remaining').classList.toggle('hidden', !!round?.bz);
   renderMetaRight(left);

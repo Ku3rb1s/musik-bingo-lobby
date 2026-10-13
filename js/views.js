@@ -78,7 +78,7 @@ function answerHtml(r) {
 function hintsHtml(r, tv = false) {
   if (r.ph === 'r' || !r.h?.length) return '';
   const img = h => `<img src="${esc(h.cover)}" alt="${tx('Unscharfes Cover')}">`;
-  return tv ? `<div class="tv-hints">${r.h.map(h => h.cover ? img(h) : `<span>💡 ${esc(hintShort(h))}</span>`).join('')}</div>`
+  return tv ? `<div class="tv-hints">${r.h.map(h => h.cover ? img(h) : `<span>${ic('bulb')}${esc(hintShort(h))}</span>`).join('')}</div>`
     : hintsLine(r.h);
 }
 // Ein anderer Mitspieler hat Bingo: großer Bildschirm (schließt sich nach ein paar Sekunden von selbst)
@@ -396,7 +396,7 @@ async function lobbyMode(code, autoName = null) {
       const has = p => p.guess?.n === keyOf(r) && p.guess.t;
       const html = r.ph === 'r'
         ? [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}"><b>${esc(p.name)}${p.id === f.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
-        : `<span class="cnt">${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
+        : `<span class="cnt">${ic('chat')}${tx('Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
       if (box._html !== html) { box._html = html; box.innerHTML = html; }   // nur bei Änderung (Wischposition bleibt)
     }
     // Alle Mitspieler: Tipps, und wer Bingo ruft oder gewonnen hat
@@ -489,21 +489,21 @@ async function lobbyMode(code, autoName = null) {
     function drawRound() {
       const r = curRound, box = $('#roundLive');
       box.classList.toggle('hidden', !r);
-      if (!r) { clearInterval(cdIv); cdIv = null; box._html = ''; return; }
+      if (!r) { clearInterval(cdIv); cdIv = null; box._html = ''; $('#livePanel').style.borderColor = ''; return; }
       const cd = r.ph === 'c' && r.end, canBuzz = r.ph === 'p' && hasBuzz(curB), sent = buzzSent === keyOf(r);
       const st = r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · Countdown') : tx(' · läuft');
       const cover = r.ph === 'r' && r.cv;   // nach der Auflösung: Cover auf dem Platz des Countdowns
       const side = cd ? `<div class="rl-timer" style="--c:${esc(r.c)}" role="timer"><b class="rl-cd"></b></div>`
         : cover ? `<img class="rl-cover" src="${esc(r.cv)}" alt="">`
         : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">${ic('bell')}<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
-      const html = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">🔔 ${esc(r.bz)}</span>` : ''}</div>
+      const html = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">${ic('bell')}${esc(r.bz)}</span>` : ''}</div>
         <div class="rl-n">${esc(tx(r.q))}</div>${hintsHtml(r)}${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
       drawHintBtn();
       const isNew = hintNew; hintNew = false;
       if (box._html === html && (!cd || cdIv)) return;   // unverändert: Knopf und laufender Ring bleiben, wie sie sind
       clearInterval(cdIv); cdIv = null;
       box._html = html; box.innerHTML = html;
-      box.style.borderColor = r.c;
+      $('#livePanel').style.borderColor = r.c;
       box.classList.toggle('has-cover', !!cover);
       if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
       if (isNew) box.querySelector('.hints-line')?.classList.add('new');
@@ -618,7 +618,7 @@ async function tvMode(code) {
     if (!r) return show(`<div class="tv-idle">${tx('Gleich geht’s los …')}</div><div class="tv-k">${tx('Jetzt beitreten – QR-Code scannen')}</div>`);
     const k = `<div class="tv-k">${tx('Runde {n}', { n: esc(r.n) })}</div>`;
     const cat = `<div class="tv-cat" style="color:${esc(r.c)}"><span class="tv-ic">${esc(r.e)}</span><span>${esc(tx(r.q))}</span></div>`;
-    const buzz = r.bz ? `<div class="tv-buzz">${tx('🔔 {n} hat gebuzzert!', { n: esc(r.bz) })}</div>` : '';
+    const buzz = r.bz ? `<div class="tv-buzz">${ic('bell')}${tx('{n} hat gebuzzert!', { n: esc(r.bz) })}</div>` : '';
     if (r.ph === 'r') {
       const title = r.ti ?? r.s, artist = r.ar ?? '';
       return show(k + cat + `<div class="tv-rev">${r.cv ? `<img class="tv-cover" src="${esc(r.cvb || r.cv)}" alt="">` : '<div class="tv-cover tv-nocover">♪</div>'}
@@ -632,12 +632,12 @@ async function tvMode(code) {
     } else show(k + cat + hintsHtml(r, true) + `<div class="tv-listen">${tx('♪ Hört genau hin …')}</div>` + tips);
     drawTips();
   };
-  // „💬 3 / 8 haben getippt“ unter dem Countdown bzw. dem laufenden Song
+  // „3 / 8 haben getippt“ unter dem Countdown bzw. dem laufenden Song
   const drawTips = () => {
     const el = $('#tvTips'); if (!el || !r) return;
     const list = Object.values(players).filter(p => p?.name);
     const n = list.filter(p => p.guess?.n === key(r) && p.guess.t).length;
-    el.textContent = list.length ? tx('💬 {a} / {b} haben getippt', { a: n, b: list.length }) : '';
+    el.innerHTML = list.length ? ic('chat') + esc(tx('{a} / {b} haben getippt', { a: n, b: list.length })) : '';
   };
   // Große Einblendung für Ereignisse, die alle sehen sollen (Bingo-Ruf, Sieg, neue Partie)
   let bannerT = null;
@@ -765,7 +765,7 @@ function renderMyLive() {
   const has = p => p.guess?.n === r.id && p.guess.t;
   gl.innerHTML = r.phase === 'revealed'
     ? [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}"><b>${esc(p.name)}${p.id === Lobby.uid ? tx(' (du)') : ''}:</b> ${has(p) ? esc(p.guess.t) : '–'}</span>`).join('')
-    : `<span class="cnt">${tx('💬 Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
+    : `<span class="cnt">${ic('chat')}${tx('Fertig: {a} / {b}', { a: list.filter(has).length, b: list.length })}</span>` + [...list.filter(has), ...list.filter(p => !has(p))].map(p => `<span class="${has(p) ? 'ok' : 'wait'}">${has(p) ? '✓ ' : ''}${esc(p.name)}</span>`).join('');
 }
 // Lobby hat sich geändert, während „Meine Karte“ offen ist: Markierungen übernehmen oder neu aufbauen
 function syncMyCard() {
