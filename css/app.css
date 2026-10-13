@@ -1058,3 +1058,9 @@ body.lobby-mode .live-panel>.guess-wrap{margin:0}
 .rl-by .ic,.buzz-by .ic{width:1em;height:1em;margin-right:3px;vertical-align:-2px}
 .guess-live span.cnt .ic{width:14px;height:14px;margin-right:4px;vertical-align:-2px}
 .tv-buzz .ic,.tv-tips .ic,.tv-hints span .ic{width:1em;height:1em;margin-right:.3em;vertical-align:-.12em}
+/* 4.17.1: Rahmen neutral, Kategorie-Farbe als getöntes Kästchen hinter dem Symbol */
+.live-panel>.round-live .rl-ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:1.45rem;
+  background:color-mix(in srgb,var(--rc,#888) 24%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rc,#888) 45%,transparent)}
+/* 4.17.1: Regeln & Karten – ruhiger: Werte schlicht grau statt grün und fett, keine Untertitel */
+.rule-v{font-weight:600;color:var(--muted)}
+.cell.rule .grow{font-weight:600}

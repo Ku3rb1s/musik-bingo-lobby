@@ -140,23 +140,27 @@ async function renderBingo() {
 // (wie jeder Mitspieler), aber nicht mittendrin aussteigen – Karte, Markierungen und Siege gingen sonst verloren.
 function renderRules() {
   const b = state.bingo; if (!b) return;
-  const code = Lobby.code, m = state.match, plays = state.settings.hostPlays !== false;
-  const row = (ic, label, val, sub = '') => `<div class="cell rule"><span class="rule-ic">${ic}</span><span class="grow">${label}${sub ? `<span class="sub">${sub}</span>` : ''}</span><span class="rule-v">${val}</span></div>`;
-  // Countdown und Song-Start gelten nicht fest – antippen springt in die Einstellungen
-  const link = (ic, label, val, to) => `<button class="cell tap rule" data-goto-set="${to}"><span class="rule-ic">${ic}</span><span class="grow">${label}<span class="sub">${tx('Antippen zum Ändern (Einstellungen)')}</span></span><span class="rule-v">${val}</span><svg class="ic chev"><use href="#i-chev"/></svg></button>`;
+  const code = Lobby.code, m = state.match, plays = state.settings.hostPlays !== false, S = state.settings;
+  const row = (icon, label, val) => `<div class="cell rule"><span class="rule-ic">${icon}</span><span class="grow">${label}</span><span class="rule-v">${val}</span></div>`;
+  // Was jederzeit änderbar ist: antippen springt in die Einstellungen
+  const link = (icon, label, val, to) => `<button class="cell tap rule" data-goto-set="${to}"><span class="rule-ic">${icon}</span><span class="grow">${label}</span><span class="rule-v">${val}</span><svg class="ic chev"><use href="#i-chev"/></svg></button>`;
   const START = { begin: 'Am Anfang', s30: 'Ab 0:30', random: 'Zufällige Stelle' };
   $('#bingoRules').innerHTML = [
-    row(ic('grid'), tx('Karten'), `${b.s} × ${b.s}${hasJoker(b) ? ' · ★ ' + tx('Joker') : ''}`, tx('{n} Felder zum Markieren', { n: fieldCount(b) })),
-    row(ic('signal'), tx('Lobby'), code ? esc(code) : tx('ohne'), code ? tx('Live – Markierungen und Tipps kommen sofort an') : tx('Karten nur per QR-Code, ohne Live-Sync')),
-    code && m ? row(ic('trophy'), tx('Partien'), m.total ? tx('{g} von {t}', { g: m.game, t: m.total }) : tx('endlos'), tx('Nach jedem bestätigten Bingo geht es mit der nächsten Partie weiter')) : '',
-    code ? row(ic('check'), tx('Markieren'), tx('1 pro Runde'), tx('Nach der Auflösung, nur die Kategorie der Runde')) : row(ic('check'), tx('Markieren'), tx('selbst'), tx('Jeder markiert auf seinem Handy, du prüfst bei „Bingo!“')),
-    code ? row(ic('bell'), tx('Buzzer'), hasBuzz(b) ? tx('an') : tx('aus'), hasBuzz(b) ? tx('Mitspieler starten den Countdown') : '') : '',
-    link(ic('timer'), tx('Countdown'), tx('{n} s', { n: state.settings.seconds }), 'rowSec'),
-    link(ic('play'), tx('Startpunkt im Song'), tx(START[state.settings.start] || START.begin), 'rowStart'),
-    link(ic('skip'), tx('Automatisch weiter'), +state.settings.autoNext ? tx('{n} s', { n: state.settings.autoNext }) : tx('aus'), 'rowAutoNext'),
-    link(ic('bulb'), tx('Tipps pro Runde'), +state.settings.hintMax ? String(state.settings.hintMax) : tx('keine'), 'rowHints'),
-    `<div class="cell rule"><span class="rule-ic">${ic('star')}</span><span class="grow">${tx('Spielleiter')}<span class="sub">${plays ? tx('Du spielst mit eigener Karte mit') : tx('Du kannst noch einsteigen – aussteigen geht erst mit „Bingo beenden“')}</span></span>`
+    row(ic('grid'), tx('Karten'), `${b.s} × ${b.s}${hasJoker(b) ? ' · ' + tx('Joker') : ''}`),
+    row(ic('signal'), tx('Lobby'), code ? esc(code) : tx('ohne')),
+    code && m ? row(ic('trophy'), tx('Partien'), m.total ? tx('{g} von {t}', { g: m.game, t: m.total }) : tx('endlos')) : '',
+    code ? row(ic('bell'), tx('Buzzer'), hasBuzz(b) ? tx('an') : tx('aus')) : '',
+    // Spielleiter darf noch einsteigen, aber nicht mittendrin aussteigen (Karte, Markierungen und Siege gingen verloren)
+    `<div class="cell rule"><span class="rule-ic">${ic('star')}</span><span class="grow">${tx('Spielleiter')}</span>`
       + (plays ? `<span class="rule-v">${tx('spielt mit')}</span>` : `<button class="mini" data-host-join>${tx('Mitspielen')}</button>`) + '</div>',
+  ].join('');
+  $('#bingoRulesNote').textContent = (code ? tx('Markiert wird nach der Auflösung: 1 Feld pro Runde, nur in der Kategorie der Runde.')
+    : tx('Jeder markiert selbst auf seinem Handy, du prüfst bei „Bingo!“.')) + ' ' + tx('Diese Regeln gelten, bis du das Bingo beendest.');
+  $('#bingoLive').innerHTML = [
+    link(ic('timer'), tx('Countdown'), tx('{n} s', { n: S.seconds }), 'rowSec'),
+    link(ic('play'), tx('Startpunkt im Song'), tx(START[S.start] || START.begin), 'rowStart'),
+    link(ic('bulb'), tx('Tipps pro Runde'), +S.hintMax ? String(S.hintMax) : tx('keine'), 'rowHints'),
+    link(ic('skip'), tx('Automatisch weiter'), +S.autoNext ? tx('{n} s', { n: S.autoNext }) : tx('aus'), 'rowAutoNext'),
   ].join('');
 }
 // „Wer hat Bingo gerufen?“ – die Mitspieler aus der Lobby

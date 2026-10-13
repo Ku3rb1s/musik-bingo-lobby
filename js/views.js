@@ -489,7 +489,7 @@ async function lobbyMode(code, autoName = null) {
     function drawRound() {
       const r = curRound, box = $('#roundLive');
       box.classList.toggle('hidden', !r);
-      if (!r) { clearInterval(cdIv); cdIv = null; box._html = ''; $('#livePanel').style.borderColor = ''; return; }
+      if (!r) { clearInterval(cdIv); cdIv = null; box._html = ''; return; }
       const cd = r.ph === 'c' && r.end, canBuzz = r.ph === 'p' && hasBuzz(curB), sent = buzzSent === keyOf(r);
       const st = r.ph === 'r' ? tx(' · aufgelöst') : cd ? tx(' · Countdown') : tx(' · läuft');
       const cover = r.ph === 'r' && r.cv;   // nach der Auflösung: Cover auf dem Platz des Countdowns
@@ -503,7 +503,7 @@ async function lobbyMode(code, autoName = null) {
       if (box._html === html && (!cd || cdIv)) return;   // unverändert: Knopf und laufender Ring bleiben, wie sie sind
       clearInterval(cdIv); cdIv = null;
       box._html = html; box.innerHTML = html;
-      $('#livePanel').style.borderColor = r.c;
+      box.style.setProperty('--rc', r.c);   // Kategorie-Farbe fürs Symbol links
       box.classList.toggle('has-cover', !!cover);
       if (cd) cdIv = runRing(box.querySelector('.rl-timer'), box.querySelector('.rl-cd'), cdEnd, r.dur);
       if (isNew) box.querySelector('.hints-line')?.classList.add('new');

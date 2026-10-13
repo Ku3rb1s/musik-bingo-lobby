@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.17.0">
+<link rel="stylesheet" href="css/app.css?v=4.17.1">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -571,9 +571,11 @@
 
     <!-- Bingo-Einstellungen -->
     <section class="page" data-page="bset" data-title="Regeln & Karten">
-      <div class="group-h">Regeln dieses Bingos</div>
+      <div class="group-h">Dieses Bingo</div>
       <div class="group" id="bingoRules"></div>
-      <div class="group-f">Die Regeln stehen fest, solange das Bingo läuft – so gilt für alle dasselbe. Zum Ändern: Bingo beenden und neu einrichten.</div>
+      <div class="group-f" id="bingoRulesNote"></div>
+      <div class="group-h">Jederzeit änderbar</div>
+      <div class="group" id="bingoLive"></div>
       <div class="group-h">Felder</div>
       <div class="chip-scroll" id="bingoInfo"></div>
       <div class="group" style="margin-top:10px">
@@ -732,16 +734,16 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.17.0"></script>
-<script src="js/lang/fr.js?v=4.17.0"></script>
-<script src="js/lang/es.js?v=4.17.0"></script>
-<script src="js/i18n.js?v=4.17.0"></script>
-<script src="js/core.js?v=4.17.0"></script>
-<script src="js/spotify.js?v=4.17.0"></script>
-<script src="js/game.js?v=4.17.0"></script>
-<script src="js/lobby.js?v=4.17.0"></script>
-<script src="js/bingo.js?v=4.17.0"></script>
-<script src="js/views.js?v=4.17.0"></script>
-<script src="js/ui.js?v=4.17.0"></script>
+<script src="js/lang/en.js?v=4.17.1"></script>
+<script src="js/lang/fr.js?v=4.17.1"></script>
+<script src="js/lang/es.js?v=4.17.1"></script>
+<script src="js/i18n.js?v=4.17.1"></script>
+<script src="js/core.js?v=4.17.1"></script>
+<script src="js/spotify.js?v=4.17.1"></script>
+<script src="js/game.js?v=4.17.1"></script>
+<script src="js/lobby.js?v=4.17.1"></script>
+<script src="js/bingo.js?v=4.17.1"></script>
+<script src="js/views.js?v=4.17.1"></script>
+<script src="js/ui.js?v=4.17.1"></script>
 </body>
 </html>
