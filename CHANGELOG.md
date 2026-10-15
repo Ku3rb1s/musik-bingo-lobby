@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.6 – 15.10.2026
+- Fehler behoben: Bands mit Komma im Namen (z. B. „Earth, Wind & Fire“, „Crosby, Stills, Nash & Young“) wurden auf den Teil vor dem Komma gekürzt – Herkunftsland, Band/Solo, Originaljahr und Interpret-Tipp konnten falsch sein, dazu fälschlich „mit Gast“. Gilt für neu geladene bzw. aktualisierte Playlists (Playlist unter „Playlists“ einmal antippen)
+- Fehler behoben: Nach dem Spielende startete „Automatisch weiter“ nach dem Schließen des Endbildschirms noch einen Song
+
 ## 4.17.5 – 15.10.2026
 - „Originaljahr nachschlagen“ (MusicBrainz) ist Standard und wird einmalig auch auf Geräten eingeschaltet, auf denen es aus war (lässt sich unter Einstellungen weiterhin abschalten)
 

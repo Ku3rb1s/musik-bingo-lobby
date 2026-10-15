@@ -27,7 +27,7 @@ let autoNextT = null, autoNextEnd = 0, autoNextLast = 0;
 function startAutoNext() {
   stopAutoNext();
   const s = +state.settings.autoNext || 0;
-  if (!s || !round || round.phase !== 'revealed') return;
+  if (!s || !round || round.phase !== 'revealed' || (Lobby.code && state.match?.over)) return;
   autoNextEnd = Date.now() + s * 1000; autoNextLast = Date.now();
   autoNextT = setInterval(tickAutoNext, 250);
 }
@@ -36,7 +36,7 @@ const autoNextBusy = () => !!document.querySelector('dialog[open]') || !$('#endS
 const autoNextLabel = () => autoNextT ? ` · ${Math.max(0, Math.ceil((autoNextEnd - Date.now()) / 1000))}` : '';
 function tickAutoNext() {
   const now = Date.now();
-  if (!round || round.phase !== 'revealed') { stopAutoNext(); return render(); }
+  if (!round || round.phase !== 'revealed' || (Lobby.code && state.match?.over)) { stopAutoNext(); return render(); }
   if (autoNextBusy()) autoNextEnd += now - autoNextLast;   // pausiert
   autoNextLast = now;
   const el = $('#controls .an'); if (el) el.textContent = autoNextLabel();
@@ -307,7 +307,7 @@ function mbLookup(t) {
 function mbYearJob(t) {
   return async () => {
     if (t.id in state.mb) return;
-    const title = baseTitle(t.title), artist = (t.artists.split(',')[0] || '').trim();
+    const title = baseTitle(t.title), artist = artistOf(t);
     if (!normStr(title) || !normStr(artist)) { state.mb[t.id] = 0; return; }
     try {
       // Nur Aufnahmen suchen, die vor dem Spotify-Jahr erschienen sind – bekannte Songs haben sonst Hunderte Treffer
@@ -343,7 +343,8 @@ function mbYearJob(t) {
 // Erst die Aufnahme suchen (Titel + Interpret) – so ist klar, welcher Künstler gemeint ist (es gibt z. B. zwei Bands „Nirvana“).
 // Dann den Künstler nachschlagen. Ergebnis je Künstler gespeichert ({} = MusicBrainz kennt ihn nicht).
 const ARTIST_FACTS = ['country', 'kind', 'gender'];
-const artistOf = t => (t.artists.split(',')[0] || '').trim();
+// Hauptkünstler: der erste Interpret – bei Namen mit Komma („Earth, Wind & Fire“) steht er vollständig in a1
+const artistOf = t => (t.a1 || t.artists.split(',')[0] || '').trim();
 const REGION_NAMES = {};   // je Sprache (die Sprache kann beim Spielleiter während des Spiels wechseln)
 function regionName(code) {
   if (code === 'XE') return tx('Europa');
@@ -357,7 +358,7 @@ const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-b
 function artistFact(t, what) {
   const a = state.mbArtist[normStr(artistOf(t))];
   if (!a || !Object.keys(a).length) return null;
-  const guest = t.artists.includes(',') ? ' · ' + tx('mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
+  const guest = t.artists.length > artistOf(t).length ? ' · ' + tx('mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
   if (what === 'country') return a.c ? regionName(a.c) : '';
   if (what === 'kind') return KIND_DE[a.t] ? tx(KIND_DE[a.t]) + guest : '';
   // Geschlecht gibt es nur bei Einzelpersonen – bei Bands, Orchestern, Chören entscheidet die Runde (z. B. nach der Stimme)
@@ -415,7 +416,7 @@ function hintsFor(cat, t) {
     const words = baseTitle(t.title).split(/\s+/).filter(Boolean).length;
     const part = y ? ['Anfang', 'Anfang', 'Anfang', 'Mitte', 'Mitte', 'Mitte', 'Mitte', 'Ende', 'Ende', 'Ende'][y % 10] : null;
     const H = (s, v) => ({ s, v });
-    const artist0 = t.artists.split(',')[0];
+    const artist0 = artistOf(t);
     const cover = t.cover ? { cover: t.thumb || t.cover } : null;   // unscharfes Vorschaubild – klein reicht
     const decH = dec && H('Erschienen in den {d}n', { d: dec }), artH = H('Der Interpret beginnt mit „{c}“', { c: first(artist0) });
     const cc = artistCountry(t);

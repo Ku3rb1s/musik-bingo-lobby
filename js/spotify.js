@@ -106,10 +106,11 @@ function pickImg(images, min) {
   return (ok[0] || list.reduce((a, b) => (b.width > a.width ? b : a))).url;
 }
 function normTrack(t) {
-  const date = t.album?.release_date || '';
+  const date = t.album?.release_date || '', names = (t.artists || []).map(a => a.name);
   return {
     id: t.id, uri: t.uri, title: t.name,
-    artists: (t.artists || []).map(a => a.name).join(', '),
+    artists: names.join(', '),
+    ...(names[0]?.includes(',') ? { a1: names[0] } : {}),   // Hauptkünstler mit Komma im Namen, z. B. „Earth, Wind & Fire“
     album: t.album?.name || '', date, year: parseInt(date) || null,
     cover: t.album?.images?.[0]?.url || '', thumb: pickImg(t.album?.images, 120), duration: t.duration_ms || 0,
   };
@@ -126,7 +127,7 @@ function mergeTracks(list, src) {
   for (const t of list) {
     if (!t.id) continue;
     const ex = byId.get(t.id);
-    if (ex) ex.srcs = [...new Set([...(ex.srcs || []), src])];
+    if (ex) { ex.srcs = [...new Set([...(ex.srcs || []), src])]; if (t.a1) ex.a1 = t.a1; }   // Playlist aktualisiert → Hauptkünstler nachtragen
     else { t.srcs = [src]; state.tracks.push(t); byId.set(t.id, t); added++; }
   }
   saveLib(); renderAll(); mbKick();   // Originaljahre der neuen Songs im Hintergrund nachschlagen
