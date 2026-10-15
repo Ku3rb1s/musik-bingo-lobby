@@ -616,5 +616,10 @@
     "Markiert wird nach der Auflösung: 1 Feld pro Runde, nur in der Kategorie der Runde.": "Marking happens after the reveal: 1 field per round, only in that round’s category.",
     "Jeder markiert selbst auf seinem Handy, du prüfst bei „Bingo!“.": "Everyone marks on their own phone, you check when someone calls “Bingo!”.",
     "Diese Regeln gelten, bis du das Bingo beendest.": "These rules apply until you end the bingo.",
+    "Neuerungen ansehen": "See what’s new",
+    "aktuell": "current",
+    "Ältere Versionen anzeigen": "Show older versions",
+    "Die Neuerungen konnten nicht geladen werden.": "Couldn’t load the release notes.",
+    "Neuerungen": "What’s new",
   },
 };

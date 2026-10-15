@@ -616,5 +616,10 @@
     "Markiert wird nach der Auflösung: 1 Feld pro Runde, nur in der Kategorie der Runde.": "On marque après la révélation : 1 case par manche, seulement dans la catégorie de la manche.",
     "Jeder markiert selbst auf seinem Handy, du prüfst bei „Bingo!“.": "Chacun marque sur son téléphone, tu vérifies quand quelqu’un crie « Bingo ! ».",
     "Diese Regeln gelten, bis du das Bingo beendest.": "Ces règles s’appliquent jusqu’à ce que tu termines le bingo.",
+    "Neuerungen ansehen": "Voir les nouveautés",
+    "aktuell": "actuelle",
+    "Ältere Versionen anzeigen": "Afficher les versions plus anciennes",
+    "Die Neuerungen konnten nicht geladen werden.": "Impossible de charger les nouveautés.",
+    "Neuerungen": "Nouveautés",
   },
 };

@@ -616,5 +616,10 @@
     "Markiert wird nach der Auflösung: 1 Feld pro Runde, nur in der Kategorie der Runde.": "Se marca tras revelar: 1 casilla por ronda, solo en la categoría de la ronda.",
     "Jeder markiert selbst auf seinem Handy, du prüfst bei „Bingo!“.": "Cada uno marca en su móvil, tú compruebas cuando alguien canta «¡Bingo!».",
     "Diese Regeln gelten, bis du das Bingo beendest.": "Estas reglas valen hasta que termines el bingo.",
+    "Neuerungen ansehen": "Ver novedades",
+    "aktuell": "actual",
+    "Ältere Versionen anzeigen": "Mostrar versiones anteriores",
+    "Die Neuerungen konnten nicht geladen werden.": "No se pudieron cargar las novedades.",
+    "Neuerungen": "Novedades",
   },
 };

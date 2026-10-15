@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.11 – 15.10.2026
+- Neu: Neuerungen in der App – unten in den Einstellungen auf die Versionsnummer tippen, dann erscheinen die Änderungen der letzten Versionen (ältere per Knopf)
+- Buzzer-Ton lauter (etwa doppelt so laut in jeder Stufe)
+
 ## 4.17.10 – 15.10.2026
 - Fehler behoben: Künstler, die eine ältere Version als „nicht gefunden“ gespeichert hatte (z. B. Dido), zeigten beim Herkunftsland „Unbekannt – ihr entscheidet selbst“, bis das neue Nachschlagen geklappt hatte. Solche Einträge gelten jetzt als „wird nachgeschlagen“, und scheitert das Nachschlagen für die laufende Runde (MusicBrainz kurz beschäftigt), versucht es die App nach ein paar Sekunden erneut
 

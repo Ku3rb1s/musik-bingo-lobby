@@ -237,7 +237,7 @@ function renderSettings() {
   $('#rowVibe').classList.toggle('hidden', !canVibe()); $('#setVibeHost').checked = vibeOn();
   $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setMb').checked = s.mb;
   renderThemes();
-  $('#appVersion').textContent = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}`;
+  $('#appVersion').innerHTML = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}<span>${tx('Neuerungen ansehen')} ›</span>`;
   const showDev = s.mode === 'connect' || Player.mode === 'connect';
   $('#devRow').classList.toggle('hidden', !showDev);
   if (showDev) renderDevices();
@@ -245,6 +245,44 @@ function renderSettings() {
   $('#catSub').textContent = tx('{a} von {b} aktiv', { a: on, b: state.cats.length });
   renderLang();
   renderStatus();
+}
+// Neuerungen (Einstellungen → Tipp auf die Versionsnummer): die Änderungsliste CHANGELOG.md, einmal geladen
+let changesCache = null, changesAll = false;
+async function renderChanges() {
+  const box = $('#changesList');
+  if (!changesCache) {
+    box.innerHTML = '<div class="cell muted"><span class="loader"></span></div>';
+    try {
+      const r = await fetch('CHANGELOG.md?v=' + APP_VERSION);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      changesCache = parseChanges(await r.text());
+    } catch {
+      box.innerHTML = `<div class="cell muted">${tx('Die Neuerungen konnten nicht geladen werden.')}</div>`;
+      return;
+    }
+  }
+  const list = changesAll ? changesCache : changesCache.slice(0, 8);
+  // Markdown-Kleinigkeiten: `code` und **fett**
+  const fmt = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  box.innerHTML = list.map(v => `<div class="chg">
+      <div class="chg-h"><b>${esc(v.ver)}</b>${v.ver === APP_VERSION ? `<span class="chg-now">${tx('aktuell')}</span>` : ''}<span class="chg-d">${esc(v.date)}</span></div>
+      <ul>${v.items.map(i => `<li>${fmt(i)}</li>`).join('')}</ul></div>`).join('')
+    + (!changesAll && changesCache.length > list.length ? `<button class="ghost full" id="btnChangesAll" style="width:100%;margin-top:6px">${tx('Ältere Versionen anzeigen')}</button>` : '');
+  const more = $('#btnChangesAll');
+  if (more) more.onclick = () => { changesAll = true; renderChanges(); };
+}
+// „## 4.17.10 – 15.10.2026“ + Spiegelstriche → [{ ver, date, items }]
+function parseChanges(text) {
+  const out = [];
+  let cur = null;
+  for (const line of text.split(/\r?\n/)) {
+    const h = line.match(/^##\s+(\S+)(?:\s+[–-]\s+(.+))?$/);
+    if (h) { cur = { ver: h[1], date: h[2] || '', items: [] }; out.push(cur); continue; }
+    const li = line.match(/^\s*[-*]\s+(.*)$/);
+    if (li && cur) cur.items.push(li[1]);
+    else if (cur?.items.length && line.trim()) cur.items[cur.items.length - 1] += ' ' + line.trim();
+  }
+  return out;
 }
 function renderCats() {
   $('#catBingoNote').classList.toggle('hidden', !state.bingo);

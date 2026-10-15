@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=4.17.10">
+<link rel="stylesheet" href="css/app.css?v=4.17.11">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -294,7 +294,7 @@
         </button>
       </div>
 
-      <div class="group-f" id="appVersion" style="text-align:center;margin-top:28px;opacity:.6"></div>
+      <button class="app-version" id="appVersion" data-go="changes"></button>
     </section>
 
     <section class="page" data-page="play" data-title="Wiedergabe">
@@ -321,6 +321,10 @@
         <div class="ph"><span class="ph-ic"><svg class="ic"><use href="#i-vol"/></svg></span><div><b>Box, Alexa, Sonos oder Fernseher</b><span>Oben „Spotify-App / Box“ wählen und das Gerät aussuchen. Taucht es nicht auf: In der Spotify-App einmal darauf abspielen (Geräte-Symbol unten), dann ↻ antippen.</span></div></div>
         <div class="ph"><span class="ph-ic"><svg class="ic"><use href="#i-music"/></svg></span><div><b>Ohne Premium</b><span>„Nur Vorschau“ spielt 30-Sekunden-Ausschnitte.</span></div></div>
       </div>
+    </section>
+
+    <section class="page" data-page="changes" data-title="Neuerungen">
+      <div id="changesList" class="changes"></div>
     </section>
 
     <section class="page" data-page="adv" data-title="Erweitert">
@@ -734,16 +738,16 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=4.17.10"></script>
-<script src="js/lang/fr.js?v=4.17.10"></script>
-<script src="js/lang/es.js?v=4.17.10"></script>
-<script src="js/i18n.js?v=4.17.10"></script>
-<script src="js/core.js?v=4.17.10"></script>
-<script src="js/spotify.js?v=4.17.10"></script>
-<script src="js/game.js?v=4.17.10"></script>
-<script src="js/lobby.js?v=4.17.10"></script>
-<script src="js/bingo.js?v=4.17.10"></script>
-<script src="js/views.js?v=4.17.10"></script>
-<script src="js/ui.js?v=4.17.10"></script>
+<script src="js/lang/en.js?v=4.17.11"></script>
+<script src="js/lang/fr.js?v=4.17.11"></script>
+<script src="js/lang/es.js?v=4.17.11"></script>
+<script src="js/i18n.js?v=4.17.11"></script>
+<script src="js/core.js?v=4.17.11"></script>
+<script src="js/spotify.js?v=4.17.11"></script>
+<script src="js/game.js?v=4.17.11"></script>
+<script src="js/lobby.js?v=4.17.11"></script>
+<script src="js/bingo.js?v=4.17.11"></script>
+<script src="js/views.js?v=4.17.11"></script>
+<script src="js/ui.js?v=4.17.11"></script>
 </body>
 </html>

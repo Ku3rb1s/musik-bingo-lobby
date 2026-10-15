@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.17.10', APP_DATE = '15.10.2026';
+const APP_VERSION = '4.17.11', APP_DATE = '15.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -286,7 +286,7 @@ function beep(freq = 880, dur = .15, vol = .2) {
 }
 // Buzzer-Ton: ein helles „Ding-Dong“ wie in einer Quizshow – zwei glockige Töne (Grundton + leise Obertöne), die
 // weich ausklingen. Lautstärke in den Einstellungen (0 = aus), unabhängig von „Töne beim Countdown“.
-const BUZZ_VOL = [0, .06, .14, .28];
+const BUZZ_VOL = [0, .12, .3, .6];
 function buzzSound(level = state.settings.buzzVol) {
   const v = BUZZ_VOL[level] || 0;
   if (!v) return;
@@ -361,6 +361,7 @@ function onPage(id, page) {
     if (page === 'main' || page === 'adv' || page === 'play') renderSettings();
     if (page === 'account') renderAccount();
     if (page === 'cats') renderCats();
+    if (page === 'changes') renderChanges();
   } else if (id === 'sheetGame') {
     if (page === 'main') { renderLobby(); renderBingo(); }
     if (page === 'setup' || page === 'invite' || page === 'bset') renderBingo();
