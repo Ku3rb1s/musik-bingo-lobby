@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.4 – 15.10.2026
+- Fehler behoben: Originaljahr oft falsch (z. B. „Hold the Line“ 2014 statt 1978, „Funkytown“ 2004 statt 1979). MusicBrainz antwortet bei vielen Anfragen kurz mit „beschäftigt“ – die App gab nach einem zweiten Versuch auf. Jetzt bis zu drei weitere Versuche mit wachsender Pause (2, 4, 8 s), die Vorab-Suche im Hintergrund fragt seltener an (löst das Ratenlimit nicht mehr selbst aus), und bei der Auflösung wird ein gescheitertes Nachschlagen erneut versucht
+
 ## 4.17.3 – 13.10.2026
 - Fehler behoben: Künstler, die Spotify mit Zusatz in Klammern führt (z. B. „Olly Alexander (Years & Years)“), fand MusicBrainz nicht – Herkunftsland, Band/Solo und Originaljahr blieben „unbekannt“. Jetzt wird nach allen Namensvarianten gesucht; früher als „unbekannt“ gespeicherte Künstler werden erneut nachgeschlagen
 

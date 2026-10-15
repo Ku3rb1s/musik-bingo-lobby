@@ -177,6 +177,7 @@ function reveal() {
   state.history.unshift({ n: round.n, cat: round.cat.name, catId: round.cat.id, title: t.title, artists: t.artists, year: yearOf(t), id: t.id });
   state.history = state.history.slice(0, 300); LS.set('history', state.history);
   state.lastRev = { id: round.id, i: round.cat.id, q: round.cat.name, n: round.n }; LS.set('lastRev', state.lastRev);
+  mbLookup(t);   // noch kein Originaljahr (Abfrage gescheitert)? → jetzt erneut, das Ergebnis wird nachgereicht
   if (state.settings.pauseOnReveal) Player.pause();
   beep(1046, .25);
   startAutoNext();
@@ -264,6 +265,7 @@ async function mbWork() {
   try {
     for (let job; (job = mbJobs.shift() || mbPrefetchJob());) {
       try { await job(); } catch {}
+      if (job.bg) await sleep(1400);   // Hintergrund: zusätzliche Pause
     }
   } finally { mbRunning = false; }
 }
@@ -274,17 +276,21 @@ function mbPrefetchJob() {
   const played = new Set(state.played);
   const todo = t => !(t.id in state.mb) && (t._mbTries || 0) < 2;
   const t = state.tracks.find(x => todo(x) && !played.has(x.id)) || state.tracks.find(todo);
-  return t ? mbYearJob(t) : null;
+  if (!t) return null;
+  const job = mbYearJob(t); job.bg = true;
+  return job;
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) mbKick(); });
 async function mbJson(url) {
-  const ac = new AbortController(), to = setTimeout(() => ac.abort(), 12000);
-  try {
-    let r = await fetch(url, { signal: ac.signal });
-    if (r.status === 503) { await sleep(2500); r = await fetch(url, { signal: ac.signal }); }   // kurz überlastet / Ratenlimit
+  for (let i = 0; ; i++) {
+    const ac = new AbortController(), to = setTimeout(() => ac.abort(), 12000);
+    let r;
+    try { r = await fetch(url, { signal: ac.signal }); } finally { clearTimeout(to); }
+    // MusicBrainz ist kurz ausgelastet (Ratenlimit) → mit wachsender Pause erneut versuchen: 2, 4, 8 s
+    if ((r.status === 503 || r.status === 429) && i < 3) { await sleep(2000 * 2 ** i); continue; }
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    return await r.json();
-  } finally { clearTimeout(to); }
+    return r.json();
+  }
 }
 // Spotify schreibt manche Künstler mit Zusatz in Klammern, z. B. „Olly Alexander (Years & Years)“ – MusicBrainz kennt dann nur
 // „Years & Years“ (bzw. „Olly Alexander“). Gesucht wird nach allen Varianten.
