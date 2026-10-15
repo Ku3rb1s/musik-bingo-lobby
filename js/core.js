@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.17.4', APP_DATE = '15.10.2026';
+const APP_VERSION = '4.17.5', APP_DATE = '15.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -120,6 +120,8 @@ const state = {
 // Ältere eigene Kategorien (noch ohne eigene Farbe) nachträglich einfärben
 LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
 // 4.11.1: Buzzer-Ton ist jetzt standardmäßig aus – einmalig auch bei allen, die ihn mit 4.10.x automatisch an hatten
+// 4.17.5: Originaljahr (MusicBrainz) ist Standard – einmalig auch bei allen einschalten, die es ausgeschaltet hatten
+if (!LS.get('mbOn1', false)) { state.settings.mb = true; LS.set('settings', state.settings); LS.set('mbOn1', true); }
 if (!LS.get('buzzOff1', false)) { state.settings.buzzSound = false; LS.set('settings', state.settings); LS.set('buzzOff1', true); }
 // 4.14.0: „Tipps erlauben“ (an/aus) → Tipps pro Runde (0–3), „Buzzer-Ton“ (an/aus) → Lautstärke (0 = aus … 3 = laut)
 {
