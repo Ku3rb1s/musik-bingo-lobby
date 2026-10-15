@@ -195,7 +195,7 @@ function reveal() {
 function answerFor(cat, t) {
   const y = yearOf(t);
   switch (cat.answer) {
-    case 'title': return esc(t.title);
+    case 'title': return esc(baseTitle(t.title) || t.title);   // ohne Zusätze wie „- Remastered 2011“ (steht vollständig darunter)
     case 'artist': return esc(t.artists);
     case 'year': return y ?? '?';
     case 'decade': return decadeOf(y);
@@ -240,15 +240,20 @@ async function loadCover(t) {
 
 /* ---------------- Originaljahr über MusicBrainz ---------------- */
 // Entfernt Zusätze wie „- Remastered 2011“ oder „(feat. X)“, die es nur in Spotify-Titeln gibt.
+// Wörter, an denen man Spotify-Zusätze erkennt („- 2009 Remaster“, „(Live)“, „- Single Edit“ …) – nur ganze Wörter,
+// damit z. B. „(Alive)“ oder „Mixed Emotions“ nicht hängen bleiben
+const EXTRA_WORDS = 'remaster(?:ed)?|re-?recorded|remix(?:ed)?|mix|version|edit|live|mono|stereo|acoustic|unplugged|demo|instrumental|extended|single|anniversary|radio|deluxe|bonus';
+const RE_DASH_EXTRA = new RegExp('\\s+[-–—]\\s+[^-–—]*\\b(?:' + EXTRA_WORDS + ')\\b[^-–—]*$', 'i');
+const RE_PAREN_EXTRA = new RegExp('\\s*[([][^)\\]]*\\b(?:feat\\.?|ft\\.|with|' + EXTRA_WORDS + '|soundtrack|motion picture)\\b[^)\\]]*[)\\]]|\\s*[([][^)\\]]*\\bfrom\\s*["“„\'«][^)\\]]*[)\\]]', 'ig');
 function baseTitle(s) {
   return String(s || '')
-    .replace(/\s*[-–—]\s*(\d{4}\s*)?(remaster(ed)?|re-?recorded|remix|radio edit|single version|album version|mono|stereo|live|edit|version|mix|original).*$/i, '')
+    .replace(RE_DASH_EXTRA, '')
     // Filmsongs: „Danger Zone - From "Top Gun" Original Soundtrack“, „- Love Theme from "Titanic"“, „- Soundtrack Version“
     .replace(/\s*[-–—]\s*[^-–—]*(\bfrom\s*["“„'«]|\bsoundtrack\b|\bmotion picture\b|\bost\b)[^-–—]*$/i, '')
-    .replace(/\s*[([][^)\]]*(feat\.?|ft\.|with |remaster|version|edit|mix|live|mono|stereo|from\s*["“„'«]|soundtrack|motion picture)[^)\]]*[)\]]/ig, '')
+    .replace(RE_PAREN_EXTRA, '')
     .trim();
 }
-const normStr = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]/gu, '');
+const normStr = s => String(s || '').toLowerCase().replace(/&/g, ' and ').normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]/gu, '');
 /* MusicBrainz-Warteschlange: höchstens etwa eine Anfrage pro Sekunde (Vorgabe von MusicBrainz).
    - Der Song der laufenden Runde kommt nach vorn (urgent).
    - Jede Anfrage bricht nach 12 s ab – vorher konnte eine hängende Verbindung die Warteschlange für den ganzen Abend
@@ -318,19 +323,27 @@ function mbYearJob(t) {
     const title = baseTitle(t.title), artist = artistOf(t);
     if (!normStr(title) || !normStr(artist)) { state.mb[t.id] = 0; return; }
     try {
-      // Nur Aufnahmen suchen, die vor dem Spotify-Jahr erschienen sind – bekannte Songs haben sonst Hunderte Treffer
-      const vs = artistVariants(artist);
-      let q = `recording:"${title.replace(/"/g, '')}" AND ${artistQuery(vs)}`;
-      if (t.year) q += ` AND firstreleasedate:[1900 TO ${t.year - 1}]`;
+      // Nur Aufnahmen suchen, die vor dem Spotify-Jahr erschienen sind – bekannte Songs haben sonst Hunderte Treffer.
+      // Gibt es mehr Treffer als eine Seite (100) – z. B. „Purple Rain“ mit vielen Live-Mitschnitten –, wird gezielt nach
+      // noch früheren gesucht (bis vor das bisher früheste Jahr), höchstens dreimal.
+      const vs = artistVariants(artist), base = `recording:"${title.replace(/"/g, '')}" AND ${artistQuery(vs)}`;
       t._mbTries = (t._mbTries || 0) + 1;
-      const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
-      let best = null;
-      for (const rec of j.recordings || []) {
-        if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(title)) continue;
-        const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
-        if (!vs.some(v => credit.includes(normStr(v)) || (credit && normStr(v).includes(credit)))) continue;
-        const y = parseInt(rec['first-release-date']);
-        if (y >= 1900 && (!best || y < best)) best = y;
+      let best = null, upto = t.year ? t.year - 1 : null;
+      for (let page = 0; page < 3; page++) {
+        const q = upto ? `${base} AND firstreleasedate:[1900 TO ${upto}]` : base;
+        if (page) await sleep(1100);
+        const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
+        const before = best;
+        for (const rec of j.recordings || []) {
+          if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(title)) continue;
+          const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
+          if (!vs.some(v => credit.includes(normStr(v)) || (credit && normStr(v).includes(credit)))) continue;
+          const y = parseInt(rec['first-release-date']);
+          if (y >= 1900 && (!best || y < best)) best = y;
+        }
+        // Alles gesehen, oder diese Seite brachte nichts Früheres → fertig
+        if ((j.count ?? 0) <= (j.recordings || []).length || !best || best === before) break;
+        upto = best - 1;
       }
       // Nur übernehmen, wenn es früher ist als das Spotify-Jahr (Best-of/Remaster sind immer später)
       state.mb[t.id] = best && (!t.year || best < t.year) ? best : 0;

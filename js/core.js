@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.17.8', APP_DATE = '15.10.2026';
+const APP_VERSION = '4.17.9', APP_DATE = '15.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -122,6 +122,11 @@ const state = {
 LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
 // 4.11.1: Buzzer-Ton ist jetzt standardmäßig aus – einmalig auch bei allen, die ihn mit 4.10.x automatisch an hatten
 // 4.17.5: Originaljahr (MusicBrainz) ist Standard – einmalig auch bei allen einschalten, die es ausgeschaltet hatten
+// 4.17.9: Titel werden noch besser bereinigt (Digital Remaster, Acoustic, Single Edit …) → „nicht gefunden“ erneut versuchen
+if (!LS.get('mbZero2', false)) {
+  for (const k of Object.keys(state.mb)) if (!state.mb[k]) delete state.mb[k];
+  LS.set('mb', state.mb); LS.set('mbZero2', true); LS.set('mbZero1', true);
+}
 if (!LS.get('mbZero1', false)) {
   for (const k of Object.keys(state.mb)) if (!state.mb[k]) delete state.mb[k];
   LS.set('mb', state.mb); LS.set('mbZero1', true);

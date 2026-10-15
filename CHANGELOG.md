@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.9 – 15.10.2026
+- Originaljahr noch zuverlässiger: weitere Spotify-Zusätze werden vor der Suche entfernt („- 2004 Digital Remaster“, „- 40th Anniversary Version / 2010 Remastered“, „- Acoustic“, „- Demo“, „- Unplugged“, „- Single Edit“, „- Club Mix“, „- Neue Version“ …); nur ganze Wörter zählen, damit z. B. „(Alive)“ oder „Mixed Emotions“ unverändert bleiben; „&“ und „and“ gelten als gleich
+- Fehler behoben: Bei Songs mit sehr vielen Aufnahmen (z. B. „Purple Rain“ mit vielen Live-Mitschnitten) lag die Original-Aufnahme nicht auf der ersten Ergebnisseite – es wird jetzt gezielt nach früheren gesucht (Purple Rain 1984 statt 1987)
+- Antwort bei „Titel des Songs“ ohne Spotify-Zusätze („Danger Zone“ statt „Danger Zone - From "Top Gun" Original Soundtrack“; der vollständige Titel steht darunter)
+- Songs ohne gefundenes Originaljahr werden einmalig neu nachgeschlagen
+
 ## 4.17.8 – 15.10.2026
 - Fehler behoben: Filmsongs bekamen kein Originaljahr (z. B. „Danger Zone“ 1997 statt 1986, „Eye of the Tiger“ 2006 statt 1982) – Spotify-Zusätze wie „- From "Top Gun" Original Soundtrack“ oder „- Love Theme from "Titanic"“ werden vor der Suche jetzt entfernt. Songs, für die früher kein Originaljahr gefunden wurde, werden einmalig neu nachgeschlagen
 
