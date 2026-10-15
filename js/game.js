@@ -276,8 +276,14 @@ function mbPrefetchJob() {
   const played = new Set(state.played);
   const todo = t => !(t.id in state.mb) && (t._mbTries || 0) < 2;
   const t = state.tracks.find(x => todo(x) && !played.has(x.id)) || state.tracks.find(todo);
-  if (!t) return null;
-  const job = mbYearJob(t); job.bg = true;
+  let job = t ? mbYearJob(t) : null;
+  if (!job && state.cats.some(c => c.enabled && ARTIST_FACTS.includes(c.answer))) {
+    const open = x => !mbArtistKnown(normStr(artistOf(x))) && (x._mbArtTries || 0) < 2;
+    const a = state.tracks.find(x => open(x) && !played.has(x.id)) || state.tracks.find(open);
+    if (a) job = artistJob(a);
+  }
+  if (!job) return null;
+  job.bg = true;
   return job;
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) mbKick(); });
@@ -366,13 +372,35 @@ function artistFact(t, what) {
   return '';
 }
 // Bekannt = nachgeschlagen (mit Ergebnis oder als „nicht gefunden“ markiert). Leere Einträge älterer Versionen werden erneut versucht.
-const mbArtistKnown = k => Object.keys(state.mbArtist[k] || {}).length > 0;
+// Bekannt = mit der aktuellen Methode nachgeschlagen (v: 2 – Herkunft über den Geburtsort). Ältere Einträge werden einmal neu geholt.
+const mbArtistKnown = k => (state.mbArtist[k]?.v || 0) >= 2;
+// Land eines Orts: direkt über den ISO-Code, sonst über das übergeordnete Gebiet (Stadt → Bezirk → Region …).
+// Ergebnis je Ort gespeichert, so muss eine Stadt nur einmal nachgeschlagen werden.
+const areaCode = a => a?.['iso-3166-1-codes']?.[0] || (a?.['iso-3166-2-codes']?.[0] || '').split('-')[0] || '';
+async function mbAreaCountry(a, depth = 0) {
+  const own = areaCode(a);
+  if (own) return own;
+  if (!a?.id || depth > 4) return '';
+  if (a.id in state.mbArea) return state.mbArea[a.id];
+  await sleep(1100);
+  const x = await mbJson('https://musicbrainz.org/ws/2/area/' + a.id + '?fmt=json&inc=area-rels');
+  const parents = (x.relations || []).filter(r => r.type === 'part of' && r.direction === 'backward' && r.area).map(r => r.area);
+  let c = areaCode(x) || parents.map(areaCode).find(Boolean) || '';
+  if (!c && parents[0]) c = await mbAreaCountry(parents[0], depth + 1);
+  state.mbArea[a.id] = c; LS.set('mbArea', state.mbArea);
+  return c;
+}
 function artistLookup(t) {
-  const name = artistOf(t), k = normStr(name);
+  const k = normStr(artistOf(t));
   if (!k || mbArtistKnown(k)) return;
-  mbQueue(async () => {
+  mbQueue(artistJob(t), true);
+}
+function artistJob(t) {
+  const name = artistOf(t), k = normStr(name);
+  return async () => {
     if (mbArtistKnown(k)) return;
     const vs = artistVariants(name), keys = vs.map(normStr);
+    t._mbArtTries = (t._mbArtTries || 0) + 1;
     try {
       const MB = 'https://musicbrainz.org/ws/2/';
       const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND ${artistQuery(vs)}`;
@@ -389,19 +417,26 @@ function artistLookup(t) {
         id = (s.artists || []).find(x => (x.score ?? 0) >= 90 && keys.includes(normStr(x.name)))?.id || null;
         await sleep(1100);
       }
-      let info = { n: 1 };   // n = nachgeschlagen, aber nicht gefunden
+      let info = { n: 1, v: 2 };   // n = nachgeschlagen, aber nicht gefunden
       if (id) {
         const x = await mbJson(MB + 'artist/' + id + '?fmt=json');
-        info = { c: x.country || x.area?.['iso-3166-1-codes']?.[0] || '', t: x.type || '', g: x.gender || '' };
+        // Herkunftsland: bei Personen der Geburtsort (begin-area) – „area“ ist dort oft der Wohnort
+        // (Rihanna: USA statt Barbados, Tina Turner: Schweiz statt USA). Bei Bands das Gründungsland.
+        let c = x.country || areaCode(x.area);
+        if (x.type === 'Person' && x['begin-area']) {
+          const bc = await mbAreaCountry(x['begin-area']).catch(() => '');
+          if (bc) c = bc;
+        }
+        info = { c, t: x.type || '', g: x.gender || '', v: 2 };
       }
       state.mbArtist[k] = info; LS.set('mbArtist', state.mbArtist);
       // Kam die Antwort erst nach der Auflösung: nachreichen (auch an Handys und Fernseher)
-      if (round?.track === t && ARTIST_FACTS.includes(round.cat.answer)) {
+      if (round && normStr(artistOf(round.track)) === k && ARTIST_FACTS.includes(round.cat.answer)) {
         if (round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } else render();
       }
-    } catch { /* offline o. ä. – beim nächsten Mal erneut versuchen */ }
+    } catch { mbPauseUntil = Date.now() + 120000; /* offline o. ä. – später erneut versuchen */ }
     await sleep(1100);
-  }, true);
+  };
 }
 
 /* ---------------- Tipps ---------------- */

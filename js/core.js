@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.17.6', APP_DATE = '15.10.2026';
+const APP_VERSION = '4.17.7', APP_DATE = '15.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -112,6 +112,7 @@ const state = {
   match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
   partieFrom: LS.get('partieFrom', 0),   // Rundennummer, ab der die aktuelle Partie zählt (für die Bingo-Prüfung)
   mb: LS.get('mb', {}),             // Originaljahre laut MusicBrainz (0 = nichts Besseres gefunden)
+  mbArea: LS.get('mbArea', {}),       // Orte laut MusicBrainz → Land (ISO), z. B. Geburtsstadt → „BB“
   mbArtist: LS.get('mbArtist', {}),   // Künstler laut MusicBrainz: { c: Land (ISO), t: Art (Person/Group/…), g: Geschlecht } – {} = nicht gefunden
   yearFix: LS.get('yearFix', {}),
   history: LS.get('history', []),
