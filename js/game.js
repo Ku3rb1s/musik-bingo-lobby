@@ -243,7 +243,9 @@ async function loadCover(t) {
 function baseTitle(s) {
   return String(s || '')
     .replace(/\s*[-–—]\s*(\d{4}\s*)?(remaster(ed)?|re-?recorded|remix|radio edit|single version|album version|mono|stereo|live|edit|version|mix|original).*$/i, '')
-    .replace(/\s*[([][^)\]]*(feat\.?|ft\.|with |remaster|version|edit|mix|live|mono|stereo)[^)\]]*[)\]]/ig, '')
+    // Filmsongs: „Danger Zone - From "Top Gun" Original Soundtrack“, „- Love Theme from "Titanic"“, „- Soundtrack Version“
+    .replace(/\s*[-–—]\s*[^-–—]*(\bfrom\s*["“„'«]|\bsoundtrack\b|\bmotion picture\b|\bost\b)[^-–—]*$/i, '')
+    .replace(/\s*[([][^)\]]*(feat\.?|ft\.|with |remaster|version|edit|mix|live|mono|stereo|from\s*["“„'«]|soundtrack|motion picture)[^)\]]*[)\]]/ig, '')
     .trim();
 }
 const normStr = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]/gu, '');

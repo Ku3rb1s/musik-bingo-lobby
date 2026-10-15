@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.8 – 15.10.2026
+- Fehler behoben: Filmsongs bekamen kein Originaljahr (z. B. „Danger Zone“ 1997 statt 1986, „Eye of the Tiger“ 2006 statt 1982) – Spotify-Zusätze wie „- From "Top Gun" Original Soundtrack“ oder „- Love Theme from "Titanic"“ werden vor der Suche jetzt entfernt. Songs, für die früher kein Originaljahr gefunden wurde, werden einmalig neu nachgeschlagen
+
 ## 4.17.7 – 15.10.2026
 - Fehler behoben: Herkunftsland bei Solo-Künstlern war oft der Wohnort statt der Herkunft (Rihanna: USA statt Barbados, Tina Turner: Schweiz statt USA). Jetzt zählt bei Personen der Geburtsort (über Stadt → Region bestimmt, Orte werden zwischengespeichert), bei Bands das Gründungsland. Bereits gespeicherte Künstler werden einmal neu nachgeschlagen
 - Sind Künstler-Kategorien aktiv (Land, Band/Solo, Sänger/in), werden die Künstler im Hintergrund vorab nachgeschlagen – das Ergebnis steht meist schon bei der Auflösung fest
