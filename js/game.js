@@ -378,7 +378,8 @@ const GENDER_DE = { Male: 'Sänger', Female: 'Sängerin', 'Non-binary': 'Nicht-b
 // Antwort für country/kind/gender: null = noch nicht nachgeschlagen, '' = unbekannt, sonst Text
 function artistFact(t, what) {
   const a = state.mbArtist[normStr(artistOf(t))];
-  if (!a || !Object.keys(a).length) return null;
+  // Noch nicht nachgeschlagen – oder ein alter Eintrag ohne Ergebnis (vor 4.17.7), der gerade neu geholt wird
+  if (!a || !Object.keys(a).length || (!a.v && !a.c)) return null;
   const guest = t.artists.length > artistOf(t).length ? ' · ' + tx('mit Gast') : '';   // Spotify nennt Gastkünstler als weitere Interpreten
   if (what === 'country') return a.c ? regionName(a.c) : '';
   if (what === 'kind') return KIND_DE[a.t] ? tx(KIND_DE[a.t]) + guest : '';
@@ -449,7 +450,11 @@ function artistJob(t) {
       if (round && normStr(artistOf(round.track)) === k && ARTIST_FACTS.includes(round.cat.answer)) {
         if (round.phase === 'revealed') { renderReveal(); Lobby.syncRound(); } else render();
       }
-    } catch { mbPauseUntil = Date.now() + 120000; /* offline o. ä. – später erneut versuchen */ }
+    } catch {
+      mbPauseUntil = Date.now() + 120000;   // offline o. ä. – Hintergrund-Suche später erneut
+      // Künstler der laufenden Runde: nach ein paar Sekunden nochmal versuchen (MusicBrainz war z. B. kurz beschäftigt)
+      if (round && normStr(artistOf(round.track)) === k && (t._mbArtTries || 0) < 4) setTimeout(() => artistLookup(t), 8000);
+    }
     await sleep(1100);
   };
 }

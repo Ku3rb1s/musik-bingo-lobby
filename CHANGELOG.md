@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.17.10 – 15.10.2026
+- Fehler behoben: Künstler, die eine ältere Version als „nicht gefunden“ gespeichert hatte (z. B. Dido), zeigten beim Herkunftsland „Unbekannt – ihr entscheidet selbst“, bis das neue Nachschlagen geklappt hatte. Solche Einträge gelten jetzt als „wird nachgeschlagen“, und scheitert das Nachschlagen für die laufende Runde (MusicBrainz kurz beschäftigt), versucht es die App nach ein paar Sekunden erneut
+
 ## 4.17.9 – 15.10.2026
 - Originaljahr noch zuverlässiger: weitere Spotify-Zusätze werden vor der Suche entfernt („- 2004 Digital Remaster“, „- 40th Anniversary Version / 2010 Remastered“, „- Acoustic“, „- Demo“, „- Unplugged“, „- Single Edit“, „- Club Mix“, „- Neue Version“ …); nur ganze Wörter zählen, damit z. B. „(Alive)“ oder „Mixed Emotions“ unverändert bleiben; „&“ und „and“ gelten als gleich
 - Fehler behoben: Bei Songs mit sehr vielen Aufnahmen (z. B. „Purple Rain“ mit vielen Live-Mitschnitten) lag die Original-Aufnahme nicht auf der ersten Ergebnisseite – es wird jetzt gezielt nach früheren gesucht (Purple Rain 1984 statt 1987)
