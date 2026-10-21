@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.18.1 – 21.10.2026
+- Tipps pro Spieler gelten auch für den Spielleiter, wenn er in der Lobby mitspielt: Sein Tipp-Knopf zeigt die eigenen übrigen Tipps und ist gesperrt, wenn sie aufgebraucht sind
+
 ## 4.18.0 – 21.10.2026
 - Neu: Tipps pro Spieler – jeder Mitspieler darf pro Partie eine feste Zahl Tipps holen (Einstellungen → Schwierigkeit: Unbegrenzt/1/2/3/5). Holt einer einen Tipp, sehen ihn alle. Am Handy zeigt die Glühbirne die eigenen übrigen Tipps; sind sie aufgebraucht, ist der Knopf gesperrt. Mit jeder neuen Partie gibt es wieder alle Tipps
 - Fehler behoben: Originaljahr konnte durch falsch datierte Zusammenstellungen zu früh sein (Dido „White Flag“ 1999 statt 2003). Für das Originaljahr zählen jetzt nur Album-, Single- und EP-Veröffentlichungen – keine Compilations und Bootlegs. Alle gespeicherten Jahre werden einmal neu nachgeschlagen (eigene Korrekturen bleiben)

@@ -535,8 +535,15 @@ function renderHints() {
 }
 // Nächsten Tipp aufdecken – vom Spielleiter oder auf Wunsch eines Mitspielers (by = Name). Alle Handys und der Fernseher
 // bekommen ihn mit der Runde (Lobby.syncRound).
+// Spielt der Spielleiter in der Lobby mit und sind die Tipps pro Spieler begrenzt, gilt das Limit auch für ihn
+function hostHintsLeft() {
+  const pp = +state.settings.hintPP || 0;
+  if (!pp || !Lobby.code || !Lobby.me()) return Infinity;
+  return Math.max(0, pp - (state.match?.hu?.[Lobby.uid] || 0));
+}
 function giveHint(by = null) {
   if (!round || round.phase === 'revealed') return false;
+  if (!by && hostHintsLeft() <= 0) { toast(tx('Deine Tipps für diese Partie sind aufgebraucht')); return false; }
   const max = hintsFor(round.cat, round.track).length;
   if ((round.hints || 0) >= max) { if (!by) toast(max ? tx('Keine weiteren Tipps') : tx('Tipps sind ausgeschaltet (Einstellungen → Tipps pro Runde)')); return false; }
   round.hintBy ??= [];
@@ -545,6 +552,9 @@ function giveHint(by = null) {
   beep(990, .1);
   render(); Lobby.syncRound();
   if (by) toast(tx('💡 {n} hat einen Tipp geholt', { n: by }), 4000);
+  else if (hostHintsLeft() !== Infinity && state.match) {   // eigener Tipp des mitspielenden Spielleiters zählt
+    state.match.hu = { ...(state.match.hu || {}), [Lobby.uid]: (state.match.hu?.[Lobby.uid] || 0) + 1 }; saveMatch(); render();
+  }
   return true;
 }
 // Mitspieler wünschen sich einen Tipp (Knopf am Handy). Mehrere Wünsche gleichzeitig ergeben nur einen Tipp;

@@ -52,7 +52,7 @@ function render() {
   const acts = [];
   if (round && ph !== 'revealed') {
     if (+state.settings.hintMax) {
-      const left = hintsFor(round.cat, round.track).length - (round.hints || 0);
+      const left = Math.min(hintsFor(round.cat, round.track).length - (round.hints || 0), hostHintsLeft());   // spielt mit: eigenes Limit
       acts.push(`<button class="pill-btn" data-act="hint" ${left > 0 ? '' : 'disabled'}>${ic('bulb')}${tx('Tipp')}${left > 0 ? ` · ${left}` : ''}</button>`);
     }
     acts.push(`<button class="pill-btn" data-act="next">${ic('skip')}${tx('Überspringen')}</button>`);
