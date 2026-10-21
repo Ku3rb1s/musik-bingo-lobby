@@ -160,6 +160,7 @@ function renderRules() {
     link(ic('timer'), tx('Countdown'), tx('{n} s', { n: S.seconds }), 'rowSec'),
     link(ic('play'), tx('Startpunkt im Song'), tx(START[S.start] || START.begin), 'rowStart'),
     link(ic('bulb'), tx('Tipps pro Runde'), +S.hintMax ? String(S.hintMax) : tx('keine'), 'rowHints'),
+    code ? link(ic('bulb'), tx('Tipps pro Spieler'), +S.hintPP ? tx('{n} pro Partie', { n: S.hintPP }) : tx('unbegrenzt'), 'rowHintPP') : '',
     link(ic('skip'), tx('Automatisch weiter'), +S.autoNext ? tx('{n} s', { n: S.autoNext }) : tx('aus'), 'rowAutoNext'),
   ].join('');
 }

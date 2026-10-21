@@ -621,5 +621,11 @@
     "Ältere Versionen anzeigen": "Afficher les versions plus anciennes",
     "Die Neuerungen konnten nicht geladen werden.": "Impossible de charger les nouveautés.",
     "Neuerungen": "Nouveautés",
+    "Tipps pro Spieler": "Indices par joueur",
+    "Wie viele Tipps jeder Mitspieler pro Partie holen darf – alle sehen den Tipp": "Combien d’indices chaque joueur peut prendre par partie – tout le monde voit l’indice",
+    "Unbegrenzt": "Illimité",
+    "unbegrenzt": "illimité",
+    "{n} pro Partie": "{n} par partie",
+    "Deine Tipps für diese Partie sind aufgebraucht": "Tu as utilisé tous tes indices pour cette partie",
   },
 };

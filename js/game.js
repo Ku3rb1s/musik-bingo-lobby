@@ -317,6 +317,16 @@ function mbLookup(t) {
   if (!state.settings.mb || t.id in state.mb) return;
   mbQueue(mbYearJob(t), true);
 }
+// Erscheinungsjahr einer Aufnahme: früheste Veröffentlichung als Album, Single oder EP – Compilations und Bootlegs zählen nicht
+// (Dido „White Flag“: eine falsch datierte Doppel-CD „Life for Rent / No Angel“ mit 1999 statt 2003). Gibt es nur
+// Compilations, zählen die; ohne Veröffentlichungsliste das von MusicBrainz genannte erste Datum.
+function recYear(rec) {
+  const rels = (rec.releases || []).filter(r => !/bootleg|pseudo|withdrawn/i.test(r.status || ''));
+  const earliest = list => Math.min(...list.map(r => parseInt(r.date)).filter(y => y >= 1900));
+  const orig = rels.filter(r => !(r['release-group']?.['secondary-types'] || []).includes('Compilation'));
+  for (const list of [orig, rels]) { const y = earliest(list); if (isFinite(y)) return y; }
+  return parseInt(rec['first-release-date']);
+}
 function mbYearJob(t) {
   return async () => {
     if (t.id in state.mb) return;
@@ -338,7 +348,7 @@ function mbYearJob(t) {
           if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(title)) continue;
           const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
           if (!vs.some(v => credit.includes(normStr(v)) || (credit && normStr(v).includes(credit)))) continue;
-          const y = parseInt(rec['first-release-date']);
+          const y = recYear(rec);
           if (y >= 1900 && (!best || y < best)) best = y;
         }
         // Alles gesehen, oder diese Seite brachte nichts Früheres → fertig
@@ -544,5 +554,8 @@ function checkHintReq() {
   const reqs = lobbyList().filter(p => p.hr?.n === round.id && p.hr.t > (round.hrT || 0) && p.id !== Lobby.uid).sort((a, b) => a.hr.t - b.hr.t);
   if (!reqs.length) return;
   round.hrT = reqs.at(-1).hr.t;
-  giveHint(reqs[0].name);
+  const pp = +state.settings.hintPP || 0, m = state.match, used = m?.hu || {};
+  const who = reqs.find(p => !pp || (used[p.id] || 0) < pp);   // wer noch Tipps übrig hat
+  if (!who || !giveHint(who.name)) return;
+  if (m) { m.hu = { ...used, [who.id]: (used[who.id] || 0) + 1 }; saveMatch(); }
 }

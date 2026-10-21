@@ -309,7 +309,7 @@ async function lobbyMode(code, autoName = null) {
     let curB = null, card = null, mounted = null, wonSent = null, hot = null, leaving = false;
     let curRound = null, lastKey = null, allPlayers = {}, firstPlayers = true, lastGame = null, lastOver = false, cdIv = null;
     let lastPh = null, lastPhKey = null, buzzSent = null, buzzT = null;   // Runden-Box: Countdown-Start erkennen, Buzzer gedrückt
-    let hintSent = null, hintT = null, hintSeen = null, hintNew = false;                  // Tipp-Knopf gedrückt, zuletzt gesehene Tipps { key, n }
+    let hintSent = null, hintT = null, hintSeen = null, hintNew = false, myHintsUsed = 0;                  // Tipp-Knopf gedrückt, zuletzt gesehene Tipps { key, n }
     const cdEndOf = cdClock(); let roundSeen = false, cdEnd = 0;          // Countdown-Ende auf der eigenen Uhr
     const keyOf = r => r ? r.id ?? r.n : null;   // eindeutige Runden-ID
     const curMark = () => curRound && markable({ key: keyOf(curRound), ph: curRound.ph, i: curRound.i, q: curRound.q, pv: curRound.pv, old: curRound.old }, (i, q) => curB?.k.find(k => k.i === i)?.n || q);
@@ -420,6 +420,7 @@ async function lobbyMode(code, autoName = null) {
       if (!m) return;
       m.wins ??= {}; m.names ??= {}; m.won ??= []; m.tips ??= {};
       const myWins = m.wins[f.uid] || 0;
+      myHintsUsed = m.hu?.[f.uid] || 0; drawHintBtn();   // eigener Tipp-Vorrat dieser Partie
       $('#cardMatch').textContent = (m.over ? tx('Spiel vorbei') : m.total ? tx('Partie {g}/{t}', { g: m.game, t: m.total }) : tx('Partie {g}', { g: m.game })) + (myWins ? ` · 🏆 ${myWins}` : '');
       box.innerHTML = `<b>${matchTitle(m)}</b>${Object.keys(m.wins).length ? winsHtml(m).replace('class="match-tbl"', 'class="match-tbl" style="margin:0"') : ''}${m.over ? `<b>${esc(matchWinner(m))}</b>` : ''}`;
       if (lastGame !== null && !m.over && (m.game !== lastGame || lastOver)) showRepick(m);
@@ -515,11 +516,14 @@ async function lobbyMode(code, autoName = null) {
       const show = !!r && r.ph !== 'r' && hm > 0;
       b.classList.toggle('hidden', !show);
       if (!show) return;
-      const left = Math.max(0, hm - got), wait = hintSent === `${keyOf(r)}:${got}`;
+      // Vorrat: in dieser Runde noch verfügbar (hm) und – falls begrenzt – eigene Tipps dieser Partie (hp)
+      const roundLeft = Math.max(0, hm - got), mine = r.hp ? Math.max(0, r.hp - myHintsUsed) : null;
+      const left = mine == null ? roundLeft : Math.min(roundLeft, mine), wait = hintSent === `${keyOf(r)}:${got}`;
       b.disabled = !left || wait;
       b.classList.toggle('wait', wait);
-      b.innerHTML = ic('bulb') + (left ? `<b class="hint-n">${left}</b>` : '');
-      b.title = left ? `${tx('Tipp für alle holen')} (${left})` : tx('keine mehr');
+      const badge = mine == null ? roundLeft : mine;   // begrenzt: eigene Tipps zeigen
+      b.innerHTML = ic('bulb') + (badge ? `<b class="hint-n">${badge}</b>` : '');
+      b.title = mine === 0 ? tx('Deine Tipps für diese Partie sind aufgebraucht') : left ? `${tx('Tipp für alle holen')} (${badge})` : tx('keine mehr');
       b.setAttribute('aria-label', b.title);
     }
     $('#btnHintReq').onclick = () => {

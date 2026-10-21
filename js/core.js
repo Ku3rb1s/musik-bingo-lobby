@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.17.11', APP_DATE = '15.10.2026';
+const APP_VERSION = '4.18.0', APP_DATE = '21.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -106,7 +106,7 @@ const state = {
   played: LS.get('played', []),
   cats: LS.get('cats', null) || structuredClone(DEFAULT_CATS),
   settings: Object.assign({ seconds: 30, start: 'begin', beep: true, buzzVol: 0, autoReveal: true, pauseOnReveal: false, mode: 'auto', volume: 80,
-    limit: 0, hintMax: 2, autoNext: 0, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
+    limit: 0, hintMax: 2, hintPP: 0, autoNext: 0, mb: true, theme: 'graphit', lobby: true, games: 0, hostPlays: true }, LS.get('settings', {})),
   bingo: (b => b?.k ? b : null)(LS.get('bingo', null)),   // { g, s, k: [{ i, c, e, n }] } – aktuelle Bingo-Runde
   lobby: LS.get('lobby', null),     // Code der eigenen Lobby (Firebase), solange Bingo läuft
   match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
@@ -123,6 +123,8 @@ LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
 // 4.11.1: Buzzer-Ton ist jetzt standardmäßig aus – einmalig auch bei allen, die ihn mit 4.10.x automatisch an hatten
 // 4.17.5: Originaljahr (MusicBrainz) ist Standard – einmalig auch bei allen einschalten, die es ausgeschaltet hatten
 // 4.17.9: Titel werden noch besser bereinigt (Digital Remaster, Acoustic, Single Edit …) → „nicht gefunden“ erneut versuchen
+// 4.18.0: Originaljahr ohne Compilations/Bootlegs → alle gespeicherten Jahre einmal neu nachschlagen (Korrekturen von Hand bleiben)
+if (!LS.get('mbYear3', false)) { state.mb = {}; LS.set('mb', state.mb); LS.set('mbYear3', true); LS.set('mbZero2', true); LS.set('mbZero1', true); }
 if (!LS.get('mbZero2', false)) {
   for (const k of Object.keys(state.mb)) if (!state.mb[k]) delete state.mb[k];
   LS.set('mb', state.mb); LS.set('mbZero2', true); LS.set('mbZero1', true);

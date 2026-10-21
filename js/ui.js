@@ -235,7 +235,7 @@ function renderSettings() {
   $('#setAutoNext').value = String(s.autoNext || 0);
   $('#setBeep').checked = s.beep; $('#setBuzzVol').value = String(s.buzzVol || 0); $('#setAuto').checked = s.autoReveal; $('#setPause').checked = s.pauseOnReveal;
   $('#rowVibe').classList.toggle('hidden', !canVibe()); $('#setVibeHost').checked = vibeOn();
-  $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setMb').checked = s.mb;
+  $('#setLimit').value = String(s.limit || 0); $('#setHints').value = String(s.hintMax ?? 2); $('#setHintPP').value = String(s.hintPP || 0); $('#setMb').checked = s.mb;
   renderThemes();
   $('#appVersion').innerHTML = `Musik-Bingo · Version ${APP_VERSION} · ${APP_DATE}<span>${tx('Neuerungen ansehen')} ›</span>`;
   const showDev = s.mode === 'connect' || Player.mode === 'connect';
@@ -588,6 +588,8 @@ $('#setLimit').onchange = e => { state.settings.limit = +e.target.value; saveSet
 // Tipps pro Runde: gilt sofort, auch für die laufende Runde (Handys sehen, wie viele es noch gibt)
 const setHintMax = n => { state.settings.hintMax = n; saveSettings(); Lobby.syncRound(); };
 $('#setHints').onchange = e => setHintMax(+e.target.value);
+// Tipps pro Spieler und Partie (0 = unbegrenzt) – die Handys erfahren es mit der Runde
+$('#setHintPP').onchange = e => { state.settings.hintPP = +e.target.value; saveSettings(); Lobby.syncRound(); };
 $('#setMb').onchange = e => { state.settings.mb = e.target.checked; saveSettings(); renderHist(); mbKick(); };
 const THEMES = [['graphit', 'Graphit', '#3a4252', '#1f3a32'], ['ozean', 'Ozean', '#0b4f75', '#0d6e66'], ['wald', 'Wald', '#1d5a3a', '#4c5b1a'], ['abend', 'Abend', '#7a2e1c', '#7d1f4a'], ['lila', 'Lila', '#4a22a0', '#8a1458'], ['oled', 'OLED', '#000', '#000']];
 function applyTheme() {

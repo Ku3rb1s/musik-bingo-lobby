@@ -621,5 +621,11 @@
     "Ältere Versionen anzeigen": "Show older versions",
     "Die Neuerungen konnten nicht geladen werden.": "Couldn’t load the release notes.",
     "Neuerungen": "What’s new",
+    "Tipps pro Spieler": "Hints per player",
+    "Wie viele Tipps jeder Mitspieler pro Partie holen darf – alle sehen den Tipp": "How many hints each player may take per game – everyone sees the hint",
+    "Unbegrenzt": "Unlimited",
+    "unbegrenzt": "unlimited",
+    "{n} pro Partie": "{n} per game",
+    "Deine Tipps für diese Partie sind aufgebraucht": "You’ve used all your hints for this game",
   },
 };

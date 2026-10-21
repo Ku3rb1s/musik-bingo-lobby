@@ -135,7 +135,7 @@ const Lobby = {
     this.write('round', { n: round.n, id: round.id, i: round.cat.id, q: round.cat.name, e, c, ph: rev ? 'r' : cd ? 'c' : 'p', ...(cd ? { end: round.end + fbOffset, dur: round.dur } : {}),
       ...(round.bz ? { bz: round.bz } : {}),   // wer gebuzzert hat (Name)
       ...(pv ? { pv } : {}),
-      ...(hm ? { hm, ...(h.length ? { h } : {}) } : {}),
+      ...(hm ? { hm, ...(h.length ? { h } : {}), ...(+state.settings.hintPP ? { hp: +state.settings.hintPP } : {}) } : {}),
       ...(round.n <= (state.partieFrom || 0) ? { old: 1 } : {}),   // Runde gehört zur vorigen Partie → nicht markierbar
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc
       ...(rev ? { a: withLang('de', () => plainText(answerFor(round.cat, t))), at: round.cat.answer, s: `${t.artists} – ${t.title}`, ti: t.title, ar: t.artists,
@@ -185,7 +185,7 @@ const Lobby = {
 // total: Anzahl Partien – „Nochmal spielen“ und „Neues Spiel“ übernehmen die des laufenden Spiels
 function newMatch(total = state.settings.games ?? 0) {
   endShown = false;
-  state.match = { total, game: 1, wins: {}, names: {}, won: [], over: false, rounds: 0, tips: {} };
+  state.match = { total, game: 1, wins: {}, names: {}, won: [], over: false, rounds: 0, tips: {}, hu: {} };   // hu = geholte Tipps je Spieler (Partie)
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   LS.set('match', state.match);
 }
@@ -197,7 +197,7 @@ function saveMatch() {
 // Nächste Partie: gleiche Karten, Markierungen weg (jeder darf seine Karte behalten oder neu wählen), Prüfung zählt nur neue Runden
 function nextGame() {
   const m = state.match; if (!m || m.over || !state.bingo) return;
-  m.game++; m.won = [];
+  m.game++; m.won = []; m.hu = {};   // neue Partie → jeder hat wieder alle Tipps
   state.partieFrom = state.history[0]?.n || 0; LS.set('partieFrom', state.partieFrom);
   Lobby.clearMarks();
   myRepick = !!Lobby.me();   // auch der Spielleiter darf seine Karte behalten oder neu wählen

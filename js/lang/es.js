@@ -621,5 +621,11 @@
     "Ältere Versionen anzeigen": "Mostrar versiones anteriores",
     "Die Neuerungen konnten nicht geladen werden.": "No se pudieron cargar las novedades.",
     "Neuerungen": "Novedades",
+    "Tipps pro Spieler": "Pistas por jugador",
+    "Wie viele Tipps jeder Mitspieler pro Partie holen darf – alle sehen den Tipp": "Cuántas pistas puede pedir cada jugador por partida – todos ven la pista",
+    "Unbegrenzt": "Ilimitadas",
+    "unbegrenzt": "ilimitadas",
+    "{n} pro Partie": "{n} por partida",
+    "Deine Tipps für diese Partie sind aufgebraucht": "Ya usaste todas tus pistas de esta partida",
   },
 };
