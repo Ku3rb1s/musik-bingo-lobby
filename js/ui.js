@@ -123,6 +123,7 @@ function renderReveal() {
       <div class="rv-artist">${esc(t.artists)} <span class="rv-year">· ${y ?? '?'}</span></div>
       <div class="rv-meta">${[t.album, t.date].filter(Boolean).map(esc).join(' · ')}</div>
       ${fixed ? `<div class="rv-meta">${tx('Jahr von dir korrigiert.')}</div>` : ''}
+      ${cat.answer !== 'film' && filmsOf(t).length ? `<div class="rv-meta rv-film">🎬 ${esc(filmsOf(t).join(' · '))}</div>` : ''}
       ${fromMb ? `<div class="rv-meta">${tx('Spotify nennt {y} (Album/Remaster) – Originaljahr laut MusicBrainz.', { y: t.year })}</div>` : ''}
     </div>
     <div id="guessHost" class="guess-list hidden"></div>`;
@@ -561,6 +562,10 @@ $('#bingoSecSeg').onclick = e => {
 $('#bingoStartSeg').onclick = e => {
   const b = e.target.closest('[data-start]'); if (!b) return;
   state.settings.start = b.dataset.start; saveSettings(); renderBingo();
+};
+$('#bingoHintPPSeg').onclick = e => {
+  const b = e.target.closest('[data-pp]'); if (!b) return;
+  state.settings.hintPP = +b.dataset.pp; saveSettings(); Lobby.syncRound(); renderBingo();
 };
 $('#bingoHintSeg').onclick = e => {
   const b = e.target.closest('[data-hints]'); if (!b) return;

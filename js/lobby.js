@@ -140,7 +140,7 @@ const Lobby = {
       // Lösung sprachneutral: immer auf Deutsch (jedes Handy übersetzt mit locAnswer), Antworttyp at, Land als Code cc
       ...(rev ? { a: withLang('de', () => plainText(answerFor(round.cat, t))), at: round.cat.answer, s: `${t.artists} – ${t.title}`, ti: t.title, ar: t.artists,
         ...(round.cat.answer === 'country' && artistCountry(t) ? { cc: artistCountry(t) } : {}),
-        ...(yearOf(t) ? { y: yearOf(t) } : {}), ...(t.cover ? { cv: t.thumb || t.cover, cvb: t.cover } : {}) } : {}) });
+        ...(yearOf(t) ? { y: yearOf(t) } : {}), ...(round.cat.answer !== 'film' && filmsOf(t).length ? { fm: filmsOf(t).join(' · ') } : {}), ...(t.cover ? { cv: t.thumb || t.cover, cvb: t.cover } : {}) } : {}) });
     this.touch();
   },
   close() {

@@ -103,6 +103,7 @@ async function renderBingo() {
     $('#bingoGamesBox').classList.toggle('hidden', state.settings.lobby === false);
     document.querySelectorAll('#bingoSecSeg button').forEach(x => x.classList.toggle('on', +x.dataset.sec === +state.settings.seconds));
     document.querySelectorAll('#bingoStartSeg button').forEach(x => x.classList.toggle('on', x.dataset.start === state.settings.start));
+    document.querySelectorAll('#bingoHintPPSeg button').forEach(x => x.classList.toggle('on', +x.dataset.pp === +(state.settings.hintPP || 0)));
     document.querySelectorAll('#bingoHintSeg button').forEach(x => x.classList.toggle('on', +x.dataset.hints === +(state.settings.hintMax ?? 2)));
     document.querySelectorAll('#bingoGamesSeg button').forEach(x => x.classList.toggle('on', +x.dataset.games === (state.settings.games ?? 0)));
     document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });

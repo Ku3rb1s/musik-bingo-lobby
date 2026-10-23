@@ -73,6 +73,7 @@ async function nextRound() {
   round = { n: (state.history[0]?.n || 0) + 1, id: Date.now(), track, cat, phase: 'playing', hints: 0, pos: Player.startMs(track) };
   mbLookup(track);
   if (ARTIST_FACTS.includes(cat.answer)) artistLookup(track);
+  if (state.settings.mb && !(track.id in state.mbFilm) && !spotifyFilms(track).length) mbQueue(filmJob(track));   // Film für die Auflösung
   spinCategory(cat);
   render(); Lobby.syncRound();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -386,6 +387,8 @@ function filmJob(t) {
       }
       state.mbFilm[t.id] = [...found].sort((a, b) => a[1] - b[1]).map(x => x[0]).slice(0, 3);
       LS.set('mbFilm', state.mbFilm);
+      // schon aufgelöst? → Film nachreichen (auch an Handys und Fernseher)
+      if (round?.track === t && round.phase === 'revealed' && state.mbFilm[t.id].length) { renderReveal(); Lobby.syncRound(); }
     } catch { mbPauseUntil = Date.now() + 120000; }
     await sleep(1100);
   };

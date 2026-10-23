@@ -498,7 +498,7 @@ async function lobbyMode(code, autoName = null) {
         : cover ? `<img class="rl-cover" src="${esc(r.cv)}" alt="">`
         : canBuzz ? `<button class="rl-buzz" ${sent ? 'disabled' : ''} aria-label="${tx('Buzzer – Countdown für alle starten')}">${ic('bell')}<small>${sent ? tx('Gesendet') : tx('Buzzer')}</small></button>` : '';
       const html = `<span class="rl-ic">${esc(r.e)}</span><div class="rl-main"><div class="rl-k">${tx('Runde {n}', { n: esc(r.n) })}${st}${r.bz ? ` <span class="rl-by">${ic('bell')}${esc(r.bz)}</span>` : ''}</div>
-        <div class="rl-n">${esc(tx(r.q))}</div>${hintsHtml(r)}${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>` : ''}</div>${side}`;
+        <div class="rl-n">${esc(tx(r.q))}</div>${hintsHtml(r)}${r.ph === 'r' ? `<div class="rl-a">${answerHtml(r)}</div><div class="small muted">${esc(r.s)}${r.y ? ` <span class="rv-year">· ${esc(r.y)}</span>` : ''}</div>${r.fm ? `<div class="small muted rl-film">🎬 ${esc(r.fm)}</div>` : ''}` : ''}</div>${side}`;
       drawHintBtn();
       const isNew = hintNew; hintNew = false;
       if (box._html === html && (!cd || cdIv)) return;   // unverändert: Knopf und laufender Ring bleiben, wie sie sind
@@ -627,7 +627,7 @@ async function tvMode(code) {
       const title = r.ti ?? r.s, artist = r.ar ?? '';
       return show(k + cat + `<div class="tv-rev">${r.cv ? `<img class="tv-cover" src="${esc(r.cvb || r.cv)}" alt="">` : '<div class="tv-cover tv-nocover">♪</div>'}
         <div class="tv-rev-t"><div class="tv-answer">${answerHtml(r)}</div><div class="tv-title">${esc(title)}</div>
-        <div class="tv-artist"><span>${esc(artist)}</span>${r.y ? `<span class="rv-year">${artist ? '· ' : ''}${esc(r.y)}</span>` : ''}</div></div></div>` + buzz);
+        <div class="tv-artist"><span>${esc(artist)}</span>${r.y ? `<span class="rv-year">${artist ? '· ' : ''}${esc(r.y)}</span>` : ''}</div>${r.fm ? `<div class="tv-film">🎬 ${esc(r.fm)}</div>` : ''}</div></div>` + buzz);
     }
     const tips = '<div class="tv-tips" id="tvTips"></div>';
     if (r.ph === 'c' && r.end) {

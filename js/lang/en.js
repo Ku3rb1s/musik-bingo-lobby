@@ -633,5 +633,7 @@
     "Kommt nur bei Songs aus Filmen oder Serien – erkennt nicht jeden": "Only for songs from films or series – won’t recognise every one",
     "Der Film/die Serie beginnt mit „{c}“": "The film/series starts with “{c}”",
     "Film: {c}…": "Film: {c}…",
+    "frei": "free",
+    "je Partie": "per game",
   },
 };

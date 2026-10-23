@@ -633,5 +633,7 @@
     "Kommt nur bei Songs aus Filmen oder Serien – erkennt nicht jeden": "Seulement pour les chansons de films ou de séries – ne les reconnaît pas toutes",
     "Der Film/die Serie beginnt mit „{c}“": "Le film/la série commence par « {c} »",
     "Film: {c}…": "Film : {c}…",
+    "frei": "libre",
+    "je Partie": "par partie",
   },
 };

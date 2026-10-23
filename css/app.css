@@ -1082,3 +1082,7 @@ body.lobby-mode .live-panel>.guess-wrap{margin:0}
 .chg ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
 .chg li{font-size:.85rem;line-height:1.45;color:var(--text)}
 .chg code{font-size:.85em;background:rgba(255,255,255,.08);border-radius:5px;padding:0 .3em}
+/* 4.20.0: Film/Serie bei der Auflösung */
+.rv-film{color:#d8b4fe}
+.round-live .rl-film{margin-top:2px}
+.tv-film{font-size:calc(var(--u) * 1.6);color:#d8b4fe;font-weight:700;margin-top:calc(var(--u) * .6)}

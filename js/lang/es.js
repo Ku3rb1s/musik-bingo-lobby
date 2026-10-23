@@ -633,5 +633,7 @@
     "Kommt nur bei Songs aus Filmen oder Serien – erkennt nicht jeden": "Solo para canciones de películas o series – no reconoce todas",
     "Der Film/die Serie beginnt mit „{c}“": "La película/serie empieza por «{c}»",
     "Film: {c}…": "Película: {c}…",
+    "frei": "libre",
+    "je Partie": "por partida",
   },
 };
