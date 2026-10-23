@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.18.2 – 23.10.2026
+- Fehler behoben: Originaljahr zu früh durch Live-Mitschnitte bzw. reine Bootlegs mit falschem Datum (Adele „When We Were Young“: SNL-Mitschnitt von 2015 als 2005 eingetragen). Live-Aufnahmen und Aufnahmen, die nur als Bootleg erschienen sind, zählen für das Originaljahr nicht mehr; gespeicherte Jahre werden einmal neu nachgeschlagen
+
 ## 4.18.1 – 21.10.2026
 - Tipps pro Spieler gelten auch für den Spielleiter, wenn er in der Lobby mitspielt: Sein Tipp-Knopf zeigt die eigenen übrigen Tipps und ist gesperrt, wenn sie aufgebraucht sind
 

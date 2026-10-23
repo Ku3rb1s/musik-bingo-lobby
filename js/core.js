@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.18.1', APP_DATE = '21.10.2026';
+const APP_VERSION = '4.18.2', APP_DATE = '23.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -124,6 +124,8 @@ LS.del('mbCountry');   // Vorgänger von mbArtist (4.3.0)
 // 4.17.5: Originaljahr (MusicBrainz) ist Standard – einmalig auch bei allen einschalten, die es ausgeschaltet hatten
 // 4.17.9: Titel werden noch besser bereinigt (Digital Remaster, Acoustic, Single Edit …) → „nicht gefunden“ erneut versuchen
 // 4.18.0: Originaljahr ohne Compilations/Bootlegs → alle gespeicherten Jahre einmal neu nachschlagen (Korrekturen von Hand bleiben)
+// 4.18.2: Live-Mitschnitte und reine Bootlegs zählen nicht mehr → gespeicherte Jahre einmal neu nachschlagen
+if (!LS.get('mbYear4', false)) { state.mb = {}; LS.set('mb', state.mb); LS.set('mbYear4', true); LS.set('mbYear3', true); LS.set('mbZero2', true); LS.set('mbZero1', true); }
 if (!LS.get('mbYear3', false)) { state.mb = {}; LS.set('mb', state.mb); LS.set('mbYear3', true); LS.set('mbZero2', true); LS.set('mbZero1', true); }
 if (!LS.get('mbZero2', false)) {
   for (const k of Object.keys(state.mb)) if (!state.mb[k]) delete state.mb[k];

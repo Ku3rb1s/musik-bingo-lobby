@@ -321,7 +321,10 @@ function mbLookup(t) {
 // (Dido „White Flag“: eine falsch datierte Doppel-CD „Life for Rent / No Angel“ mit 1999 statt 2003). Gibt es nur
 // Compilations, zählen die; ohne Veröffentlichungsliste das von MusicBrainz genannte erste Datum.
 function recYear(rec) {
-  const rels = (rec.releases || []).filter(r => !/bootleg|pseudo|withdrawn/i.test(r.status || ''));
+  // Live-Mitschnitte zählen nicht (MusicBrainz: „live, 2015-11-22: Saturday Night Live …“) – das Original kam vorher
+  if (/^live\b/i.test(rec.disambiguation || '')) return NaN;
+  const all = rec.releases || [], rels = all.filter(r => !/bootleg|pseudo|withdrawn/i.test(r.status || ''));
+  if (all.length && !rels.length) return NaN;   // nur als Bootleg erschienen (Adele: SNL-Mitschnitt, falsch auf 2005 datiert)
   const earliest = list => Math.min(...list.map(r => parseInt(r.date)).filter(y => y >= 1900));
   const orig = rels.filter(r => !(r['release-group']?.['secondary-types'] || []).includes('Compilation'));
   for (const list of [orig, rels]) { const y = earliest(list); if (isFinite(y)) return y; }
