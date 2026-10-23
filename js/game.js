@@ -371,7 +371,7 @@ function filmJob(t) {
       const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
       const found = new Map();   // Name → frühestes Jahr
       for (const rec of j.recordings || []) {
-        if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(baseTitle(t.title))) continue;
+        if ((rec.score ?? 0) < 70 || !sameTitle(rec.title, t.title)) continue;
         const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
         if (!vs.some(v => credit.includes(normStr(v)))) continue;
         for (const r of rec.releases || []) {
@@ -393,6 +393,18 @@ function filmJob(t) {
     await sleep(1100);
   };
 }
+// Gleicher Titel? Auch Varianten zählen: Zusätze wie bei Spotify entfernt (baseTitle), „Theme From …“/„Main Title …“ vorne,
+// und der Teil vor einem Komma/Doppelpunkt („Magnum, P.I.“ ≈ „Magnum“). Leerzeichen-Erweiterungen wie „Hello Again“ zählen nicht.
+function titleKeys(s) {
+  const b = baseTitle(s), keys = new Set([normStr(s), normStr(b)]);
+  const noTheme = b.replace(/^(?:the\s+)?(?:(?:love|main|tv|official)\s+)?(?:theme|title|main title)\s+(?:from|to|of)\s+/i, '').replace(/^["“„'«]|["”“'»]$/g, '');
+  keys.add(normStr(noTheme));
+  // Teil vor Komma, Doppelpunkt oder Klammer – erst ab 5 Zeichen (sonst wäre „Love“ gleich „Love, Love, Love“)
+  for (const x of [b, noTheme]) { const head = x.split(/\s*[,:;([]\s*/)[0]; if (normStr(head).length >= 5) keys.add(normStr(head)); }
+  keys.delete('');
+  return keys;
+}
+const sameTitle = (a, b) => { const kb = titleKeys(b); return [...titleKeys(a)].some(k => kb.has(k)); };
 function mbLookup(t) {
   if (!state.settings.mb || t.id in state.mb) return;
   mbQueue(mbYearJob(t), true);
@@ -428,7 +440,7 @@ function mbYearJob(t) {
         const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
         const before = best;
         for (const rec of j.recordings || []) {
-          if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(title)) continue;
+          if ((rec.score ?? 0) < 70 || !sameTitle(rec.title, title)) continue;
           const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
           if (!vs.some(v => credit.includes(normStr(v)) || (credit && normStr(v).includes(credit)))) continue;
           const y = recYear(rec);

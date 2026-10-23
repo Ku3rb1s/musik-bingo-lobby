@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.20.1 – 23.10.2026
+- Fehler behoben: Originaljahr bei Stücken mit mehreren Künstlern und Titel-Varianten (z. B. „Magnum“ von Mike Post & Pete Carpenter: 1982 statt 2015). Die App erkennt jetzt Varianten wie „Magnum, P.I.“, „Theme From Magnum P.I.“ oder „Magnum (Theme From …)“ als denselben Titel – „Hello“ und „Hello Again“ bleiben verschieden. Aufnahmen mit mehreren Künstlern fallen nicht mehr durch die Trefferschwelle. Gespeicherte Jahre und Filme werden einmal neu nachgeschlagen
+
 ## 4.20.0 – 23.10.2026
 - Neu: Bei jeder Auflösung steht der Film bzw. die Serie unter dem Song, wenn einer bekannt ist („🎬 Top Gun“) – auch ohne die Film-Kategorie. Beim Spielleiter, auf den Handys und am Fernseher; kommt die Info erst nach der Auflösung, wird sie nachgereicht
 - Tipps pro Spieler lassen sich jetzt auch beim Bingo-Einrichten wählen (∞/1/2/3/5 je Partie) – weiterhin jederzeit änderbar in den Einstellungen und unter „Regeln & Karten“
