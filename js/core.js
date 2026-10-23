@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.18.2', APP_DATE = '23.10.2026';
+const APP_VERSION = '4.19.0', APP_DATE = '23.10.2026';
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
@@ -56,14 +56,16 @@ const DEFAULT_CATS = [
   { id: 'gender', name: 'Sänger oder Sängerin?', answer: 'gender', enabled: false, builtin: true },
   // Neu (4.12.8): Album laut Spotify (bei Best-of/Sampler steht dort die Zusammenstellung) – von Haus aus ausgeschaltet
   { id: 'album', name: 'Aus welchem Album?', answer: 'album', enabled: false, builtin: true },
+  // Neu (4.19.0): Film/Serie – kommt nur bei Songs, für die ein Film oder eine Serie bekannt ist (experimentell)
+  { id: 'film', name: 'Aus welchem Film / welcher Serie?', answer: 'film', enabled: false, builtin: true },
 ];
 const ANSWER_TYPES = {
   title: 'Songtitel', artist: 'Interpret', year: 'Genaues Jahr', decade: 'Jahrzehnt',
-  range: 'Jahr ± Toleranz', album: 'Album', country: 'Herkunftsland (automatisch)', kind: 'Band oder Solo (automatisch)', gender: 'Sänger oder Sängerin (automatisch)', none: 'Keine – ihr entscheidet selbst',
+  range: 'Jahr ± Toleranz', album: 'Album', film: 'Film/Serie (automatisch, experimentell)', country: 'Herkunftsland (automatisch)', kind: 'Band oder Solo (automatisch)', gender: 'Sänger oder Sängerin (automatisch)', none: 'Keine – ihr entscheidet selbst',
 };
 const CAT_STYLE = {
   title: ['🎵', '#1ed760'], artist: ['🎤', '#ff4fa3'], year: ['🎯', '#ffb020'], decade: ['🕰️', '#8b6cff'],
-  range: ['📅', '#22d3ee'], album: ['💿', '#ff8a3d'], country: ['🌍', '#60a5fa'], kind: ['👥', '#f87171'], gender: ['🎙️', '#e879f9'], none: ['❓', '#a3e635'],
+  range: ['📅', '#22d3ee'], album: ['💿', '#ff8a3d'], film: ['🎬', '#c084fc'], country: ['🌍', '#60a5fa'], kind: ['👥', '#f87171'], gender: ['🎙️', '#e879f9'], none: ['❓', '#a3e635'],
 };
 const catStyle = c => {
   const base = CAT_STYLE[c?.answer] || CAT_STYLE.none;
@@ -112,6 +114,7 @@ const state = {
   match: LS.get('match', null),     // Partien & Siege in der Lobby (siehe newMatch)
   partieFrom: LS.get('partieFrom', 0),   // Rundennummer, ab der die aktuelle Partie zählt (für die Bingo-Prüfung)
   mb: LS.get('mb', {}),             // Originaljahre laut MusicBrainz (0 = nichts Besseres gefunden)
+  mbFilm: LS.get('mbFilm', {}),       // Filme/Serien je Song laut MusicBrainz (Soundtrack-Alben) – [] = keiner gefunden
   mbArea: LS.get('mbArea', {}),       // Orte laut MusicBrainz → Land (ISO), z. B. Geburtsstadt → „BB“
   mbArtist: LS.get('mbArtist', {}),   // Künstler laut MusicBrainz: { c: Land (ISO), t: Art (Person/Group/…), g: Geschlecht } – {} = nicht gefunden
   yearFix: LS.get('yearFix', {}),

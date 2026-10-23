@@ -58,8 +58,16 @@ async function nextRound() {
     reshuffled = true; state.played = [];
     pool = state.tracks.length > 1 ? state.tracks.filter(t => t.id !== round?.track?.id) : state.tracks.slice();
   }
-  const track = pool[Math.floor(Math.random() * pool.length)];
-  const cat = cats[Math.floor(Math.random() * cats.length)];
+  // Kategorie zuerst. „Film/Serie“ nur mit einem Song, für den ein Film bekannt ist – gibt es keinen, eine andere Kategorie
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  let cat = pick(cats);
+  if (cat.answer === 'film') {
+    const withFilm = pool.filter(t => filmsOf(t).length);
+    const others = cats.filter(c => c.answer !== 'film');
+    if (withFilm.length) pool = withFilm;
+    else if (others.length) cat = pick(others);
+  }
+  const track = pick(pool);
   state.played.push(track.id); LS.set('played', state.played);
   // n = Anzeige (übersprungene Runden behalten die Nummer), id = eindeutig – daran hängen die Tipps in der Lobby
   round = { n: (state.history[0]?.n || 0) + 1, id: Date.now(), track, cat, phase: 'playing', hints: 0, pos: Player.startMs(track) };
@@ -201,6 +209,7 @@ function answerFor(cat, t) {
     case 'decade': return decadeOf(y);
     case 'range': return y ? `${y} <span class="small">${tx('(richtig: {a}–{b})', { a: y - cat.tol, b: y + cat.tol })}</span>` : '?';
     case 'album': return esc(t.album || '?');
+    case 'film': { const f = filmsOf(t); return f.length ? esc(f.join(' · ')) : tx('🤔 Ihr entscheidet selbst'); }
     case 'country': case 'kind': case 'gender': {   // kommt von MusicBrainz
       const v = artistFact(t, cat.answer);
       return v ? esc(v) : v === null ? tx('🔎 Wird nachgeschlagen …') : tx('🤔 Unbekannt – ihr entscheidet selbst');
@@ -281,6 +290,11 @@ async function mbWork() {
 function mbPrefetchJob() {
   if (!state.settings.mb || document.hidden || Date.now() < mbPauseUntil || !state.tracks.length) return null;
   const played = new Set(state.played);
+  if (filmCatOn()) {
+    const open = x => !(x.id in state.mbFilm) && !spotifyFilms(x).length && (x._mbFilmTries || 0) < 2;
+    const f = state.tracks.find(x => open(x) && !played.has(x.id)) || state.tracks.find(open);
+    if (f) { const job = filmJob(f); job.bg = true; return job; }
+  }
   const todo = t => !(t.id in state.mb) && (t._mbTries || 0) < 2;
   const t = state.tracks.find(x => todo(x) && !played.has(x.id)) || state.tracks.find(todo);
   let job = t ? mbYearJob(t) : null;
@@ -313,6 +327,69 @@ function artistVariants(name) {
   return [...new Set(v.map(s => s.trim()).filter(s => normStr(s)))];
 }
 const artistQuery = vs => '(' + vs.map(v => `artist:"${v.replace(/"/g, '')}"`).join(' OR ') + ')';
+/* ---------------- Film / Serie (experimentell) ----------------
+   Quellen: 1. Spotify-Titel („Danger Zone - From "Top Gun"“), 2. Spotify-Album („Dirty Dancing (Original Motion Picture
+   Soundtrack)“), 3. MusicBrainz: Soundtrack-Alben, auf denen der Song ist. Nur Titel mit Hinweis auf Film/Serie zählen
+   (sonst landen Musicals, Olympia-Feiern o. Ä. dabei). Höchstens drei, das früheste zuerst. */
+const FILM_HINT = /motion picture|\bfilm\b|\bmovie\b|sound\s*track|original score|\bscore\b|\bseries\b|\bserie\b|\bseason\b|staffel|\bost\b|filmmusik/i;
+function filmName(s) {
+  s = String(s || '').trim();
+  let m = s.match(/(?:love theme |theme |music |songs )?from\s*(?:the\s+)?(?:motion picture|film|movie|series|netflix series)?\s*["“„'«]([^"”“'»]+)["”“'»]/i);
+  if (m) return m[1].trim();
+  m = s.match(/^(.*?)\s*[:([–-]\s*(?:the\s+)?(?:official\s+)?(?:original\s+)?(?:music\s+(?:from|inspired)|songs\s+from|motion picture|(?:movie\s+|film\s+)?sound\s*track|(?:original\s+)?score|ost\b|filmmusik|der\s+soundtrack|bande originale|banda sonora)/i);
+  if (!m || !m[1]) return '';   // kein erkennbarer Film-Name
+  s = m[1];
+  return s.replace(/:\s*awesome mix.*$/i, '').replace(/,?\s*(?:vol\.?|volume)\s*\d+$/i, '').replace(/[\s:–-]+$/, '').trim();
+}
+// Filme aus den Spotify-Angaben (ohne Abfrage)
+function spotifyFilms(t) {
+  const out = [];
+  const fromTitle = String(t.title || '').match(/from\s*["“„'«]([^"”“'»]+)["”“'»]/i);
+  if (fromTitle) out.push(fromTitle[1].trim());
+  if (FILM_HINT.test(t.album || '')) { const n = filmName(t.album); if (n) out.push(n); }
+  return out;
+}
+// Alle bekannten Filme/Serien eines Songs (höchstens drei, ohne Doppelte)
+function filmsOf(t) {
+  const seen = new Set(), out = [];
+  for (const n of [...spotifyFilms(t), ...(state.mbFilm[t.id] || [])]) {
+    const k = normStr(n);
+    // gleicher oder enthaltener Name („Marvel’s Guardians of the Galaxy: Cosmic Mix“ ⊃ „Guardians of the Galaxy“) nur einmal
+    if (k && ![...seen].some(x => x.includes(k) || k.includes(x))) { seen.add(k); out.push(n); }
+  }
+  return out.slice(0, 3);
+}
+const filmCatOn = () => state.cats.some(c => c.enabled && c.answer === 'film');
+function filmJob(t) {
+  return async () => {
+    if (t.id in state.mbFilm) return;
+    t._mbFilmTries = (t._mbFilmTries || 0) + 1;
+    try {
+      const vs = artistVariants(artistOf(t));
+      const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND ${artistQuery(vs)}`;
+      const j = await mbJson('https://musicbrainz.org/ws/2/recording?fmt=json&limit=100&query=' + encodeURIComponent(q));
+      const found = new Map();   // Name → frühestes Jahr
+      for (const rec of j.recordings || []) {
+        if ((rec.score ?? 0) < 90 || normStr(rec.title) !== normStr(baseTitle(t.title))) continue;
+        const credit = normStr((rec['artist-credit'] || []).map(a => a.name || a.artist?.name).join(''));
+        if (!vs.some(v => credit.includes(normStr(v)))) continue;
+        for (const r of rec.releases || []) {
+          const g = r['release-group'] || {};
+          if (!(g['secondary-types'] || []).includes('Soundtrack') || /bootleg|pseudo/i.test(r.status || '')) continue;
+          const title = g.title || r.title || '';
+          if (!FILM_HINT.test(title) && !/from\s*["“„']/i.test(title)) continue;
+          const n = filmName(title);
+          if (!n || normStr(n) === normStr(baseTitle(t.title))) continue;   // „Danger Zone“-Single ist kein Film
+          const y = parseInt(r.date) || 9999;
+          if (!found.has(n) || found.get(n) > y) found.set(n, y);
+        }
+      }
+      state.mbFilm[t.id] = [...found].sort((a, b) => a[1] - b[1]).map(x => x[0]).slice(0, 3);
+      LS.set('mbFilm', state.mbFilm);
+    } catch { mbPauseUntil = Date.now() + 120000; }
+    await sleep(1100);
+  };
+}
 function mbLookup(t) {
   if (!state.settings.mb || t.id in state.mb) return;
   mbQueue(mbYearJob(t), true);
@@ -495,6 +572,7 @@ function hintsFor(cat, t) {
       range: [decH, part && H('{p} der {d}', { p: part, d: dec }), artH],
       decade: [y && H(y < 2000 ? 'Vor 2000 erschienen' : 'Ab 2000 erschienen'), artH, H('Der Titel beginnt mit „{c}“', { c: first(t.title) })],
       album: [t.album && H('Das Album beginnt mit „{c}“', { c: first(t.album) }), decH, cover],
+      film: [filmsOf(t)[0] && H('Der Film/die Serie beginnt mit „{c}“', { c: first(filmsOf(t)[0]) }), decH, artH],
       none: [decH, artH, cover],
       country: [cc && { s: 'Das Land beginnt mit „{c}“', cc }, artH, cover],
       kind: [artH, decH, cover],
@@ -518,7 +596,7 @@ function hintText(h) {
 // Kurzform für die Zeile unter der Frage (Handys, Fernseher, „Meine Karte“) – der Hinweis oben zeigt den ganzen Satz
 const HINT_SHORT = {
   'Der Titel beginnt mit „{c}“': 'Titel: {c}…', 'Der Titel hat {n} Wort': '1 Wort', 'Der Titel hat {n} Wörter': '{n} Wörter',
-  'Der Interpret beginnt mit „{c}“': 'Interpret: {c}…', 'Das Album beginnt mit „{c}“': 'Album: {c}…', 'Das Land beginnt mit „{c}“': 'Land: {c}…',
+  'Der Interpret beginnt mit „{c}“': 'Interpret: {c}…', 'Das Album beginnt mit „{c}“': 'Album: {c}…', 'Der Film/die Serie beginnt mit „{c}“': 'Film: {c}…', 'Das Land beginnt mit „{c}“': 'Land: {c}…',
   'Vor 2000 erschienen': 'vor 2000', 'Ab 2000 erschienen': 'ab 2000',
 };
 function hintShort(h) {

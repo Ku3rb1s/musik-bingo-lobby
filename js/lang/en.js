@@ -627,5 +627,11 @@
     "unbegrenzt": "unlimited",
     "{n} pro Partie": "{n} per game",
     "Deine Tipps für diese Partie sind aufgebraucht": "You’ve used all your hints for this game",
+    "Aus welchem Film / welcher Serie?": "From which film / series?",
+    "Film/Serie (automatisch, experimentell)": "Film/series (automatic, experimental)",
+    "Film/Serie": "Film/series",
+    "Kommt nur bei Songs aus Filmen oder Serien – erkennt nicht jeden": "Only for songs from films or series – won’t recognise every one",
+    "Der Film/die Serie beginnt mit „{c}“": "The film/series starts with “{c}”",
+    "Film: {c}…": "Film: {c}…",
   },
 };

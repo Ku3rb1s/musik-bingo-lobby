@@ -26,7 +26,7 @@ function mountWake() {
 // Titel/Interpret/Album/Jahr bleiben, Land kommt als Code, feste Sätze und Jahrzehnte werden übersetzt.
 function locAnswer(r) {
   if (r.cc) return regionName(r.cc);
-  if (['title', 'artist', 'album', 'year'].includes(r.at)) return r.a;
+  if (['title', 'artist', 'album', 'year', 'film'].includes(r.at)) return r.a;
   const one = p => {
     let m;
     if (hasTx(p)) return tx(p);

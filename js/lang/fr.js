@@ -627,5 +627,11 @@
     "unbegrenzt": "illimité",
     "{n} pro Partie": "{n} par partie",
     "Deine Tipps für diese Partie sind aufgebraucht": "Tu as utilisé tous tes indices pour cette partie",
+    "Aus welchem Film / welcher Serie?": "De quel film / quelle série ?",
+    "Film/Serie (automatisch, experimentell)": "Film/série (automatique, expérimental)",
+    "Film/Serie": "Film/série",
+    "Kommt nur bei Songs aus Filmen oder Serien – erkennt nicht jeden": "Seulement pour les chansons de films ou de séries – ne les reconnaît pas toutes",
+    "Der Film/die Serie beginnt mit „{c}“": "Le film/la série commence par « {c} »",
+    "Film: {c}…": "Film : {c}…",
   },
 };

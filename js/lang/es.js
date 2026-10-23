@@ -627,5 +627,11 @@
     "unbegrenzt": "ilimitadas",
     "{n} pro Partie": "{n} por partida",
     "Deine Tipps für diese Partie sind aufgebraucht": "Ya usaste todas tus pistas de esta partida",
+    "Aus welchem Film / welcher Serie?": "¿De qué película / serie?",
+    "Film/Serie (automatisch, experimentell)": "Película/serie (automático, experimental)",
+    "Film/Serie": "Película/serie",
+    "Kommt nur bei Songs aus Filmen oder Serien – erkennt nicht jeden": "Solo para canciones de películas o series – no reconoce todas",
+    "Der Film/die Serie beginnt mit „{c}“": "La película/serie empieza por «{c}»",
+    "Film: {c}…": "Película: {c}…",
   },
 };
