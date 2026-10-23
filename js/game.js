@@ -479,7 +479,7 @@ function artistFact(t, what) {
 }
 // Bekannt = nachgeschlagen (mit Ergebnis oder als „nicht gefunden“ markiert). Leere Einträge älterer Versionen werden erneut versucht.
 // Bekannt = mit der aktuellen Methode nachgeschlagen (v: 2 – Herkunft über den Geburtsort). Ältere Einträge werden einmal neu geholt.
-const mbArtistKnown = k => (state.mbArtist[k]?.v || 0) >= 2;
+const mbArtistKnown = k => (state.mbArtist[k]?.v || 0) >= 3;   // v: 3 = mit Namensvetter-Prüfung (4.19.1)
 // Land eines Orts: direkt über den ISO-Code, sonst über das übergeordnete Gebiet (Stadt → Bezirk → Region …).
 // Ergebnis je Ort gespeichert, so muss eine Stadt nur einmal nachgeschlagen werden.
 const areaCode = a => a?.['iso-3166-1-codes']?.[0] || (a?.['iso-3166-2-codes']?.[0] || '').split('-')[0] || '';
@@ -511,19 +511,25 @@ function artistJob(t) {
       const MB = 'https://musicbrainz.org/ws/2/';
       const q = `recording:"${baseTitle(t.title).replace(/"/g, '')}" AND ${artistQuery(vs)}`;
       const j = await mbJson(MB + 'recording?fmt=json&limit=15&query=' + encodeURIComponent(q));
-      let id = null;
+      // Namensvettern (z. B. „BUNT.“ aus Deutschland und „Bunt“ aus Australien): Es gewinnt der Künstler, der bei den
+      // meisten passenden Aufnahmen genannt ist; exakt gleich geschriebener Name (mit Punkt, Groß/klein) zählt extra
+      const votes = new Map();
       for (const rec of j.recordings || []) {
         if ((rec.score ?? 0) < 85) continue;
         const ac = (rec['artist-credit'] || []).find(x => keys.includes(normStr(x.artist?.name)) || keys.includes(normStr(x.name)));
-        if (ac?.artist?.id) { id = ac.artist.id; break; }
+        if (!ac?.artist?.id) continue;
+        const exact = vs.some(v => v === ac.name || v === ac.artist.name);
+        votes.set(ac.artist.id, (votes.get(ac.artist.id) || 0) + 1 + (exact ? 2 : 0));
       }
+      let id = [...votes].sort((a, b) => b[1] - a[1])[0]?.[0] || null;
       await sleep(1100);
       if (!id) {   // Aufnahme nicht gefunden → Künstler direkt suchen (gleicher Name)
         const s = await mbJson(MB + 'artist?fmt=json&limit=5&query=' + encodeURIComponent(artistQuery(vs)));
-        id = (s.artists || []).find(x => (x.score ?? 0) >= 90 && keys.includes(normStr(x.name)))?.id || null;
+        const cands = (s.artists || []).filter(x => (x.score ?? 0) >= 90 && keys.includes(normStr(x.name)));
+        id = (cands.find(x => vs.includes(x.name)) || cands[0])?.id || null;
         await sleep(1100);
       }
-      let info = { n: 1, v: 2 };   // n = nachgeschlagen, aber nicht gefunden
+      let info = { n: 1, v: 3 };   // n = nachgeschlagen, aber nicht gefunden
       if (id) {
         const x = await mbJson(MB + 'artist/' + id + '?fmt=json');
         // Herkunftsland: bei Personen der Geburtsort (begin-area) – „area“ ist dort oft der Wohnort
@@ -533,7 +539,7 @@ function artistJob(t) {
           const bc = await mbAreaCountry(x['begin-area']).catch(() => '');
           if (bc) c = bc;
         }
-        info = { c, t: x.type || '', g: x.gender || '', v: 2 };
+        info = { c, t: x.type || '', g: x.gender || '', v: 3 };
       }
       state.mbArtist[k] = info; LS.set('mbArtist', state.mbArtist);
       // Kam die Antwort erst nach der Auflösung: nachreichen (auch an Handys und Fernseher)

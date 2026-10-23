@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.19.1 – 23.10.2026
+- Fehler behoben: Namensvettern bei Künstlern (z. B. „BUNT.“ aus Deutschland und „Bunt“ aus Australien) – bei „Clouds“ stand Australien statt Deutschland, weil eine Aufnahme in MusicBrainz der falschen Band zugeordnet ist. Jetzt gewinnt der Künstler, der bei den meisten passenden Aufnahmen genannt ist, und ein exakt gleich geschriebener Name zählt extra. Alle Künstler werden einmal neu nachgeschlagen
+
 ## 4.19.0 – 23.10.2026
 - Neu (experimentell): Kategorie „Aus welchem Film / welcher Serie?“ – standardmäßig aus. Sie kommt nur bei Songs, für die ein Film oder eine Serie bekannt ist; sonst wird eine andere Kategorie gezogen. Quellen: Spotify-Titel („- From "Top Gun"“), Spotify-Album („… (Original Motion Picture Soundtrack)“) und Soundtrack-Alben bei MusicBrainz (Musicals, Feiern u. Ä. werden aussortiert). Bis zu drei Filme gelten als richtig (z. B. „Reservoir Dogs · Guardians of the Galaxy“). Ist die Kategorie aktiv, werden die Songs im Hintergrund vorab geprüft – mit einer Filmsong-Playlist kommt sie entsprechend oft
 
