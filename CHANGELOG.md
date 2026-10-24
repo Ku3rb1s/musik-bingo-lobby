@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.21.0 – 24.10.2026
+- Neu: Norwegisch (Bokmål) als fünfte Sprache – auch automatisch für Geräte mit „no“/„nn“
+- CSS aufgeräumt: 67 wirkungslose Angaben entfernt (von späteren Regeln mit demselben Selektor überschrieben). Geprüft durch Vergleich aller berechneten Darstellungen in 23 Zuständen (Spielleiter, Menüs, Designs inkl. OLED, Handy, Fernseher) – keine einzige Abweichung
+
 ## 4.20.1 – 23.10.2026
 - Fehler behoben: Originaljahr bei Stücken mit mehreren Künstlern und Titel-Varianten (z. B. „Magnum“ von Mike Post & Pete Carpenter: 1982 statt 2015). Die App erkennt jetzt Varianten wie „Magnum, P.I.“, „Theme From Magnum P.I.“ oder „Magnum (Theme From …)“ als denselben Titel – „Hello“ und „Hello Again“ bleiben verschieden. Aufnahmen mit mehreren Künstlern fallen nicht mehr durch die Trefferschwelle. Gespeicherte Jahre und Filme werden einmal neu nachgeschlagen
 

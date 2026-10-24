@@ -16,7 +16,8 @@ const LANGS = { de: { name: 'Deutsch', flag: '🇩🇪' }, ...Object.fromEntries
 // Gewählte Sprache, sonst die des Geräts (falls vorhanden), sonst Englisch bzw. Deutsch
 let LANG = (() => {
   try { const v = JSON.parse(localStorage.getItem('mb_lang')); if (LANGS[v]) return v; } catch {}
-  for (const l of navigator.languages || [navigator.language || '']) { const k = String(l).slice(0, 2).toLowerCase(); if (LANGS[k]) return k; }
+  // Norwegisch: Geräte melden „nb“, „no“ oder „nn“ – alle bekommen die Bokmål-Übersetzung
+  for (const l of navigator.languages || [navigator.language || '']) { let k = String(l).slice(0, 2).toLowerCase(); if (k === 'no' || k === 'nn') k = 'nb'; if (LANGS[k]) return k; }
   return LANGS.en ? 'en' : 'de';
 })();
 document.documentElement.lang = LANG;
