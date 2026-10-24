@@ -3,6 +3,7 @@
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
 ## 4.21.0 – 24.10.2026
+- Sicherheit: strengere Datenbank-Regeln – in einer Lobby sind nur noch die bekannten Bereiche erlaubt, Texte begrenzt (Kategorien 40, Runden-/Partie-Texte 500 Zeichen), Kartengröße 3–5, Markierungen nur 0–24. Am Spiel ändert sich nichts
 - Neu: Norwegisch (Bokmål) als fünfte Sprache – auch automatisch für Geräte mit „no“/„nn“
 - CSS aufgeräumt: 67 wirkungslose Angaben entfernt (von späteren Regeln mit demselben Selektor überschrieben). Geprüft durch Vergleich aller berechneten Darstellungen in 23 Zuständen (Spielleiter, Menüs, Designs inkl. OLED, Handy, Fernseher) – keine einzige Abweichung
 

@@ -16,10 +16,13 @@
               ".validate": "newData.isNumber() && newData.val() >= 1000 && newData.val() <= 9999"
             },
             "g": {
-              ".validate": "newData.isString()"
+              ".validate": "newData.isString() && newData.val().length <= 20"
             },
             "marks": {
-              ".validate": "newData.hasChildren()"
+              ".validate": "newData.hasChildren()",
+              "$m": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 24"
+              }
             },
             "on": {
               ".validate": "newData.isBoolean()"
@@ -49,6 +52,66 @@
               ".validate": "newData.hasChildren(['n', 'i']) && newData.child('n').isNumber() && newData.child('i').isNumber()"
             }
           }
+        },
+        "host": {
+          ".validate": "newData.isString() && newData.val() === auth.uid"
+        },
+        "created": {
+          ".validate": "newData.isNumber()"
+        },
+        "act": {
+          ".validate": "newData.isNumber()"
+        },
+        "bingo": {
+          ".validate": "newData.hasChildren(['g', 's', 'k'])",
+          "g": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "s": {
+            ".validate": "newData.isNumber() && newData.val() >= 3 && newData.val() <= 5"
+          },
+          "f": {
+            ".validate": "newData.isNumber() || newData.isBoolean()"
+          },
+          "z": {
+            ".validate": "newData.isNumber() || newData.isBoolean()"
+          },
+          "k": {
+            "$j": {
+              ".validate": "newData.hasChildren(['i'])",
+              "i": {
+                ".validate": "newData.isString() && newData.val().length <= 40"
+              },
+              "c": {
+                ".validate": "newData.isString() && newData.val().length <= 12"
+              },
+              "e": {
+                ".validate": "newData.isString() && newData.val().length <= 16"
+              },
+              "n": {
+                ".validate": "newData.isString() && newData.val().length <= 40"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          },
+          "$other": {
+            ".validate": false
+          }
+        },
+        "round": {
+          "$f": {
+            ".validate": "!newData.isString() || newData.val().length <= 500"
+          }
+        },
+        "match": {
+          "$f": {
+            ".validate": "!newData.isString() || newData.val().length <= 500"
+          }
+        },
+        "$other": {
+          ".validate": false
         }
       }
     }
