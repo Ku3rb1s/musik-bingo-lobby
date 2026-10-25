@@ -635,5 +635,10 @@
     "Film: {c}…": "Film : {c}…",
     "frei": "libre",
     "je Partie": "par partie",
+    "Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.": "Ce Musik-Bingo est protégé par un mot de passe. Demande-le à l’animateur.",
+    "Freischalten": "Déverrouiller",
+    "Passwort nötig": "Mot de passe requis",
+    "Falsches Passwort – bitte nochmal versuchen.": "Mot de passe incorrect – réessaie.",
+    "Passwort enthalten": "mot de passe inclus",
   },
 };

@@ -635,5 +635,10 @@
     "Film: {c}…": "Película: {c}…",
     "frei": "libre",
     "je Partie": "por partida",
+    "Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.": "Este Musik-Bingo está protegido con contraseña. Pídesela al anfitrión.",
+    "Freischalten": "Desbloquear",
+    "Passwort nötig": "Se necesita contraseña",
+    "Falsches Passwort – bitte nochmal versuchen.": "Contraseña incorrecta – inténtalo de nuevo.",
+    "Passwort enthalten": "contraseña incluida",
   },
 };

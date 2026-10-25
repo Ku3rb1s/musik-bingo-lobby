@@ -21,11 +21,39 @@ function firebase() {
     const user = await new Promise(res => { const off = auth.onAuthStateChanged(au, u => { off(); res(u); }); })
       || (await auth.signInAnonymously(au)).user;
     const d = db.getDatabase(a);
+    await unlockGate(db, d, user.uid);
     db.onValue(db.ref(d, '.info/serverTimeOffset'), s => { fbOffset = s.val() || 0; });
     return { ...db, db: d, uid: user.uid, at: p => db.ref(d, p) };
   })();
   fbP.catch(() => { fbP = null; });
   return fbP;
+}
+// Passwortschutz (siehe database.rules.json): Steht in der Datenbank ein Passwort (cfg/pw – nur in der Firebase-Konsole
+// sichtbar), kommen nur freigeschaltete Geräte an die Lobbys. Freischalten = access/{uid} mit dem richtigen Passwort,
+// das prüft der Server. Das Passwort kommt aus dem Einladungs-Link (#pw=…), dem Speicher dieses Geräts oder wird abgefragt.
+let fbLocked = false;   // true → Passwort ist aktiv, Einladungs-Links und QR-Codes enthalten es
+{
+  const m = location.hash.match(/[#&]pw=([^&]*)/);
+  if (m) {
+    try { LS.set('pw', decodeURIComponent(m[1])); } catch {}
+    history.replaceState(null, '', location.pathname + location.search);   // Passwort nicht in der Adresszeile stehen lassen
+  }
+}
+const pwHash = () => fbLocked && LS.get('pw', '') ? '#pw=' + encodeURIComponent(LS.get('pw', '')) : '';
+async function unlockGate(db, d, uid) {
+  const open = () => db.get(db.ref(d, 'gate')).then(() => true, e => { if (/permission/i.test(e.message)) return false; throw e; });
+  if (await open()) return;
+  fbLocked = true;
+  const tryPw = pw => db.set(db.ref(d, 'access/' + uid), pw).then(() => true, () => false);
+  const saved = LS.get('pw', '');
+  if (saved && await tryPw(saved)) return;
+  LS.del('pw');   // altes Passwort (z. B. inzwischen geändert) – nicht mehr in Einladungen weitergeben
+  for (let msg = tx('Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.'); ;) {
+    const pw = (await ask(msg, { input: '', ok: tx('Freischalten') }))?.trim();
+    if (pw == null) throw new Error(tx('Passwort nötig'));
+    if (pw && await tryPw(pw)) { LS.set('pw', pw); return; }
+    msg = tx('Falsches Passwort – bitte nochmal versuchen.');
+  }
 }
 const nameList = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + tx(' und ') + names.at(-1);
 const LOBBY_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

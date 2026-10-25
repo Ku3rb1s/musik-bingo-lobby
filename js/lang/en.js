@@ -635,5 +635,10 @@
     "Film: {c}…": "Film: {c}…",
     "frei": "free",
     "je Partie": "per game",
+    "Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.": "This Musik-Bingo is password protected. Ask the host for the password.",
+    "Freischalten": "Unlock",
+    "Passwort nötig": "Password required",
+    "Falsches Passwort – bitte nochmal versuchen.": "Wrong password – please try again.",
+    "Passwort enthalten": "password included",
   },
 };

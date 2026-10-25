@@ -634,5 +634,10 @@
     "Film: {c}…": "Film: {c}…",
     "frei": "fritt",
     "je Partie": "per parti",
+    "Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.": "Denne Musik-Bingo er passordbeskyttet. Du får passordet av spillederen.",
+    "Freischalten": "Lås opp",
+    "Passwort nötig": "Passord kreves",
+    "Falsches Passwort – bitte nochmal versuchen.": "Feil passord – prøv igjen.",
+    "Passwort enthalten": "passord inkludert",
   },
 };

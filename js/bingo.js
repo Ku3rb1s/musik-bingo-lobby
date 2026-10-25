@@ -21,7 +21,7 @@ const cardBase = () => location.protocol === 'https:' && !/^(localhost|127\.|\[:
 // Kompaktes Format (Zeilen statt JSON), damit der QR-Code nicht zu dicht wird
 const bingoUrl = b => cardBase() + '?b=' + b64u.enc([b.g, b.s + (hasJoker(b) ? 'f' : ''), ...b.k.map(k => [k.i, k.c, k.e, k.n].join('|'))].join('\n'));
 // Mit Lobby genügt der kurze Code – die Karten-Daten kommen live vom Server
-const lobbyUrl = code => cardBase() + '?l=' + code;
+const lobbyUrl = code => cardBase() + '?l=' + code + pwHash();   // mit Passwortschutz: Passwort im Link (#, geht nicht an den Server)
 const joinUrl = b => Lobby.code ? lobbyUrl(Lobby.code) : bingoUrl(b);
 const parseBingo = p => {
   const [g, s, ...rest] = b64u.dec(p).split('\n');
@@ -120,13 +120,13 @@ async function renderBingo() {
   document.querySelectorAll('.set-host-plays').forEach(x => { x.checked = state.settings.hostPlays !== false; });
   $('#myCardCell').classList.toggle('hidden', state.settings.hostPlays === false);
   $('#checkBox').innerHTML = '';
-  $('#qrNote').textContent = Lobby.code ? tx('Mit der Handy-Kamera scannen · Lobby {c}', { c: Lobby.code }) : tx('Mit der Handy-Kamera scannen');
+  $('#qrNote').textContent = Lobby.code ? tx('Mit der Handy-Kamera scannen · Lobby {c}', { c: Lobby.code }) + (pwHash() ? ' · 🔒 ' + tx('Passwort enthalten') : '') : tx('Mit der Handy-Kamera scannen');
   // Beitreten ohne QR-Code: kurze Adresse + Code
   $('#joinCodeBox').classList.toggle('hidden', !Lobby.code);
   $('#joinUrlShort').textContent = (cardBase() + 'join').replace(/^https?:\/\//, '');
   $('#joinCodeBig').textContent = Lobby.code || '';
   $('#tvHint').classList.toggle('hidden', !Lobby.code);
-  if (Lobby.code) $('#tvLink').href = $('#tvLink2').href = cardBase() + '?tv=' + Lobby.code;
+  if (Lobby.code) $('#tvLink').href = $('#tvLink2').href = cardBase() + '?tv=' + Lobby.code + pwHash();
   $('#tvLink2').classList.toggle('hidden', !Lobby.code);
   $('#btnBingoOff .sub').classList.toggle('hidden', !Lobby.code);
   $('#bingoNewSub').textContent = Lobby.code ? tx('Alle in der Lobby bekommen automatisch eine neue Karte') : tx('Alle müssen den neuen QR-Code scannen');

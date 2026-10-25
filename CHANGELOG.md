@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.22.0 – 25.10.2026
+- Neu: optionaler Passwortschutz. Ist in der Firebase-Konsole unter cfg/pw ein Passwort eingetragen, kommen nur freigeschaltete Geräte in die Lobbys – geprüft vom Server, nicht nur auf der Seite. Jedes Gerät gibt es einmal ein (danach gespeichert). QR-Code, Einladungslink und Fernseher-Link enthalten das Passwort, Mitspieler merken davon also nichts. Ohne Passwort in der Datenbank bleibt alles wie bisher
+
 ## 4.21.0 – 24.10.2026
 - Sicherheit: strengere Datenbank-Regeln – in einer Lobby sind nur noch die bekannten Bereiche erlaubt, Texte begrenzt (Kategorien 40, Runden-/Partie-Texte 500 Zeichen), Kartengröße 3–5, Markierungen nur 0–24. Am Spiel ändert sich nichts
 - Neu: Norwegisch (Bokmål) als fünfte Sprache – auch automatisch für Geräte mit „no“/„nn“
