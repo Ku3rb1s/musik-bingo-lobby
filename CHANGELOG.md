@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.22.1 – 25.10.2026
+- Passwortschutz schon beim Öffnen: Die Seite bleibt verborgen, bis das Gerät freigeschaltet ist (gilt für Spielleiter, Mitspieler und Fernseher). Wer schon freigeschaltet ist oder über QR-Code/Einladungslink kommt, merkt davon nichts
+
 ## 4.22.0 – 25.10.2026
 - Neu: optionaler Passwortschutz. Ist in der Firebase-Konsole unter cfg/pw ein Passwort eingetragen, kommen nur freigeschaltete Geräte in die Lobbys – geprüft vom Server, nicht nur auf der Seite. Jedes Gerät gibt es einmal ein (danach gespeichert). QR-Code, Einladungslink und Fernseher-Link enthalten das Passwort, Mitspieler merken davon also nichts. Ohne Passwort in der Datenbank bleibt alles wie bisher
 

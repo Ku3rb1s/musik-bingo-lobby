@@ -1078,3 +1078,7 @@ body.lobby-mode .live-panel>.guess-wrap{margin:0}
 .rv-film{color:#d8b4fe}
 .round-live .rl-film{margin-top:2px}
 .tv-film{font-size:calc(var(--u) * 1.6);color:#d8b4fe;font-weight:700;margin-top:calc(var(--u) * .6)}
+
+/* Passwortschutz beim Start: Seite bleibt verborgen, bis das Gerät freigeschaltet ist */
+body.pw-locked > :not(dialog):not(.bg) { visibility: hidden; }
+body.pw-locked::after { content: "🔒"; position: fixed; inset: 0; display: grid; place-items: center; font-size: 48px; opacity: .35; pointer-events: none; }

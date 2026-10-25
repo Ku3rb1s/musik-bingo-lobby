@@ -50,10 +50,27 @@ async function unlockGate(db, d, uid) {
   LS.del('pw');   // altes Passwort (z. B. inzwischen geändert) – nicht mehr in Einladungen weitergeben
   for (let msg = tx('Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.'); ;) {
     const pw = (await ask(msg, { input: '', ok: tx('Freischalten') }))?.trim();
-    if (pw == null) throw new Error(tx('Passwort nötig'));
+    if (pw == null) throw Object.assign(new Error(tx('Passwort nötig')), { pw: true });
     if (pw && await tryPw(pw)) { LS.set('pw', pw); return; }
     msg = tx('Falsches Passwort – bitte nochmal versuchen.');
   }
+}
+// Beim Start: erst freischalten, dann die Seite zeigen. Wer schon einmal geprüft wurde, sieht die Seite sofort –
+// die Prüfung läuft dann im Hintergrund (fragt nur nach, wenn das Passwort inzwischen geändert wurde).
+// Ohne Verbindung geht es ohne Prüfung weiter – die Lobbys selbst schützt ohnehin der Server.
+async function pageGate() {
+  if (!hasFirebase()) return;
+  const known = LS.get('pwOk', false);
+  const run = async () => {
+    for (;;) {
+      try { await firebase(); LS.set('pwOk', true); break; }
+      catch (e) { if (!e.pw) break; }   // Abbrechen → nochmal fragen, ohne Passwort geht es nicht weiter
+    }
+    document.body.classList.remove('pw-locked');
+  };
+  if (known) return void run();
+  document.body.classList.add('pw-locked');
+  await run();
 }
 const nameList = names => names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + tx(' und ') + names.at(-1);
 const LOBBY_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

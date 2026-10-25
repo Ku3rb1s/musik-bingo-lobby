@@ -686,6 +686,7 @@ $('#langSel').onchange = e => setLang(e.target.value);
 
 /* ---------------- Start ---------------- */
 (async () => {
+  await pageGate();   // Passwortschutz (falls eingerichtet) – vor allem anderen
   const q = new URLSearchParams(location.search);
   if (q.get('tv')) return tvMode(q.get('tv'));
   if (q.get('l')) return lobbyMode(q.get('l'));
