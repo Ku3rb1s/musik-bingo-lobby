@@ -637,7 +637,6 @@
     "je Partie": "por partida",
     "Falsches Passwort – bitte nochmal versuchen.": "Contraseña incorrecta – inténtalo de nuevo.",
     "Passwort enthalten": "contraseña incluida",
-    "Privates Spiel": "Partida privada",
     "Passwort": "Contraseña",
     "Passwort anzeigen": "Mostrar contraseña",
     "Keine Verbindung zum Server – bitte nochmal versuchen.": "Sin conexión con el servidor – inténtalo de nuevo.",

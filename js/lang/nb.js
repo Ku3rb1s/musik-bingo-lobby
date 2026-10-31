@@ -636,7 +636,6 @@
     "je Partie": "per parti",
     "Falsches Passwort – bitte nochmal versuchen.": "Feil passord – prøv igjen.",
     "Passwort enthalten": "passord inkludert",
-    "Privates Spiel": "Privat spill",
     "Passwort": "Passord",
     "Passwort anzeigen": "Vis passord",
     "Keine Verbindung zum Server – bitte nochmal versuchen.": "Ingen forbindelse til serveren – prøv igjen.",

@@ -637,7 +637,6 @@
     "je Partie": "per game",
     "Falsches Passwort – bitte nochmal versuchen.": "Wrong password – please try again.",
     "Passwort enthalten": "password included",
-    "Privates Spiel": "Private game",
     "Passwort": "Password",
     "Passwort anzeigen": "Show password",
     "Keine Verbindung zum Server – bitte nochmal versuchen.": "No connection to the server – please try again.",

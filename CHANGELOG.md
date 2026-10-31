@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.23.2 – 31.10.2026
+- Passwort-Seite: Hinweis „Privates Spiel“ entfernt – das Schloss am Logo sagt es schon
+
 ## 4.23.1 – 31.10.2026
 - Passwort-Seite: klarere Texte – „Gib das Passwort ein, um mitzuspielen.“, Knopf „Weiter“ statt „Freischalten“, Hinweis auf den QR-Code als kleine Zeile darunter
 

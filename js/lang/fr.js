@@ -637,7 +637,6 @@
     "je Partie": "par partie",
     "Falsches Passwort – bitte nochmal versuchen.": "Mot de passe incorrect – réessaie.",
     "Passwort enthalten": "mot de passe inclus",
-    "Privates Spiel": "Partie privée",
     "Passwort": "Mot de passe",
     "Passwort anzeigen": "Afficher le mot de passe",
     "Keine Verbindung zum Server – bitte nochmal versuchen.": "Pas de connexion au serveur – réessaie.",

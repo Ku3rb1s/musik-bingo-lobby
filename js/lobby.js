@@ -64,7 +64,6 @@ function pwScreen(tryPw) {
     <form class="pw-card glass" novalidate>
       <div class="pw-logo"><img src="icon-192.png?v=5" alt=""><span class="pw-lock"><svg class="ic"><use href="#i-lock"/></svg></span></div>
       <h1>Musik-Bingo</h1>
-      <span class="badge">${tx('Privates Spiel')}</span>
       <p class="pw-text">${tx('Gib das Passwort ein, um mitzuspielen.')}</p>
       <div class="pw-field">
         <input type="password" autocomplete="current-password" placeholder="${tx('Passwort')}" maxlength="64" enterkeyhint="go" autocapitalize="off" autocorrect="off" spellcheck="false">
