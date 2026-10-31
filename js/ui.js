@@ -377,11 +377,8 @@ document.addEventListener('click', async e => {
   const conf = force || t.closest('[data-confirm]');
   if (conf) {
     Lobby.confirm(conf.dataset.confirm);
-    const m = state.match;
-    const open = pendingCallers(conf.dataset.confirm).length;
-    conf.outerHTML = `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>` +
-      (!m || !Lobby.code ? '' : open ? `<div class="small" style="width:100%;text-align:center;margin-top:8px">${tx(open === 1 ? 'Noch 1 weiterer Bingo-Ruf offen' : 'Noch {n} weitere Bingo-Rufe offen', { n: open })}</div>`
-        : m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>` : `<button class="big" data-next-game style="width:100%;margin-top:8px">${tx('Nächste Partie starten')}</button>`);
+    $('#checkBox').querySelectorAll('.cf-open').forEach(x => x.remove());   // veralteter Hinweis „Noch … offen“ bei einer anderen Karte
+    conf.outerHTML = `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>` + afterConfirm(conf.dataset.confirm);
   }
   if (t.closest('[data-next-game]')) { nextGame(); document.querySelectorAll('dialog[open]').forEach(d => d.close()); }
   if (t.closest('[data-end-close]')) $('#endScreen').classList.add('hidden');

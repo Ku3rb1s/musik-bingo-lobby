@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.23.3 – 31.10.2026
+- Bingo prüfen: Haben mehrere gleichzeitig Bingo, steht nach dem letzten Bestätigen jetzt immer „Nächste Partie starten“ da – auch wenn man eine schon bestätigte Karte (z. B. über den Namen unten) nochmal öffnet. Der veraltete Hinweis „Noch 1 weiterer Bingo-Ruf offen“ verschwindet dabei
+
 ## 4.23.2 – 31.10.2026
 - Passwort-Seite: Hinweis „Privates Spiel“ entfernt – das Schloss am Logo sagt es schon
 

@@ -216,6 +216,7 @@ function checkHtml(num, id) {
     return Object.entries(need).every(([c, n]) => (avail[c] || 0) >= n);
   };
   const who = id ? whoById(id) : null;
+  const done = !!(who && (who.ok || state.match?.won?.includes(id)));   // schon bestätigt (auch bevor die Lobby das „ok“ zurückmeldet)
   const marks = who && +who.num === num ? new Set(who.g === b.g ? who.marks || [] : []) : null;
   // Mit Lobby: nur die Linien, die der Spieler wirklich voll markiert hat
   const fullLines = marks ? bingoLines(b.s).filter(l => l.every(i => fields[i] === '*' || marks.has(i))) : bingoLines(b.s);
@@ -239,8 +240,8 @@ function checkHtml(num, id) {
     <div class="check-res ${win && !over.length ? 'won' : 'no'}">${head}</div>
     <div class="bgrid n${b.s}" style="--n:${b.s}">${fields.map((f, i) => bcell(b, f, cls(i))).join('')}</div>
     <div class="group-f" style="text-align:center;margin-top:0">${note}</div>
-    ${marks && (!who.host || Lobby.code) && (who.ok || fullLines.length) ? `<div class="chips" style="margin-top:6px">${who.ok
-      ? `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>`
+    ${marks && (!who.host || Lobby.code) && (done || fullLines.length) ? `<div class="chips" style="margin-top:6px">${done
+      ? `<span class="chip-btn on">${tx('✓ Bingo bestätigt')}</span>` + afterConfirm(id)
       : win && !over.length ? `<button class="chip-btn" data-confirm="${esc(id)}">${tx('✓ Bingo für {n} bestätigen', { n: esc(who.name) })}</button>`
       // Volle Linie, aber die App hat Bedenken (zu wenige passende Runden / mehr markiert als gespielt) –
       // der Spielleiter kann trotzdem bestätigen (mit Rückfrage). Ohne volle Linie gibt es nichts zu bestätigen.
@@ -257,6 +258,14 @@ function checkCard() {
 }
 // Wer hat Bingo gerufen und ist noch nicht bestätigt? (except = gerade bestätigte ID)
 const pendingCallers = (except = null) => lobbyList().filter(p => p.bingo && !p.ok && p.id !== except && !state.match?.won?.includes(p.id));
+// Unter „✓ Bingo bestätigt“: weitere offene Rufe, Spielende oder „Nächste Partie starten“
+function afterConfirm(id) {
+  const m = state.match; if (!m || !Lobby.code) return '';
+  const open = pendingCallers(id).length;
+  return open ? `<div class="small cf-open" style="width:100%;text-align:center;margin-top:8px">${tx(open === 1 ? 'Noch 1 weiterer Bingo-Ruf offen' : 'Noch {n} weitere Bingo-Rufe offen', { n: open })}</div>`
+    : m.over ? `<div class="mc-h" style="width:100%;text-align:center;margin-top:8px">${esc(matchWinner(m))}</div>`
+    : `<button class="big" data-next-game style="width:100%;margin-top:8px">${tx('Nächste Partie starten')}</button>`;
+}
 // Alle offenen Bingo-Rufe auf einmal prüfen – rufen zwei gleichzeitig, werden beide angezeigt
 function checkCallers() {
   const callers = pendingCallers();
