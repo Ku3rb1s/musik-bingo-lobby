@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.23.0 – 31.10.2026
+- Neue Passwort-Seite statt des einfachen Frage-Fensters: Logo mit Schloss, „Privates Spiel“, Passwortfeld mit Auge zum Anzeigen, Fehler direkt unter dem Feld (die Karte wackelt kurz), Ladeanzeige beim Prüfen, eigene Meldung ohne Verbindung, Sprachwahl oben rechts. Kein „Abbrechen“ mehr, Esc schließt nicht. Beim Öffnen nur ein Ladekreis statt des Schloss-Symbols
+
 ## 4.22.1 – 25.10.2026
 - Passwortschutz schon beim Öffnen: Die Seite bleibt verborgen, bis das Gerät freigeschaltet ist (gilt für Spielleiter, Mitspieler und Fernseher). Wer schon freigeschaltet ist oder über QR-Code/Einladungslink kommt, merkt davon nichts
 

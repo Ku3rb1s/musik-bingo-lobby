@@ -44,31 +44,77 @@ async function unlockGate(db, d, uid) {
   const open = () => db.get(db.ref(d, 'gate')).then(() => true, e => { if (/permission/i.test(e.message)) return false; throw e; });
   if (await open()) return;
   fbLocked = true;
-  const tryPw = pw => db.set(db.ref(d, 'access/' + uid), pw).then(() => true, () => false);
+  // 'ok' | 'wrong' | 'net' – ohne Verbindung hängt set() sonst endlos
+  const tryPw = pw => Promise.race([
+    db.set(db.ref(d, 'access/' + uid), pw).then(() => 'ok', e => /permission/i.test(e.message) ? 'wrong' : 'net'),
+    new Promise(r => setTimeout(() => r('net'), 10000)),
+  ]);
   const saved = LS.get('pw', '');
-  if (saved && await tryPw(saved)) return;
+  if (saved && await tryPw(saved) === 'ok') return;
   LS.del('pw');   // altes Passwort (z. B. inzwischen geändert) – nicht mehr in Einladungen weitergeben
-  for (let msg = tx('Dieses Musik-Bingo ist mit einem Passwort geschützt. Du bekommst es vom Spielleiter.'); ;) {
-    const pw = (await ask(msg, { input: '', ok: tx('Freischalten') }))?.trim();
-    if (pw == null) throw Object.assign(new Error(tx('Passwort nötig')), { pw: true });
-    if (pw && await tryPw(pw)) { LS.set('pw', pw); return; }
-    msg = tx('Falsches Passwort – bitte nochmal versuchen.');
-  }
+  await pwScreen(tryPw);
+}
+// Eigene Seite fürs Passwort (statt des allgemeinen Frage-Fensters): Logo, Feld mit Auge, Fehler direkt darunter.
+// Als modaler Dialog liegt sie über allem – auch über offenen Menüs, falls das Passwort mitten im Spiel geändert wurde.
+function pwScreen(tryPw) {
+  const d = document.createElement('dialog');
+  d.className = 'pw-gate';
+  d.innerHTML = `
+    <label class="lang-pill pw-lang" title="Sprache · Language"><svg class="ic"><use href="#i-globe"/></svg><span>${LANG.toUpperCase()}</span><select aria-label="Sprache">${langOptions()}</select></label>
+    <form class="pw-card glass" novalidate>
+      <div class="pw-logo"><img src="icon-192.png?v=5" alt=""><span class="pw-lock"><svg class="ic"><use href="#i-lock"/></svg></span></div>
+      <h1>Musik-Bingo</h1>
+      <span class="badge">${tx('Privates Spiel')}</span>
+      <p class="pw-text">${tx('Gib das Passwort ein, das du vom Spielleiter bekommen hast – oder scanne seinen QR-Code, dann geht es von allein.')}</p>
+      <div class="pw-field">
+        <input type="password" autocomplete="current-password" placeholder="${tx('Passwort')}" maxlength="64" enterkeyhint="go" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="button" class="pw-eye" aria-label="${tx('Passwort anzeigen')}" title="${tx('Passwort anzeigen')}"><svg class="ic"><use href="#i-eye"/></svg></button>
+      </div>
+      <p class="pw-err" role="alert"></p>
+      <button class="big full pw-go" type="submit">${tx('Freischalten')}</button>
+      <p class="pw-foot">${tx('Dieses Gerät merkt sich das Passwort.')}</p>
+    </form>`;
+  document.body.appendChild(d);
+  const form = d.querySelector('form'), inp = d.querySelector('input'), err = d.querySelector('.pw-err'), go = d.querySelector('.pw-go');
+  d.querySelector('select').onchange = e => setLang(e.target.value);
+  d.addEventListener('cancel', e => e.preventDefault());   // Esc schließt nicht – ohne Passwort geht es nicht weiter
+  d.querySelector('.pw-eye').onclick = e => {
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    e.currentTarget.querySelector('use').setAttribute('href', show ? '#i-eye-off' : '#i-eye');
+    inp.focus();
+  };
+  inp.oninput = () => { err.textContent = ''; };
+  const fail = msg => {
+    err.textContent = msg;
+    form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake');
+    if (typeof vib === 'function') vib(60);
+    inp.select();
+  };
+  d.showModal();
+  inp.focus();
+  return new Promise(res => {
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const pw = inp.value.trim();
+      if (!pw) return fail(tx('Bitte gib das Passwort ein.'));
+      go.disabled = true; go.innerHTML = '<span class="loader"></span>';
+      const r = await tryPw(pw);
+      go.disabled = false; go.textContent = tx('Freischalten');
+      if (r !== 'ok') return fail(r === 'wrong' ? tx('Falsches Passwort – bitte nochmal versuchen.') : tx('Keine Verbindung zum Server – bitte nochmal versuchen.'));
+      LS.set('pw', pw);
+      d.classList.add('pw-ok');
+      setTimeout(() => { d.close(); d.remove(); res(); }, 280);
+    };
+  });
 }
 // Beim Start: erst freischalten, dann die Seite zeigen. Wer schon einmal geprüft wurde, sieht die Seite sofort –
 // die Prüfung läuft dann im Hintergrund (fragt nur nach, wenn das Passwort inzwischen geändert wurde).
 // Ohne Verbindung geht es ohne Prüfung weiter – die Lobbys selbst schützt ohnehin der Server.
 async function pageGate() {
   if (!hasFirebase()) return;
-  const known = LS.get('pwOk', false);
-  const run = async () => {
-    for (;;) {
-      try { await firebase(); LS.set('pwOk', true); break; }
-      catch (e) { if (!e.pw) break; }   // Abbrechen → nochmal fragen, ohne Passwort geht es nicht weiter
-    }
-    document.body.classList.remove('pw-locked');
-  };
-  if (known) return void run();
+  const run = () => firebase().then(() => LS.set('pwOk', true), () => {}).finally(() => document.body.classList.remove('pw-locked'));
+  if (LS.get('pwOk', false)) return void run();
   document.body.classList.add('pw-locked');
   await run();
 }
