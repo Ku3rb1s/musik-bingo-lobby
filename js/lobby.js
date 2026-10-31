@@ -65,14 +65,14 @@ function pwScreen(tryPw) {
       <div class="pw-logo"><img src="icon-192.png?v=5" alt=""><span class="pw-lock"><svg class="ic"><use href="#i-lock"/></svg></span></div>
       <h1>Musik-Bingo</h1>
       <span class="badge">${tx('Privates Spiel')}</span>
-      <p class="pw-text">${tx('Gib das Passwort ein, das du vom Spielleiter bekommen hast – oder scanne seinen QR-Code, dann geht es von allein.')}</p>
+      <p class="pw-text">${tx('Gib das Passwort ein, um mitzuspielen.')}</p>
       <div class="pw-field">
         <input type="password" autocomplete="current-password" placeholder="${tx('Passwort')}" maxlength="64" enterkeyhint="go" autocapitalize="off" autocorrect="off" spellcheck="false">
         <button type="button" class="pw-eye" aria-label="${tx('Passwort anzeigen')}" title="${tx('Passwort anzeigen')}"><svg class="ic"><use href="#i-eye"/></svg></button>
       </div>
       <p class="pw-err" role="alert"></p>
-      <button class="big full pw-go" type="submit">${tx('Freischalten')}</button>
-      <p class="pw-foot">${tx('Dieses Gerät merkt sich das Passwort.')}</p>
+      <button class="big full pw-go" type="submit">${tx('Weiter')}</button>
+      <p class="pw-foot">${tx('Oder scanne den QR-Code vom Spielleiter – dann geht es ohne Passwort.')}</p>
     </form>`;
   document.body.appendChild(d);
   const form = d.querySelector('form'), inp = d.querySelector('input'), err = d.querySelector('.pw-err'), go = d.querySelector('.pw-go');
@@ -100,7 +100,7 @@ function pwScreen(tryPw) {
       if (!pw) return fail(tx('Bitte gib das Passwort ein.'));
       go.disabled = true; go.innerHTML = '<span class="loader"></span>';
       const r = await tryPw(pw);
-      go.disabled = false; go.textContent = tx('Freischalten');
+      go.disabled = false; go.textContent = tx('Weiter');
       if (r !== 'ok') return fail(r === 'wrong' ? tx('Falsches Passwort – bitte nochmal versuchen.') : tx('Keine Verbindung zum Server – bitte nochmal versuchen.'));
       LS.set('pw', pw);
       d.classList.add('pw-ok');
