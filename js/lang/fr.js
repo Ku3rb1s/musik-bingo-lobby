@@ -650,5 +650,8 @@
     "Tippe auf „Hinzufügen“.": "Touche « Ajouter ».",
     "Die App speichert getrennt vom Browser: Einstellungen und Anmeldungen gibst du dort einmal neu ein.": "L’app enregistre ses données séparément du navigateur : saisis-y une nouvelle fois tes réglages et connexions.",
     "Verstanden": "Compris",
+    "Spiele": "Jeux",
+    "Zur Jukebox": "Vers la Jukebox",
+    "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Astuce :</b> maintiens le logo appuyé – vers la Jukebox et les autres jeux.",
   },
 };

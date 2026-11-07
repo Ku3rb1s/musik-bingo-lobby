@@ -649,5 +649,8 @@
     "Tippe auf „Hinzufügen“.": "Trykk på «Legg til».",
     "Die App speichert getrennt vom Browser: Einstellungen und Anmeldungen gibst du dort einmal neu ein.": "Appen lagrer data separat fra nettleseren: der legger du inn innstillinger og innlogginger én gang til.",
     "Verstanden": "Skjønner",
+    "Spiele": "Spill",
+    "Zur Jukebox": "Til Jukebox",
+    "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Tips:</b> Hold inne logoen – til Jukebox og de andre spillene.",
   },
 };
