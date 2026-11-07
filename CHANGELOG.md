@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.0 – 07.11.2026
+- **Als App installieren** (Einstellungen): Musik-Bingo lässt sich als App auf den Home-Bildschirm legen – am Android-Handy und am PC per Knopf, am iPhone/iPad mit kurzer Anleitung (Teilen → „Zum Home-Bildschirm“). Der Knopf erscheint nur, wo es geht, und verschwindet in der installierten App
+- Schnellerer Start: Dateien bleiben auf dem Gerät gespeichert. Die Seite selbst kommt immer frisch aus dem Netz, Updates sind also sofort da. Ohne Netz öffnet sich die App trotzdem (Lobby und Spotify brauchen natürlich Internet)
+
 ## 4.26.0 – 07.11.2026
 - Einstellungen aufgeräumt (wie bei Needle Drop): Die Hauptseite ist jetzt eine kurze Liste – Spotify-Konto, Wiedergabe, **Spielregeln**, Kategorien, **Töne**, **Design**, Alle Spiele. Unter jedem Eintrag steht, was gerade eingestellt ist (z. B. „Countdown 30 s · Am Anfang“). „Erweitert“ gibt es nicht mehr – „Bei Auflösung pausieren“ und „Originaljahr nachschlagen“ stehen jetzt bei den Spielregeln
 

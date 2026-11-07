@@ -642,5 +642,12 @@
     "Gib das Passwort ein, um mitzuspielen.": "Skriv inn passordet for å bli med.",
     "Oder scanne den QR-Code vom Spielleiter – dann geht es ohne Passwort.": "Eller skann QR-koden til spillederen – da trenger du ikke passord.",
     "Spielregeln": "Spilleregler",
+    "Als App installieren": "Installer som app",
+    "Startet schneller, im Vollbild und mit eigenem Symbol": "Starter raskere, i fullskjerm og med eget ikon",
+    "Tippe auf „Teilen“": "Trykk på «Del»",
+    "Wähle „Zum Home-Bildschirm“ – eventuell etwas nach unten scrollen.": "Velg «Legg til på Hjem-skjerm» – du må kanskje rulle litt ned.",
+    "Tippe auf „Hinzufügen“.": "Trykk på «Legg til».",
+    "Die App speichert getrennt vom Browser: Einstellungen und Anmeldungen gibst du dort einmal neu ein.": "Appen lagrer data separat fra nettleseren: der legger du inn innstillinger og innlogginger én gang til.",
+    "Verstanden": "Skjønner",
   },
 };
