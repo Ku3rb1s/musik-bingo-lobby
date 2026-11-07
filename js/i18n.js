@@ -13,9 +13,13 @@
 const LANG_PACKS = self.LANG_PACKS || {};
 const LANGS = { de: { name: 'Deutsch', flag: '🇩🇪' }, ...Object.fromEntries(Object.entries(LANG_PACKS).map(([k, p]) => [k, { name: p.name, flag: p.flag }])) };
 
-// Gewählte Sprache, sonst die des Geräts (falls vorhanden), sonst Englisch bzw. Deutsch
+// Alle Jukebox-Spiele liegen unter ku3rb1s.github.io und teilen sich den Browser-Speicher: die Sprache gilt für alle.
+// mb_lang = Musik-Bingo, mq.lang = Needle Drop und die neueren Spiele, hub.lang = Jukebox (siehe Spiele-Hub/JUKEBOX.md)
+const LANG_KEYS = ['mb_lang', 'mq.lang', 'hub.lang'];
+
+// Gewählte Sprache (hier oder in einem anderen Spiel), sonst die des Geräts (falls vorhanden), sonst Englisch bzw. Deutsch
 let LANG = (() => {
-  try { const v = JSON.parse(localStorage.getItem('mb_lang')); if (LANGS[v]) return v; } catch {}
+  for (const k of LANG_KEYS) { try { const v = JSON.parse(localStorage.getItem(k)); if (LANGS[v]) return v; } catch {} }
   // Norwegisch: Geräte melden „nb“, „no“ oder „nn“ – alle bekommen die Bokmål-Übersetzung
   for (const l of navigator.languages || [navigator.language || '']) { let k = String(l).slice(0, 2).toLowerCase(); if (k === 'no' || k === 'nn') k = 'nb'; if (LANGS[k]) return k; }
   return LANGS.en ? 'en' : 'de';
@@ -24,7 +28,7 @@ document.documentElement.lang = LANG;
 // Sprache wechseln: Beim Spielleiter ohne Neuladen (Runde und Musik laufen weiter, self.liveLang zeichnet alles neu),
 // bei Mitspielern/Fernseher durch Neuladen (ihr Stand kommt ohnehin vom Server zurück)
 function setLang(l) {
-  try { localStorage.setItem('mb_lang', JSON.stringify(l)); } catch {}
+  for (const k of LANG_KEYS) try { localStorage.setItem(k, JSON.stringify(l)); } catch {}   // für alle Spiele
   if (typeof self.liveLang !== 'function') return location.reload();
   LANG = curLang = l;
   document.documentElement.lang = l;
