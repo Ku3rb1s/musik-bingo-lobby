@@ -9,8 +9,14 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.24.0', APP_DATE = '07.11.2026';
+const APP_VERSION = '4.25.0', APP_DATE = '07.11.2026';
 
+/* Gemeinsames Spielerprofil der Jukebox-Spiele (Needle Drop, Jukebox): Name von dort vorschlagen,
+   hier eingegebenen Namen dorthin übernehmen. Liegt nur lokal auf dem Gerät. */
+const sharedName = {
+  get() { try { return String(JSON.parse(localStorage.getItem('jb.profile'))?.name || ''); } catch { return ''; } },
+  set(n) { try { const p = JSON.parse(localStorage.getItem('jb.profile')) || {}; p.name = String(n).slice(0, 24); localStorage.setItem('jb.profile', JSON.stringify(p)); } catch {} },
+};
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('mb_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) {

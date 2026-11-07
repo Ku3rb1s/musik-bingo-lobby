@@ -215,7 +215,7 @@ async function codeMode(note = null) {
   const inp = $('#joinCodeInput'), btn = $('#btnJoin');
   for (const el of [inp, $('#joinName'), btn]) el.classList.remove('hidden');
   inp.value = '';
-  $('#joinName').value = LS.get('name', '');
+  $('#joinName').value = sharedName.get() || LS.get('name', '');
   $('#joinMsg').textContent = note || tx('Gib den Lobby-Code vom Spielleiter und deinen Namen ein.');
   inp.oninput = () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); };
   const go = async () => {
@@ -548,7 +548,7 @@ async function lobbyMode(code, autoName = null) {
   };
 
   if (me?.name) return start();
-  $('#joinName').value = LS.get('name', '');
+  $('#joinName').value = sharedName.get() || LS.get('name', '');
   btn.disabled = false; msg(tx('Gib deinen Namen ein, dann bekommst du deine Bingo-Karte.'));
   // Nach dem Namen: Karte aussuchen (eine Karte, „Andere Karte zeigen“ würfelt eine neue freie Nummer)
   const showPicker = async name => {
@@ -568,7 +568,7 @@ async function lobbyMode(code, autoName = null) {
         try {
           me = { name, num, on: true, joined: f.serverTimestamp() };
           await f.set(meRef, me);
-          LS.set('name', typed);   // für das nächste Mal den eingegebenen Namen merken (ohne „ 2“)
+          LS.set('name', typed); sharedName.set(typed);   // für das nächste Mal den eingegebenen Namen merken (ohne „ 2“)
           start();
         } catch (err) { msg(tx('Beitreten fehlgeschlagen: {e}', { e: err.message })); showPicker(name); }
       });
