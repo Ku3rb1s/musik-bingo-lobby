@@ -5,7 +5,7 @@
   "description": "Musik-Quiz mit deinen Spotify-Playlists",
   "lang": "de",
   "start_url": "/musik-bingo-lobby/",
-  "scope": "/musik-bingo-lobby/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0c0c0f",
