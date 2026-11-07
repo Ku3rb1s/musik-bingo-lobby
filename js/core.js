@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.27.0', APP_DATE = '07.11.2026';
+const APP_VERSION = '4.27.2', APP_DATE = '07.11.2026';
 
 /* Gemeinsames Spielerprofil der Jukebox-Spiele (Needle Drop, Jukebox): Name von dort vorschlagen,
    hier eingegebenen Namen dorthin übernehmen. Liegt nur lokal auf dem Gerät. */
