@@ -57,6 +57,7 @@ function bcell(b, f, cls = '', attrs = '') {
 const catChip = c => `<span class="cat-chip" style="--c:${catStyle(c)[1]}">${catStyle(c)[0]} ${esc(tx(shortCat(c)))}</span>`;
 
 let bingoSize = 4;
+const START_NAMES = { begin: 'Am Anfang', s30: 'Ab 0:30', random: 'Zufällige Stelle' };
 function createBingo() {
   const cats = state.cats.filter(c => c.enabled);
   if (cats.length < 2) return toast(tx('Für Bingo braucht es mindestens 2 aktive Kategorien (Einstellungen → Kategorien).'), 6000);
@@ -145,7 +146,6 @@ function renderRules() {
   const row = (icon, label, val) => `<div class="cell rule"><span class="rule-ic">${icon}</span><span class="grow">${label}</span><span class="rule-v">${val}</span></div>`;
   // Was jederzeit änderbar ist: antippen springt in die Einstellungen
   const link = (icon, label, val, to) => `<button class="cell tap rule" data-goto-set="${to}"><span class="rule-ic">${icon}</span><span class="grow">${label}</span><span class="rule-v">${val}</span><svg class="ic chev"><use href="#i-chev"/></svg></button>`;
-  const START = { begin: 'Am Anfang', s30: 'Ab 0:30', random: 'Zufällige Stelle' };
   $('#bingoRules').innerHTML = [
     row(ic('grid'), tx('Karten'), `${b.s} × ${b.s}${hasJoker(b) ? ' · ' + tx('Joker') : ''}`),
     row(ic('signal'), tx('Lobby'), code ? esc(code) : tx('ohne')),
@@ -159,7 +159,7 @@ function renderRules() {
     : tx('Jeder markiert selbst auf seinem Handy, du prüfst bei „Bingo!“.')) + ' ' + tx('Diese Regeln gelten, bis du das Bingo beendest.');
   $('#bingoLive').innerHTML = [
     link(ic('timer'), tx('Countdown'), tx('{n} s', { n: S.seconds }), 'rowSec'),
-    link(ic('play'), tx('Startpunkt im Song'), tx(START[S.start] || START.begin), 'rowStart'),
+    link(ic('play'), tx('Startpunkt im Song'), tx(START_NAMES[S.start] || START_NAMES.begin), 'rowStart'),
     link(ic('bulb'), tx('Tipps pro Runde'), +S.hintMax ? String(S.hintMax) : tx('keine'), 'rowHints'),
     code ? link(ic('bulb'), tx('Tipps pro Spieler'), +S.hintPP ? tx('{n} pro Partie', { n: S.hintPP }) : tx('unbegrenzt'), 'rowHintPP') : '',
     link(ic('skip'), tx('Automatisch weiter'), +S.autoNext ? tx('{n} s', { n: S.autoNext }) : tx('aus'), 'rowAutoNext'),

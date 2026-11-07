@@ -540,8 +540,6 @@
     "Aus welchem Album?": "De quel album ?",
     "Der Speicher des Browsers ist voll – Änderungen werden evtl. nicht gespeichert. Tipp: nicht benötigte Playlists entfernen.": "Le stockage du navigateur est plein – les modifications risquent de ne pas être enregistrées. Astuce : retire les playlists inutiles.",
     "Töne": "Sons",
-    "Erweitert": "Avancé",
-    "Auflösung": "Révélation",
     "Musik stoppt, sobald die Lösung kommt": "La musique s’arrête dès que la réponse s’affiche",
     "Wenn der Countdown abgelaufen ist": "Quand le compte à rebours est terminé",
     "Spielt auf „{d}“": "Joue sur « {d} »",
@@ -556,7 +554,6 @@
     "Oben „Spotify-App / Box“ wählen und das Gerät aussuchen. Taucht es nicht auf: In der Spotify-App einmal darauf abspielen (Geräte-Symbol unten), dann ↻ antippen.": "Choisis « Appli Spotify / enceinte » en haut et sélectionne l’appareil. S’il n’apparaît pas : lance une fois la lecture dessus dans l’app Spotify (icône des appareils en bas), puis touche ↻.",
     "Ohne Premium": "Sans Premium",
     "„Nur Vorschau“ spielt 30-Sekunden-Ausschnitte.": "« Extraits uniquement » joue des extraits de 30 secondes.",
-    "Originaljahr, Pause bei Auflösung": "Année d’origine, pause à la révélation",
     "Spotify lässt Apps wie Musik-Bingo nur im Entwicklermodus laufen: Pro App können sich höchstens 5 Spielleiter anmelden, und der Ersteller muss jeden freischalten.": "Spotify ne laisse fonctionner des apps comme Musik-Bingo qu’en mode développement : au maximum 5 animateurs par app peuvent se connecter, et le créateur doit approuver chacun.",
     "Mit einer eigenen, kostenlosen Spotify-App bist du selbst der Ersteller – du meldest dich ohne Freischaltung an und kannst bis zu 4 weitere Spielleiter freischalten. Du brauchst dafür Spotify Premium. Mitspieler brauchen nie ein Konto.": "Avec ta propre app Spotify gratuite, tu es toi-même le créateur – tu te connectes sans approbation et peux approuver jusqu’à 4 autres animateurs. Il te faut Spotify Premium. Les joueurs n’ont jamais besoin de compte.",
     "Auf der Spotify-Entwicklerseite mit deinem Spotify-Konto anmelden und „Create app“ antippen.": "Connecte-toi au site développeur de Spotify avec ton compte et touche « Create app ».",
@@ -645,5 +642,6 @@
     "Bitte gib das Passwort ein.": "Saisis le mot de passe.",
     "Gib das Passwort ein, um mitzuspielen.": "Saisis le mot de passe pour jouer.",
     "Oder scanne den QR-Code vom Spielleiter – dann geht es ohne Passwort.": "Ou scanne le QR code de l’animateur – pas besoin de mot de passe.",
+    "Spielregeln": "Règles du jeu",
   },
 };

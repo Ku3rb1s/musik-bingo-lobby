@@ -539,8 +539,6 @@
     "Aus welchem Album?": "Hvilket album?",
     "Der Speicher des Browsers ist voll – Änderungen werden evtl. nicht gespeichert. Tipp: nicht benötigte Playlists entfernen.": "Nettleserens lagring er full – endringer blir kanskje ikke lagret. Tips: fjern spillelister du ikke trenger.",
     "Töne": "Lyder",
-    "Erweitert": "Avansert",
-    "Auflösung": "Avsløring",
     "Musik stoppt, sobald die Lösung kommt": "Musikken stopper så snart svaret vises",
     "Wenn der Countdown abgelaufen ist": "Når nedtellingen er over",
     "Spielt auf „{d}“": "Spiller på «{d}»",
@@ -555,7 +553,6 @@
     "Oben „Spotify-App / Box“ wählen und das Gerät aussuchen. Taucht es nicht auf: In der Spotify-App einmal darauf abspielen (Geräte-Symbol unten), dann ↻ antippen.": "Velg «Spotify-app / høyttaler» ovenfor og velg enheten. Vises den ikke: spill av på den én gang i Spotify-appen (enhetsikonet nederst), og trykk så på ↻.",
     "Ohne Premium": "Uten Premium",
     "„Nur Vorschau“ spielt 30-Sekunden-Ausschnitte.": "«Bare forhåndsvisning» spiller 30 sekunders klipp.",
-    "Originaljahr, Pause bei Auflösung": "Originalår, pause ved avsløring",
     "Spotify lässt Apps wie Musik-Bingo nur im Entwicklermodus laufen: Pro App können sich höchstens 5 Spielleiter anmelden, und der Ersteller muss jeden freischalten.": "Spotify lar apper som Musik-Bingo bare kjøre i utviklermodus: maks 5 spilledere kan logge inn per app, og den som lagde appen må godkjenne hver enkelt.",
     "Mit einer eigenen, kostenlosen Spotify-App bist du selbst der Ersteller – du meldest dich ohne Freischaltung an und kannst bis zu 4 weitere Spielleiter freischalten. Du brauchst dafür Spotify Premium. Mitspieler brauchen nie ein Konto.": "Med din egen gratis Spotify-app er du selv den som lagde den – du logger inn uten godkjenning og kan godkjenne opptil 4 andre spilledere. Du trenger Spotify Premium for dette. Spillerne trenger aldri en konto.",
     "Auf der Spotify-Entwicklerseite mit deinem Spotify-Konto anmelden und „Create app“ antippen.": "Logg inn på Spotifys utviklerside med Spotify-kontoen din og trykk på «Create app».",
@@ -644,5 +641,6 @@
     "Bitte gib das Passwort ein.": "Skriv inn passordet.",
     "Gib das Passwort ein, um mitzuspielen.": "Skriv inn passordet for å bli med.",
     "Oder scanne den QR-Code vom Spielleiter – dann geht es ohne Passwort.": "Eller skann QR-koden til spillederen – da trenger du ikke passord.",
+    "Spielregeln": "Spilleregler",
   },
 };

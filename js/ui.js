@@ -244,6 +244,9 @@ function renderSettings() {
   if (showDev) renderDevices();
   const on = state.cats.filter(c => c.enabled).length;
   $('#catSub').textContent = tx('{a} von {b} aktiv', { a: on, b: state.cats.length });
+  $('#rulesSub').textContent = `${tx('Countdown')} ${tx('{n} s', { n: s.seconds })} · ${tx(START_NAMES[s.start] || START_NAMES.begin)}`;
+  $('#soundSub').textContent = `${tx('Countdown')} ${tx(s.beep ? 'an' : 'aus')} · ${tx('Buzzer-Ton')} ${tx(['Aus', 'Leise', 'Mittel', 'Laut'][+s.buzzVol || 0])}`;
+  $('#designSub').textContent = tx((THEMES.find(t => t[0] === s.theme) || THEMES[0])[1]);
   renderLang();
   renderStatus();
 }
@@ -390,8 +393,8 @@ document.addEventListener('click', async e => {
   }
   const gs = t.closest('[data-goto-set]');
   if (gs) {   // Regeln & Karten → passende Zeile in den Einstellungen, kurz hervorgehoben
-    openSheet('sheetSettings');
     const row = $('#' + gs.dataset.gotoSet);
+    openSheet('sheetSettings', row.closest('.page').dataset.page);
     setTimeout(() => { row.scrollIntoView({ behavior: 'smooth', block: 'center' }); row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }, 350);
   }
   if (t.closest('[data-host-join]')) {   // Spielleiter steigt nachträglich ein → gleich zur Kartenwahl

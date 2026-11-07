@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.26.0 – 07.11.2026
+- Einstellungen aufgeräumt (wie bei Needle Drop): Die Hauptseite ist jetzt eine kurze Liste – Spotify-Konto, Wiedergabe, **Spielregeln**, Kategorien, **Töne**, **Design**, Alle Spiele. Unter jedem Eintrag steht, was gerade eingestellt ist (z. B. „Countdown 30 s · Am Anfang“). „Erweitert“ gibt es nicht mehr – „Bei Auflösung pausieren“ und „Originaljahr nachschlagen“ stehen jetzt bei den Spielregeln
+
 ## 4.25.0 – 07.11.2026
 - Gemeinsames Spielerprofil: Beim Beitreten steht dein Name aus der Jukebox bzw. aus Needle Drop schon drin – und ein hier eingegebener Name gilt auch dort
 

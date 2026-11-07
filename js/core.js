@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.25.0', APP_DATE = '07.11.2026';
+const APP_VERSION = '4.26.0', APP_DATE = '07.11.2026';
 
 /* Gemeinsames Spielerprofil der Jukebox-Spiele (Needle Drop, Jukebox): Name von dort vorschlagen,
    hier eingegebenen Namen dorthin übernehmen. Liegt nur lokal auf dem Gerät. */
@@ -373,7 +373,7 @@ function goPage(d, page, back) {
 }
 function onPage(id, page) {
   if (id === 'sheetSettings') {
-    if (page === 'main' || page === 'adv' || page === 'play') renderSettings();
+    if (page === 'main' || page === 'rules' || page === 'sound' || page === 'design' || page === 'play') renderSettings();
     if (page === 'account') renderAccount();
     if (page === 'cats') renderCats();
     if (page === 'changes') renderChanges();
