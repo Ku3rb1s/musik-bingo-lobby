@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.4 – 07.11.2026
+- iPhone/Handy: Ist ein Fenster offen (z. B. Einstellungen), scrollt die Seite dahinter nicht mehr mit; nach dem Schließen steht sie wieder an derselben Stelle
+
 ## 4.27.3 – 07.11.2026
 - Die Sprache gilt jetzt für alle Jukebox-Spiele: hier umgestellt, sprechen auch Needle Drop, Older or Newer, Gold Record und die Jukebox die neue Sprache (und umgekehrt)
 
