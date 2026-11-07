@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.7 – 07.11.2026
+- Spiele-Menü: neues Spiel **Hit or Miss** – Stimmt’s oder stimmt’s nicht? Musik-Quiz zum Wischen
+
 ## 4.27.6 – 07.11.2026
 - Spiele-Menü: Logo oben lange gedrückt halten (am Computer Rechtsklick) – zurück zur Jukebox oder direkt in ein anderes Spiel
 
