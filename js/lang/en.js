@@ -5,6 +5,8 @@
   name: 'English',
   flag: '🇬🇧',
   dict: {
+    "Alle Spiele": "All games",
+    "Jukebox: Needle Drop und mehr": "Jukebox: Needle Drop and more",
     "Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.": "Play without bingo?\nNo bingo is set up yet. You can just guess songs or create bingo cards for everyone first.",
     "Ohne Bingo starten": "Start without bingo",
     "\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.": "\nThe bingo cards stay valid – everyone should clear their marks.",

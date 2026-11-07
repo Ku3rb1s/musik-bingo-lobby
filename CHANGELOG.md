@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.24.0 – 07.11.2026
+- Neu: „Alle Spiele“ in den Einstellungen führt zur **Jukebox** (ku3rb1s.github.io/jukebox) – Übersicht aller Spiele mit Needle Drop, dem Song-Quiz im selben Stil
+
 ## 4.23.4 – 07.11.2026
 - Schriften (Outfit, Caveat) liegen jetzt in der App selbst statt bei Google Fonts – beim Öffnen gibt es keine Verbindung mehr zu Google Fonts
 

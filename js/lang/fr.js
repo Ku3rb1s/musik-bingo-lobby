@@ -5,6 +5,8 @@
   name: 'Français',
   flag: '🇫🇷',
   dict: {
+    "Alle Spiele": "Tous les jeux",
+    "Jukebox: Needle Drop und mehr": "Jukebox : Needle Drop et plus",
     "Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.": "Jouer sans bingo ?\nAucun bingo n'est encore configuré. Vous pouvez simplement deviner des titres ou créer d'abord des cartes de bingo pour tout le monde.",
     "Ohne Bingo starten": "Commencer sans bingo",
     "\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.": "\nLes cartes de bingo restent valables – tout le monde doit effacer ses marques.",

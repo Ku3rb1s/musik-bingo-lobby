@@ -4,6 +4,8 @@
   name: 'Norsk',
   flag: '🇳🇴',
   dict: {
+    "Alle Spiele": "Alle spill",
+    "Jukebox: Needle Drop und mehr": "Jukebox: Needle Drop og mer",
     "Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.": "Spille uten bingo?\nIngen bingo er satt opp ennå. Dere kan bare gjette sanger eller først lage bingokort til alle.",
     "Ohne Bingo starten": "Start uten bingo",
     "\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.": "\nBingokortene er fortsatt gyldige – alle bør fjerne markeringene sine.",
