@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.11 – 07.11.2026
+- Gemeinsame Dateien aktualisiert
+
 ## 4.27.10 – 07.11.2026
 - Fenster wie auf dem iPhone: am Kopf (oder oben im Inhalt) nach unten wegwischen; beim Schließen gleiten sie nach unten weg
 
