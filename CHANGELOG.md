@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.14 – 08.11.2026
+- Spiele-Menü (Logo lange drücken): neues Spiel On Tour – eine Reise durch die Musikgeschichte
+
 ## 4.27.13 – 07.11.2026
 - Knöpfe reagieren schneller beim Drücken, Hover-Effekte nur noch mit Maus
 - „Bewegung reduzieren“ und „Transparenz reduzieren“ (iPhone-Bedienungshilfen) werden beachtet
