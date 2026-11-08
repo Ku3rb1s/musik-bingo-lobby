@@ -2,6 +2,11 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.10 – 07.11.2026
+- - Fenster wie auf dem iPhone: am Kopf (oder oben im Inhalt) nach unten wegwischen; beim Schließen gleiten sie nach unten weg
+- - Knöpfe reagieren schneller beim Drücken, Hover-Effekte nur noch mit Maus
+- - „Bewegung reduzieren“ und „Transparenz reduzieren“ (iPhone-Bedienungshilfen) werden beachtet
+
 ## 4.27.9 – 07.11.2026
 - Spiele-Menü: Ist es offen, schließt ein Tipp aufs Logo nur das Menü (statt zur Startseite zu springen)
 
