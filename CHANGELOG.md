@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.16 – 08.11.2026
+- Fenster: Ein Doppeltipp auf „Fertig“ tippt nicht mehr versehentlich, was darunter liegt
+
 ## 4.27.15 – 08.11.2026
 - Behoben: Direkt nach dem Schließen eines Fensters ging der nächste Tipp verloren, solange das Fenster noch wegglitt
 
