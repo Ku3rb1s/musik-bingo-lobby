@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.17 – 09.11.2026
+- Neues Spiel in der Jukebox: Piano Rain (Klavier lernen mit fallenden Noten) – im Spiele-Menü (Logo lange drücken) und im Abgleich
+
 ## 4.27.16 – 08.11.2026
 - Fenster: Ein Doppeltipp auf „Fertig“ tippt nicht mehr versehentlich, was darunter liegt
 
