@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.30.0 – 24.11.2026
+- Die laufende Runde übersteht jetzt das Neuladen der Seite (z. B. wenn das Handy kurz im Hintergrund war): Kategorie, Tipps und Buzzer bleiben, ein laufender Countdown zählt mit der restlichen Zeit weiter, und auch die Handys der Mitspieler bekommen die Runde zurück. Die Musik startet nach dem Neuladen per Tipp auf die Platte
+
 ## 4.29.1 – 24.11.2026
 - Die empfohlene Playlist heißt jetzt **All-in** – „Über 1.000 Hits quer durch alle Jahrzehnte“ (schon geladene heißen automatisch mit)
 

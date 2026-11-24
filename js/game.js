@@ -83,6 +83,27 @@ async function nextRound() {
   else if (prev && prev.round.phase !== 'revealed') { const cur = round; toast(tx('Song übersprungen'), 5000, { label: tx('Rückgängig'), fn: () => { if (round === cur && cur.phase !== 'revealed') undoNext(prev); } }); }
   await playSnippet();
 }
+/* Laufende Runde übersteht das Neuladen (Handy im Hintergrund, Browser lädt neu): Sie wird bei jeder Änderung gespeichert
+   (saveRound in render) und beim Start wiederhergestellt – auch die Handys der Mitspieler bekommen sie dann wieder.
+   Die Musik startet nach dem Neuladen nicht von selbst (Browser verlangen dafür ein Antippen): Platte antippen. */
+function saveRound() {
+  LS.set('round', round ? { r: { ...round, snippetDone: false }, at: Date.now() } : null);
+}
+function restoreRound() {
+  const s = LS.get('round', null);
+  if (!s?.r || Date.now() - s.at > 12 * 3600 * 1000) return;   // ältere Runden (z. B. vom letzten Spieleabend) nicht
+  const r = s.r;
+  r.track = state.tracks.find(t => t.id === r.track?.id) || r.track;
+  r.cat = state.cats.find(c => c.id === r.cat?.id) || r.cat;
+  if (!r.track?.id || !r.cat?.id) return;
+  round = r;
+  if (r.phase === 'countdown') {
+    if (r.end > Date.now()) startCountdown(r.bz, true);   // Zeit läuft noch
+    else if (state.settings.autoReveal) reveal();        // Zeit war während des Neuladens abgelaufen
+    else r.timeUp = true;
+  }
+  if (r.phase !== 'revealed') toast(tx('Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.', { n: r.n }), 7000);
+}
 // Zurück zur vorherigen Runde (versehentlich „Nächster Song“ oder „Überspringen“ getippt)
 function undoNext(prev) {
   stopAutoNext(); stopTimer(); clearTimeout(snippetT); cancelSpin();
@@ -138,13 +159,17 @@ function spinCategory(final) {
   }, 1100);
 }
 
-// by = Name des Mitspielers, der gebuzzert hat (sonst startet der Spielleiter selbst)
-function startCountdown(by = null) {
-  if (!round || round.phase !== 'playing') return;
+// by = Name des Mitspielers, der gebuzzert hat (sonst startet der Spielleiter selbst).
+// resume: Countdown einer nach dem Neuladen wiederhergestellten Runde mit der restlichen Zeit weiterlaufen lassen
+function startCountdown(by = null, resume = false) {
+  if (!round || round.phase !== (resume ? 'countdown' : 'playing')) return;
   Player.unlock();
-  round.phase = 'countdown'; round.timeUp = false; round.bz = by;
-  const total = state.settings.seconds * 1000, end = Date.now() + total;
-  round.end = end; round.dur = total; Lobby.syncRound();   // Fernseher-Ansicht zeigt den Countdown mit
+  if (!resume) {
+    round.phase = 'countdown'; round.timeUp = false; round.bz = by;
+    round.dur = state.settings.seconds * 1000; round.end = Date.now() + round.dur;
+  }
+  const total = round.dur, end = round.end;
+  Lobby.syncRound();   // Fernseher-Ansicht zeigt den Countdown mit
   const ring = $('#ringSvg'), C = 2 * Math.PI * 56;
   ring.style.setProperty('--len', C);
   let lastSec = null;

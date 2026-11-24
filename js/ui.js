@@ -3,6 +3,7 @@
 
 /* ---------------- Rendering ---------------- */
 function render() {
+  saveRound();   // laufende Runde fürs Neuladen merken
   const ph = round?.phase || 'idle';
   $('#roundNo').textContent = round ? tx('Runde {n}', { n: round.n }) : tx('Runde –');
   const playedSet = new Set(state.played), left = state.tracks.reduce((n, t) => n + !playedSet.has(t.id), 0);
@@ -739,6 +740,7 @@ $('#langSel').onchange = e => setLang(e.target.value);
     if (!$('#endScreen').classList.contains('hidden') && state.match?.over) showEndHost();
     if (round?.phase === 'countdown') $('#timerNum').textContent = Math.max(0, Math.ceil((round.end - Date.now()) / 1000));
   };
+  restoreRound();   // vor allem anderen: render() würde sonst die gespeicherte Runde überschreiben
   Lobby.watch();
   if (location.protocol === 'file:') $('#fileWarn').classList.remove('hidden');
   let justLoggedIn = false;

@@ -692,5 +692,6 @@
     "✓ Musik läuft {w}. Hörst du etwas? Dann passt alles.": "✓ Music is playing {w}. Can you hear it? Then you’re all set.",
     "✗ Klappt noch nicht: {e}": "✗ Not working yet: {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Tap “Test music” under “Playback” – then you know in advance that everything works.",
+    "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "Round {n} continues – tap the record to play the song again.",
   },
 };

@@ -692,5 +692,6 @@
     "✓ Musik läuft {w}. Hörst du etwas? Dann passt alles.": "✓ La musique joue {w}. Tu l’entends ? Alors tout est prêt.",
     "✗ Klappt noch nicht: {e}": "✗ Ça ne marche pas encore : {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Touche « Tester la musique » sous « Lecture » – tu sauras à l’avance si tout fonctionne.",
+    "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "La manche {n} continue – touche le disque pour relancer la chanson.",
   },
 };

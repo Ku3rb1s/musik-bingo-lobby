@@ -691,5 +691,6 @@
     "✓ Musik läuft {w}. Hörst du etwas? Dann passt alles.": "✓ Musikken spilles {w}. Hører du den? Da er alt klart.",
     "✗ Klappt noch nicht: {e}": "✗ Fungerer ikke ennå: {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Trykk på «Test musikken» under «Avspilling» – da vet du på forhånd om alt fungerer.",
+    "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "Runde {n} fortsetter – trykk på platen for å spille sangen igjen.",
   },
 };

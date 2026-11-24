@@ -692,5 +692,6 @@
     "✓ Musik läuft {w}. Hörst du etwas? Dann passt alles.": "✓ La música suena {w}. ¿La oyes? Entonces todo está listo.",
     "✗ Klappt noch nicht: {e}": "✗ Aún no funciona: {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Toca «Probar música» en «Reproducción»; así sabrás de antemano si todo funciona.",
+    "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "La ronda {n} continúa: toca el disco para volver a reproducir la canción.",
   },
 };
