@@ -654,5 +654,6 @@
     "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Tips:</b> Hold inne logoen – til Jukebox og de andre spillene.",
     "Empfohlen": "Anbefalt",
     "Hits aus allen Jahrzehnten": "Hits fra alle tiår",
+    "Die Verbindung ist langsam – einen Moment …": "Tilkoblingen er treg – et øyeblikk …",
   },
 };

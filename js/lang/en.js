@@ -655,5 +655,6 @@
     "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Tip:</b> Press and hold the logo – to the Jukebox and the other games.",
     "Empfohlen": "Recommended",
     "Hits aus allen Jahrzehnten": "Hits from every decade",
+    "Die Verbindung ist langsam – einen Moment …": "The connection is slow – one moment …",
   },
 };

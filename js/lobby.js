@@ -45,24 +45,30 @@ async function unlockGate(db, d, user) {
   const open = () => db.get(db.ref(d, 'gate')).then(() => true, e => { if (/permission/i.test(e.message)) return false; throw e; });
   // 'ok' | 'wrong' | 'net' – ohne Verbindung hängt set() sonst endlos. Großzügige Wartezeit: Beim allerersten Öffnen
   // (neues Handy, mobiles Netz) dauert der Verbindungsaufbau manchmal lange.
-  const once = pw => Promise.race([
-    db.set(db.ref(d, 'access/' + uid), pw).then(() => 'ok', e => /permission/i.test(e.message) ? 'wrong' : 'net'),
-    new Promise(r => setTimeout(() => r('net'), 20000)),
-  ]);
+  // Wichtig: Läuft die Zeit ab, ist der Schreibversuch nicht verloren – Firebase schickt ihn nach, sobald die Verbindung steht.
+  // Darum beim eingetippten Passwort lange warten (max) und nach ein paar Sekunden nur „langsam“ melden (onSlow), statt
+  // „Keine Verbindung“ zu zeigen, obwohl das Passwort kurz danach doch angenommen wird.
+  const once = (pw, max = 20000, onSlow = null) => {
+    const slow = onSlow && setTimeout(onSlow, 6000);
+    return Promise.race([
+      db.set(db.ref(d, 'access/' + uid), pw).then(() => 'ok', e => /permission/i.test(e.message) ? 'wrong' : 'net'),
+      new Promise(r => setTimeout(() => r('net'), max)),
+    ]).finally(() => clearTimeout(slow));
+  };
   // Abgelehnt? Einmal mit frischer Anmeldung nachfassen – direkt nach der allerersten (anonymen) Anmeldung kann der
   // Server die Anfrage sonst noch ohne Anmeldung sehen und ein richtiges Passwort ablehnen.
-  const tryPw = async pw => {
-    const r = await once(pw);
+  const tryPw = async (pw, max, onSlow) => {
+    const r = await once(pw, max, onSlow);
     if (r !== 'wrong') return r;
     try { await user.getIdToken(true); } catch {}
     await new Promise(res => setTimeout(res, 800));
-    return once(pw);
+    return once(pw, max, onSlow);
   };
   const saved = LS.get('pw', '');
   if (await open()) {
     // Gerät ist schon freigeschaltet. Trotzdem prüfen, ob das gespeicherte Passwort noch gilt – nur dann kommt es in
     // QR-Codes und Einladungs-Links (vorher fehlte es dort bei jedem, der schon einmal freigeschaltet war).
-    if (saved) { const r = await tryPw(saved); if (r === 'ok') fbLocked = true; else if (r === 'wrong') LS.del('pw'); }
+    if (saved) { const r = await tryPw(saved, 6000); if (r === 'ok') fbLocked = true; else if (r === 'wrong') LS.del('pw'); }
     return;
   }
   fbLocked = true;
@@ -118,7 +124,7 @@ function pwScreen(tryPw) {
       const pw = inp.value.trim();
       if (!pw) return fail(tx('Bitte gib das Passwort ein.'));
       go.disabled = true; go.innerHTML = '<span class="loader"></span>';
-      const r = await tryPw(pw);
+      const r = await tryPw(pw, 90000, () => { err.textContent = tx('Die Verbindung ist langsam – einen Moment …'); });
       go.disabled = false; go.textContent = tx('Weiter');
       if (r !== 'ok') return fail(r === 'wrong' ? tx('Falsches Passwort – bitte nochmal versuchen.') : tx('Keine Verbindung zum Server – bitte nochmal versuchen.'));
       LS.set('pw', pw);

@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.21 – 24.11.2026
+- Behoben: Bei langsamer Verbindung (z. B. neues Handy im mobilen Netz) meldete die Passwort-Seite nach 10 Sekunden einen Fehler, obwohl das richtige Passwort kurz danach doch angenommen wurde – beim nächsten Öffnen ging es dann plötzlich ohne Passwort. Jetzt wartet sie bis zu 90 Sekunden und zeigt solange „Die Verbindung ist langsam – einen Moment …“
+
 ## 4.27.20 – 24.11.2026
 - Passwort-Freischaltung robuster auf neuen Handys: Lehnt der Server direkt nach der allerersten Anmeldung ein Passwort ab, fragt das Spiel einmal mit frischer Anmeldung nach. Bei langsamer Verbindung wird das Passwort aus dem QR-Code nicht mehr verworfen, sondern nochmal versucht
 
