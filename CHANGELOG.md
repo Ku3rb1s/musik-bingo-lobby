@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.20 – 24.11.2026
+- Passwort-Freischaltung robuster auf neuen Handys: Lehnt der Server direkt nach der allerersten Anmeldung ein Passwort ab, fragt das Spiel einmal mit frischer Anmeldung nach. Bei langsamer Verbindung wird das Passwort aus dem QR-Code nicht mehr verworfen, sondern nochmal versucht
+
 ## 4.27.19 – 24.11.2026
 - Behoben: Mit Passwortschutz fehlte das Passwort im QR-Code und im Einladungs-Link, sobald das Gerät des Spielleiters schon einmal freigeschaltet war – Mitspieler mussten es dann nach dem Scannen eintippen. Jetzt ist es wieder enthalten (nur wenn es noch aktuell ist)
 

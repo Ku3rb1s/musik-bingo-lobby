@@ -21,7 +21,7 @@ function firebase() {
     const user = await new Promise(res => { const off = auth.onAuthStateChanged(au, u => { off(); res(u); }); })
       || (await auth.signInAnonymously(au)).user;
     const d = db.getDatabase(a);
-    await unlockGate(db, d, user.uid);
+    await unlockGate(db, d, user);
     db.onValue(db.ref(d, '.info/serverTimeOffset'), s => { fbOffset = s.val() || 0; });
     return { ...db, db: d, uid: user.uid, at: p => db.ref(d, p) };
   })();
@@ -40,13 +40,24 @@ let fbLocked = false;   // true → Passwort ist aktiv, Einladungs-Links und QR-
   }
 }
 const pwHash = () => fbLocked && LS.get('pw', '') ? '#pw=' + encodeURIComponent(LS.get('pw', '')) : '';
-async function unlockGate(db, d, uid) {
+async function unlockGate(db, d, user) {
+  const uid = user.uid;
   const open = () => db.get(db.ref(d, 'gate')).then(() => true, e => { if (/permission/i.test(e.message)) return false; throw e; });
-  // 'ok' | 'wrong' | 'net' – ohne Verbindung hängt set() sonst endlos
-  const tryPw = pw => Promise.race([
+  // 'ok' | 'wrong' | 'net' – ohne Verbindung hängt set() sonst endlos. Großzügige Wartezeit: Beim allerersten Öffnen
+  // (neues Handy, mobiles Netz) dauert der Verbindungsaufbau manchmal lange.
+  const once = pw => Promise.race([
     db.set(db.ref(d, 'access/' + uid), pw).then(() => 'ok', e => /permission/i.test(e.message) ? 'wrong' : 'net'),
-    new Promise(r => setTimeout(() => r('net'), 10000)),
+    new Promise(r => setTimeout(() => r('net'), 20000)),
   ]);
+  // Abgelehnt? Einmal mit frischer Anmeldung nachfassen – direkt nach der allerersten (anonymen) Anmeldung kann der
+  // Server die Anfrage sonst noch ohne Anmeldung sehen und ein richtiges Passwort ablehnen.
+  const tryPw = async pw => {
+    const r = await once(pw);
+    if (r !== 'wrong') return r;
+    try { await user.getIdToken(true); } catch {}
+    await new Promise(res => setTimeout(res, 800));
+    return once(pw);
+  };
   const saved = LS.get('pw', '');
   if (await open()) {
     // Gerät ist schon freigeschaltet. Trotzdem prüfen, ob das gespeicherte Passwort noch gilt – nur dann kommt es in
@@ -55,8 +66,12 @@ async function unlockGate(db, d, uid) {
     return;
   }
   fbLocked = true;
-  if (saved && await tryPw(saved) === 'ok') return;
-  LS.del('pw');   // altes Passwort (z. B. inzwischen geändert) – nicht mehr in Einladungen weitergeben
+  if (saved) {
+    let r = await tryPw(saved);
+    if (r === 'net') r = await tryPw(saved);   // langsame Verbindung: Passwort aus dem QR-Code nicht gleich verwerfen
+    if (r === 'ok') return;
+    if (r === 'wrong') LS.del('pw');   // altes Passwort (z. B. inzwischen geändert) – nicht mehr in Einladungen weitergeben
+  }
   await pwScreen(tryPw);
 }
 // Eigene Seite fürs Passwort (statt des allgemeinen Frage-Fensters): Logo, Feld mit Auge, Fehler direkt darunter.
