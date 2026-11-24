@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.30.1 – 24.11.2026
+- Vorbereitung für die eigene Adresse jukeboxquiz.de: Beim Umzug nimmt das Spiel Profil, Rekorde und Einstellungen von der alten Adresse automatisch mit
+
 ## 4.30.0 – 24.11.2026
 - Die laufende Runde übersteht jetzt das Neuladen der Seite (z. B. wenn das Handy kurz im Hintergrund war): Kategorie, Tipps und Buzzer bleiben, ein laufender Countdown zählt mit der restlichen Zeit weiter, und auch die Handys der Mitspieler bekommen die Runde zurück. Die Musik startet nach dem Neuladen per Tipp auf die Platte
 
