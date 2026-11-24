@@ -4,7 +4,7 @@
 /* ---------------- Bingo ---------------- */
 // Die Felder einer Karte sind die aktiven Kategorien (in ihren Farben). Wer die Frage einer Runde
 // richtig beantwortet, markiert ein Feld dieser Kategorie. Volle Reihe, Spalte oder Diagonale = Bingo.
-const PUBLIC_URL = 'https://ku3rb1s.github.io/musik-bingo-lobby/';
+const PUBLIC_URL = 'https://jukeboxquiz.de/musik-bingo-lobby/';
 const b64u = {
   enc: s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''),
   dec: s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))),

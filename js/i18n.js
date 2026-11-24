@@ -13,7 +13,7 @@
 const LANG_PACKS = self.LANG_PACKS || {};
 const LANGS = { de: { name: 'Deutsch', flag: '🇩🇪' }, ...Object.fromEntries(Object.entries(LANG_PACKS).map(([k, p]) => [k, { name: p.name, flag: p.flag }])) };
 
-// Alle Jukebox-Spiele liegen unter ku3rb1s.github.io und teilen sich den Browser-Speicher: die Sprache gilt für alle.
+// Alle Jukebox-Spiele liegen unter jukeboxquiz.de und teilen sich den Browser-Speicher: die Sprache gilt für alle.
 // mb_lang = Musik-Bingo, mq.lang = Needle Drop und die neueren Spiele, hub.lang = Jukebox (siehe Spiele-Hub/JUKEBOX.md)
 const LANG_KEYS = ['mb_lang', 'mq.lang', 'hub.lang'];
 
