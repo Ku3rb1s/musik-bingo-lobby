@@ -158,7 +158,9 @@ function parsePlaylistId(s) {
 const loadingPl = new Set();
 // Empfohlene Playlist für alle (oben bei „Hinzufügen“). Wird jedes Mal live von Spotify geladen – kommen dort Songs dazu,
 // reicht erneutes Antippen.
-const FEATURED_PL = { id: '0yN2Cv5Nz5bvejrZqCTAP4', name: 'Party-Mix', cover: 'https://i.scdn.co/image/ab67706c0000da848536f2153917125fb0e6d764' };
+const FEATURED_PL = { id: '0yN2Cv5Nz5bvejrZqCTAP4', name: 'All-in', cover: 'https://i.scdn.co/image/ab67706c0000da848536f2153917125fb0e6d764' };
+// Hieß bis 4.29.0 „Party-Mix“ – schon geladene Playlist im Spiel umbenennen
+{ const s = state.sources.find(x => x.id === FEATURED_PL.id); if (s && s.name !== FEATURED_PL.name) { s.name = FEATURED_PL.name; LS.set('sources', state.sources); } }
 async function loadPlaylist(id) {
   if (!state.tok) { openSheet('sheetSettings', 'account'); return toast(tx('Bitte zuerst mit Spotify verbinden')); }
   if (loadingPl.has(id)) return;

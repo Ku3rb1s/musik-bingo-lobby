@@ -220,7 +220,7 @@ function plRow(p, have) {
 // Suchergebnisse (öffentliche Playlists)
 function renderPlSearch() {
   $('#featBox').classList.toggle('hidden', !state.tok);
-  if (state.tok) $('#featPl').innerHTML = plRow({ ...FEATURED_PL, note: tx('Hits aus allen Jahrzehnten') }, new Set(state.sources.map(s => s.id)));
+  if (state.tok) $('#featPl').innerHTML = plRow({ ...FEATURED_PL, note: tx('Über 1.000 Hits quer durch alle Jahrzehnte') }, new Set(state.sources.map(s => s.id)));
   const el = $('#plSearchRes');
   $('#plSearchBox').classList.toggle('hidden', !state.tok);
   const q = $('#plSearch').value.trim();
