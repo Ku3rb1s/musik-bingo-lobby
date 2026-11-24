@@ -91,6 +91,7 @@ function loadQrLib() {
 let checkPlayer = null;
 async function renderBingo() {
   const b = state.bingo;
+  $('#gameStateBox').classList.toggle('hidden', !state.history.length && !round);   // „Neues Spiel“ nur, wenn schon gespielt wurde
   $('#bingoStart').classList.toggle('hidden', !!b);
   $('#bingoActive').classList.toggle('hidden', !b);
   $('#bingoEndBox').classList.toggle('hidden', !b);

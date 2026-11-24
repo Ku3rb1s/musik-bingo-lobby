@@ -1130,3 +1130,19 @@ dialog.pw-gate::before { content: ""; position: fixed; inset: 0; pointer-events:
 @keyframes pwShake { 15%, 55% { transform: translateX(-9px); } 35%, 75% { transform: translateX(9px); } }
 .pw-gate.pw-ok .pw-card { transition: transform .28s, opacity .28s; transform: scale(.96); opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .pw-card.shake { animation: none; } }
+
+/* Start-Auswahl („Wie wollt ihr spielen?“) und Regeln für Mitspieler */
+.start-pick,.help-dlg{width:min(360px,calc(100vw - 32px));text-align:left}
+.start-pick .sp-h,.help-dlg .sp-h{text-align:center;font-weight:800;font-size:1.1rem;padding:20px 18px 10px}
+.sp-opt{display:flex;gap:14px;align-items:center;width:calc(100% - 28px);margin:8px 14px 0;padding:14px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text);text-align:left;white-space:normal;line-height:1.3}
+.sp-opt .sp-ic{font-size:1.8rem;flex:none}
+.sp-opt b{display:block;font-size:1.02rem}
+.sp-opt small{display:block;color:var(--muted);font-size:.84rem;margin-top:3px;font-weight:400}
+.sp-cancel{display:block;width:100%;margin-top:14px;padding:14px;background:none;border:0;border-top:1px solid var(--line);border-radius:0;color:var(--text);font-weight:500}
+.help-dlg .steps li{padding:9px 16px}
+.help-dlg .help-more{padding:6px 18px 0;font-size:.84rem;color:var(--muted);text-align:left}
+.alert-btns.one{grid-template-columns:1fr}
+.alert-btns.one button{color:var(--accent);font-weight:700;border-right:0}
+.join-how{margin:14px 4px 0;font-size:.84rem;color:var(--muted);line-height:1.45}
+.help-pill{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border-radius:50%;background:var(--g-bg);color:var(--text);border:1px solid var(--g-brd);box-shadow:var(--g-hi)}
+.help-pill .ic{width:18px;height:18px}

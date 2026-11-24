@@ -2,6 +2,12 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.28.0 – 24.11.2026
+- Neu in den Einstellungen: **So geht’s** – kurze Anleitung für den ersten Spieleabend (Vorbereitung, einfach raten, Bingo mit Handys, Tipps/Buzzer/Fernseher)
+- „Spiel starten“ ohne Bingo fragt jetzt klarer: **Wie wollt ihr spielen?** – „Einfach raten“ oder „Bingo mit Handys“, je mit einem Satz Erklärung
+- Mitspieler: kurze Erklärung unter „Beitreten“ und ein **?** oben auf der Karte, das die Regeln jederzeit zeigt
+- Unter „Bingo“ steht „Neues Spiel“ nur noch, wenn schon gespielt wurde
+
 ## 4.27.21 – 24.11.2026
 - Behoben: Bei langsamer Verbindung (z. B. neues Handy im mobilen Netz) meldete die Passwort-Seite nach 10 Sekunden einen Fehler, obwohl das richtige Passwort kurz danach doch angenommen wurde – beim nächsten Öffnen ging es dann plötzlich ohne Passwort. Jetzt wartet sie bis zu 90 Sekunden und zeigt solange „Die Verbindung ist langsam – einen Moment …“
 

@@ -95,6 +95,7 @@ function showOtherWin(text, won = false) {
   showOtherWin.t = setTimeout(() => el.classList.add('hidden'), won ? 8000 : 6500);
 }
 $('#otherWin').onclick = () => $('#otherWin').classList.add('hidden');
+$('#btnHelpP').onclick = () => { $('#dlgHelpP').showModal(); raiseToast(); };
 
 // OLED-Modus am Handy (ganz unten unter der Karte): gleiche Einstellung wie das Design „OLED“ beim Spielleiter.
 // Beim Ausschalten kommt das vorherige Design zurück.
@@ -213,7 +214,7 @@ async function codeMode(note = null) {
   $('#pickBox').classList.add('hidden');
   $('#joinBox h3').innerHTML = tx('Lobby <span id="joinCode">beitreten</span>');   // EN: „Join a lobby“ (lobbyMode setzt später den Code ein)
   const inp = $('#joinCodeInput'), btn = $('#btnJoin');
-  for (const el of [inp, $('#joinName'), btn]) el.classList.remove('hidden');
+  for (const el of [inp, $('#joinName'), btn, $('#joinHow')]) el.classList.remove('hidden');
   inp.value = '';
   $('#joinName').value = sharedName.get() || LS.get('name', '');
   $('#joinMsg').textContent = note || tx('Gib den Lobby-Code vom Spielleiter und deinen Namen ein.');
@@ -560,7 +561,7 @@ async function lobbyMode(code, autoName = null) {
       const taken = new Set(Object.entries(players || {}).filter(([id]) => id !== f.uid).map(([, p]) => String(p?.name || '').toLowerCase()));
       const typed = name;
       for (let i = 2, base0 = name.slice(0, 21); taken.has(name.toLowerCase()); i++) name = `${base0} ${i}`;
-      $('#joinName').classList.add('hidden'); $('#joinCodeInput').classList.add('hidden'); btn.classList.add('hidden');
+      $('#joinName').classList.add('hidden'); $('#joinCodeInput').classList.add('hidden'); btn.classList.add('hidden'); $('#joinHow').classList.add('hidden');
       $('#pickBox').classList.remove('hidden');
       msg(tx('Hallo {n}! Such dir deine Karte aus:', { n: name }));
       cardPicker($('#pickBox'), b, used, async num => {

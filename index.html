@@ -21,7 +21,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="preload" href="fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=4.27.2">
-<link rel="stylesheet" href="css/app.css?v=4.27.13">
+<link rel="stylesheet" href="css/app.css?v=4.28.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -36,6 +36,7 @@
   <symbol id="i-skip" viewBox="0 0 24 24"><path d="M5 5l10 7-10 7z" fill="currentColor"/><path d="M19 5v14"/></symbol>
   <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v4l2.5 2M9.5 2.5h5"/></symbol>
   <symbol id="i-install" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3M10.5 18.5h3"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.2-2.5 3.8"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -203,6 +204,14 @@
   <div class="sheet-body">
     <section class="page" data-page="main" data-title="Einstellungen">
       <div class="group icons" style="margin-top:14px">
+        <button class="cell tap" data-go="help">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#ffb020,#ff4fa3)"><svg class="ic"><use href="#i-help"/></svg></span>
+          <span class="grow">So geht’s<span class="sub">Kurze Anleitung für den ersten Spieleabend</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+      </div>
+
+      <div class="group icons" style="margin-top:22px">
         <button class="cell tap" data-go="account">
           <span class="cell-ic" style="background:#1ed760"><svg class="ic"><use href="#i-music"/></svg></span>
           <span class="grow">Spotify-Konto<span class="sub" id="accSub"></span></span>
@@ -253,6 +262,42 @@
       </div>
 
       <button class="app-version" id="appVersion" data-go="changes"></button>
+    </section>
+
+    <section class="page" data-page="help" data-title="So geht’s">
+      <div class="group-h" style="margin-top:14px">Vorbereitung</div>
+      <div class="group">
+        <ol class="steps">
+          <li><span>Unter „Spotify-Konto“ mit Spotify verbinden.</span></li>
+          <li><span>Unter „Playlists“ Songs holen – am einfachsten mit dem Party-Mix.</span></li>
+          <li><span>Am iPhone oder iPad: die Spotify-App öffnen und kurz etwas abspielen – die Musik läuft dann über die App.</span></li>
+        </ol>
+      </div>
+      <div class="group-h">Einfach raten</div>
+      <div class="group">
+        <ol class="steps">
+          <li><span>Auf „Spiel starten“ tippen: Ein Song läuft, oben steht die Frage der Runde.</span></li>
+          <li><span>Alle raten. „Countdown“ startet die Zeit, danach kommt die Auflösung.</span></li>
+          <li><span>Mit „Nächster Song“ geht es weiter. Auf die Platte tippen pausiert die Musik.</span></li>
+        </ol>
+      </div>
+      <div class="group-h">Bingo mit Handys</div>
+      <div class="group">
+        <ol class="steps">
+          <li><span>Oben auf „Bingo“ tippen und Karten erstellen – es öffnet sich eine Lobby mit QR-Code.</span></li>
+          <li><span>Die Mitspieler scannen den QR-Code, geben ihren Namen ein und suchen sich eine Karte aus. Ein Spotify-Konto brauchen sie nicht.</span></li>
+          <li><span>Jede Runde tippen alle ihren Tipp ins Handy. Nach der Auflösung markiert, wer richtig lag, ein leuchtendes Feld.</span></li>
+          <li><span>Ist eine Reihe, Spalte oder Diagonale voll, meldet das Handy „Bingo!“. Du prüfst die Karte und bestätigst den Sieg.</span></li>
+        </ol>
+      </div>
+      <div class="group-h">Gut zu wissen</div>
+      <div class="group">
+        <ol class="steps">
+          <li><span>Tipps: Die Glühbirne deckt Hinweise auf – Mitspieler können sie auch am Handy anfordern.</span></li>
+          <li><span>Buzzer: Wer die Antwort weiß, startet am Handy den Countdown für alle – beim Bingo-Einrichten einschalten.</span></li>
+          <li><span>Fernseher: Beim Einladen gibt es eine eigene Ansicht für den großen Bildschirm.</span></li>
+        </ol>
+      </div>
     </section>
 
     <section class="page" data-page="rules" data-title="Spielregeln">
@@ -488,9 +533,11 @@
         </button>
         </div>
       </div>
+      <div id="gameStateBox">
       <div class="group-h">Spielstand</div>
       <div class="group">
         <button class="cell tap" id="btnNewGame"><span class="grow">Neues Spiel<span class="sub">Verlauf, Songs, Markierungen und Siege zurücksetzen</span></span></button>
+      </div>
       </div>
       <div class="group hidden" id="bingoEndBox" style="margin-top:22px">
         <button class="cell tap danger" id="btnBingoOff"><span class="grow">Bingo beenden<span class="sub">Lobby schließen – alle Mitspieler kommen zur Code-Eingabe zurück</span></span></button>
@@ -667,6 +714,7 @@
   <div class="card-head">
     <div class="logo"><img src="icon-192.png?v=5" alt=""><span>Musik-Bingo</span></div>
     <div class="card-head-r">
+      <button class="help-pill" id="btnHelpP" aria-label="Spielregeln" title="Spielregeln"><svg class="ic"><use href="#i-help"/></svg></button>
       <label class="lang-pill" title="Sprache · Language"><svg class="ic"><use href="#i-globe"/></svg><span id="langCode"></span><select id="langSelP" aria-label="Sprache"></select></label>
       <span class="pill card-pill"><span class="cp-l">Karte Nr. <b id="cardNo"></b></span><small id="cardMatch" class="hidden"></small></span>
     </div>
@@ -679,6 +727,7 @@
     <input id="joinCodeInput" class="hidden" placeholder="Lobby-Code" maxlength="8" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.2em;font-weight:800">
     <input id="joinName" placeholder="Dein Name" maxlength="24" autocomplete="nickname" enterkeyhint="go">
     <button class="big full" id="btnJoin">Beitreten</button>
+    <p class="join-how" id="joinHow">So geht’s: Song hören, Tipp eintippen – lag er richtig, ein leuchtendes Feld markieren. Volle Reihe = Bingo!</p>
     <div id="pickBox" class="pick-box hidden"></div>
   </div>
   <div id="cardLive">
@@ -763,6 +812,26 @@
   </div>
 </dialog>
 
+<dialog id="dlgStart" class="alert start-pick">
+  <form method="dialog">
+    <p class="sp-h">Wie wollt ihr spielen?</p>
+    <button value="free" class="sp-opt"><span class="sp-ic">🎵</span><span class="sp-t"><b>Einfach raten</b><small>Ein Song läuft, alle raten laut. Kein Handy nötig.</small></span></button>
+    <button value="bingo" class="sp-opt"><span class="sp-ic">🎟️</span><span class="sp-t"><b>Bingo mit Handys</b><small>Jeder bekommt eine Karte aufs Handy und markiert, was er richtig hatte.</small></span></button>
+    <button value="" class="sp-cancel">Abbrechen</button>
+  </form>
+</dialog>
+<dialog id="dlgHelpP" class="alert help-dlg">
+  <form method="dialog">
+    <p class="sp-h">So spielst du mit</p>
+    <ol class="steps">
+      <li><span>Ein Song läuft, oben steht die Frage der Runde. Schreib deinen Tipp ins Feld.</span></li>
+      <li><span>Nach der Auflösung: Lag dein Tipp richtig? Dann tippe ein leuchtendes Feld an – 1 Feld pro Runde.</span></li>
+      <li><span>Reihe, Spalte oder Diagonale voll? Dann meldet dein Handy „Bingo!“ und der Spielleiter prüft deine Karte.</span></li>
+    </ol>
+    <p class="help-more">Die Glühbirne holt einen Tipp für alle, die Glocke (Buzzer) startet den Countdown – falls der Spielleiter das eingeschaltet hat.</p>
+    <div class="alert-btns one"><button value="">Verstanden</button></div>
+  </form>
+</dialog>
 <dialog id="dlgAsk" class="alert">
   <form method="dialog">
     <p id="askMsg"></p>
@@ -779,18 +848,18 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=6.27.4"></script>
-<script src="js/lang/fr.js?v=6.27.4"></script>
-<script src="js/lang/es.js?v=6.27.4"></script>
-<script src="js/lang/nb.js?v=6.27.4"></script>
+<script src="js/lang/en.js?v=6.28.0"></script>
+<script src="js/lang/fr.js?v=6.28.0"></script>
+<script src="js/lang/es.js?v=6.28.0"></script>
+<script src="js/lang/nb.js?v=6.28.0"></script>
 <script src="js/i18n.js?v=4.27.3"></script>
-<script src="js/core.js?v=11.27.14"></script>
+<script src="js/core.js?v=11.28.0"></script>
 <script src="js/spotify.js?v=4.27.18"></script>
 <script src="js/game.js?v=4.27.2"></script>
 <script src="js/lobby.js?v=4.27.21"></script>
-<script src="js/bingo.js?v=4.27.2"></script>
-<script src="js/views.js?v=4.27.2"></script>
-<script src="js/ui.js?v=4.27.18"></script>
+<script src="js/bingo.js?v=4.28.0"></script>
+<script src="js/views.js?v=4.28.0"></script>
+<script src="js/ui.js?v=4.28.0"></script>
 <script src="js/pwa.js?v=4.27.17"></script>
 </body>
 </html>

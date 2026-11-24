@@ -526,12 +526,17 @@ function resetGame() {
 async function startGame() {
   if (needSongs()) return;   // ohne Songs zuerst Playlists – die Bingo-Frage kommt danach
   if (!state.bingo) {
-    const c = await ask(tx('Ohne Bingo spielen?\nEs ist noch kein Bingo eingerichtet. Ihr könnt einfach so Songs raten oder zuerst Bingo-Karten für alle erstellen.'),
-      { ok: tx('Ohne Bingo starten'), cancel: tx('Bingo einrichten'), choice: true });
-    if (c === 'no') return openSheet('sheetGame', 'setup');
-    if (c !== 'yes') return;   // Frage weggeklickt
+    const c = await pickStart();
+    if (c === 'bingo') return openSheet('sheetGame', 'setup');
+    if (c !== 'free') return;   // Auswahl weggeklickt
   }
   resetGame(); nextRound();
+}
+// „Wie wollt ihr spielen?“ – zwei große Karten statt einer Ja/Nein-Frage: 'free' | 'bingo' | '' (abgebrochen)
+function pickStart() {
+  const d = $('#dlgStart');
+  d.returnValue = ''; d.showModal(); raiseToast();
+  return new Promise(res => d.addEventListener('close', () => res(d.returnValue), { once: true }));
 }
 async function askNewGame() {
   if (state.history.length && !await ask(tx('Neues Spiel starten?\nVerlauf und gespielte Songs werden zurückgesetzt.') + (state.bingo ? Lobby.code ? tx('\nDie Bingo-Karten bleiben gültig – die Markierungen in der Lobby werden gelöscht, Siege und Partien fangen wieder bei 0 an.') : tx('\nDie Bingo-Karten bleiben gültig – alle sollten ihre Markierungen löschen.') : ''), { ok: tx('Neues Spiel') })) return;
