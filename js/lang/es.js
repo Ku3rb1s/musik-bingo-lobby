@@ -653,5 +653,7 @@
     "Spiele": "Juegos",
     "Zur Jukebox": "A la Jukebox",
     "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Consejo:</b> mantén pulsado el logo para ir a la Jukebox y a los demás juegos.",
+    "Empfohlen": "Recomendado",
+    "Hits aus allen Jahrzehnten": "Éxitos de todas las décadas",
   },
 };

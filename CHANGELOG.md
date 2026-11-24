@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.18 – 24.11.2026
+- Neu bei „Playlist hinzufügen“: **Empfohlen – Party-Mix** (Hits aus allen Jahrzehnten). Ein Tipp lädt die Playlist direkt von Spotify – praktisch, wenn man selbst keine passende Playlist hat. Kommen dort neue Songs dazu, reicht erneutes Antippen
+
 ## 4.27.17 – 09.11.2026
 - Neues Spiel in der Jukebox: Piano Rain (Klavier lernen mit fallenden Noten) – im Spiele-Menü (Logo lange drücken) und im Abgleich
 

@@ -156,13 +156,16 @@ function parsePlaylistId(s) {
   return /^[A-Za-z0-9]{22}$/.test(s) ? s : null;
 }
 const loadingPl = new Set();
+// Empfohlene Playlist für alle (oben bei „Hinzufügen“). Wird jedes Mal live von Spotify geladen – kommen dort Songs dazu,
+// reicht erneutes Antippen.
+const FEATURED_PL = { id: '0yN2Cv5Nz5bvejrZqCTAP4', name: 'Party-Mix', cover: 'https://i.scdn.co/image/ab67706c0000da848536f2153917125fb0e6d764' };
 async function loadPlaylist(id) {
   if (!state.tok) { openSheet('sheetSettings', 'account'); return toast(tx('Bitte zuerst mit Spotify verbinden')); }
   if (loadingPl.has(id)) return;
   loadingPl.add(id); renderMyPlaylists();
   const btn = $('#btnLoadPl');
   try {
-    const meta = myPlaylists?.find(p => p.id === id) || plSearch.list?.find(p => p.id === id);
+    const meta = (id === FEATURED_PL.id && FEATURED_PL) || myPlaylists?.find(p => p.id === id) || plSearch.list?.find(p => p.id === id);
     let name = meta?.name, cover = meta?.cover;
     if (!name) { try { const p = await api(`/playlists/${id}?fields=name,images`); name = p?.name; cover = pickImg(p?.images, 120); } catch {} }
     let page;

@@ -201,17 +201,17 @@ function renderAdd() {
 }
 function renderMyPlaylists() {
   const el = $('#myPl');
+  renderPlSearch();   // auch „Empfohlen“ (✓ nach dem Laden)
   if (!state.tok) { el.innerHTML = ''; return; }
   if (myPlLoading && !myPlaylists) { el.innerHTML = `<div class="cell muted"><span class="loader"></span>${tx('Lade deine Playlists …')}</div>`; return; }
   if (!myPlaylists?.length) { el.innerHTML = `<div class="cell muted">${tx('Keine Playlists gefunden')}</div>`; return; }
   const have = new Set(state.sources.map(s => s.id));
   el.innerHTML = myPlaylists.map(p => plRow(p, have)).join('');
-  renderPlSearch();
 }
 // Eine Playlist-Zeile (eigene Playlists und Suchergebnisse): Cover, Name, Songs, + / ✓ / Ladekreis
 function plRow(p, have) {
   const trail = loadingPl.has(p.id) ? '<span class="loader"></span>' : have.has(p.id) ? ic('check') : ic('plus');
-  const sub = [p.owner && !p.spotify && tx('von {o}', { o: esc(p.owner) }), p.total != null && tx('{n} Songs', { n: p.total })].filter(Boolean).join(' · ')
+  const sub = [p.note, p.owner && !p.spotify && tx('von {o}', { o: esc(p.owner) }), p.total != null && tx('{n} Songs', { n: p.total })].filter(Boolean).join(' · ')
     + (have.has(p.id) ? tx(' · im Spiel – tippen zum Aktualisieren') : '') + (p.spotify ? ' · ' + tx('von Spotify – lässt sich evtl. nicht laden') : '');
   return `<button class="cell tap ${p.spotify ? 'pl-spotify' : ''}" data-add-pl="${esc(p.id)}">${plCover(p.cover)}
       <span class="grow">${esc(p.name)}<span class="sub">${sub}</span></span>
@@ -219,6 +219,8 @@ function plRow(p, have) {
 }
 // Suchergebnisse (öffentliche Playlists)
 function renderPlSearch() {
+  $('#featBox').classList.toggle('hidden', !state.tok);
+  if (state.tok) $('#featPl').innerHTML = plRow({ ...FEATURED_PL, note: tx('Hits aus allen Jahrzehnten') }, new Set(state.sources.map(s => s.id)));
   const el = $('#plSearchRes');
   $('#plSearchBox').classList.toggle('hidden', !state.tok);
   const q = $('#plSearch').value.trim();
