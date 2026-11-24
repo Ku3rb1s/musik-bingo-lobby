@@ -21,7 +21,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="preload" href="fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=4.27.2">
-<link rel="stylesheet" href="css/app.css?v=4.28.0">
+<link rel="stylesheet" href="css/app.css?v=4.29.0">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -271,6 +271,7 @@
           <li><span>Unter „Spotify-Konto“ mit Spotify verbinden.</span></li>
           <li><span>Unter „Playlists“ Songs holen – am einfachsten mit dem Party-Mix.</span></li>
           <li><span>Am iPhone oder iPad: die Spotify-App öffnen und kurz etwas abspielen – die Musik läuft dann über die App.</span></li>
+          <li><span>Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.</span></li>
         </ol>
       </div>
       <div class="group-h">Einfach raten</div>
@@ -403,6 +404,13 @@
         </div>
       </div>
       <div class="group-f" id="modeInfo"></div>
+      <div class="group icons" style="margin-top:14px">
+        <button class="cell tap" id="btnTestMusic">
+          <span class="cell-ic" style="background:#1ed760"><svg class="ic"><use href="#i-play"/></svg></span>
+          <span class="grow">Musik testen<span class="sub">Spielt ein paar Sekunden – so weißt du vor dem Spiel, ob alles klappt</span></span>
+        </button>
+      </div>
+      <div class="group-f test-res hidden" id="testRes"></div>
       <div class="group-h">So klappt’s</div>
       <div class="play-help">
         <div class="ph"><span class="ph-ic"><svg class="ic"><use href="#i-monitor"/></svg></span><div><b>Am PC oder Laptop</b><span>Chrome oder Edge spielen die Musik selbst ab – mit Spotify Premium.</span></div></div>
@@ -848,18 +856,18 @@
 
 <!-- Reihenfolge wichtig: spätere Dateien nutzen, was frühere definieren. Bei jedem Update die Versionsnummer (?v=) mit APP_VERSION erhöhen. -->
 <!-- Sprachdateien vor i18n.js: jede trägt sich in LANG_PACKS ein (neue Sprache = neue Datei + Zeile hier) -->
-<script src="js/lang/en.js?v=6.28.0"></script>
-<script src="js/lang/fr.js?v=6.28.0"></script>
-<script src="js/lang/es.js?v=6.28.0"></script>
-<script src="js/lang/nb.js?v=6.28.0"></script>
+<script src="js/lang/en.js?v=6.29.0"></script>
+<script src="js/lang/fr.js?v=6.29.0"></script>
+<script src="js/lang/es.js?v=6.29.0"></script>
+<script src="js/lang/nb.js?v=6.29.0"></script>
 <script src="js/i18n.js?v=4.27.3"></script>
-<script src="js/core.js?v=11.28.0"></script>
+<script src="js/core.js?v=11.29.0"></script>
 <script src="js/spotify.js?v=4.27.18"></script>
 <script src="js/game.js?v=4.27.2"></script>
 <script src="js/lobby.js?v=4.27.21"></script>
 <script src="js/bingo.js?v=4.28.0"></script>
 <script src="js/views.js?v=4.28.0"></script>
-<script src="js/ui.js?v=4.28.0"></script>
+<script src="js/ui.js?v=4.29.0"></script>
 <script src="js/pwa.js?v=4.27.17"></script>
 </body>
 </html>

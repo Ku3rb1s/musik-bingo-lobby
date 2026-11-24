@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.29.0 – 24.11.2026
+- Neu unter Einstellungen → Wiedergabe: **Musik testen** – spielt ein paar Sekunden eines Songs über die eingestellte Wiedergabe und sagt, wo die Musik läuft (z. B. „auf iPhone von …“). Klappt es nicht, steht direkt da, warum, und was zu tun ist. So fällt ein Problem vor dem Spieleabend auf
+
 ## 4.28.0 – 24.11.2026
 - Neu in den Einstellungen: **So geht’s** – kurze Anleitung für den ersten Spieleabend (Vorbereitung, einfach raten, Bingo mit Handys, Tipps/Buzzer/Fernseher)
 - „Spiel starten“ ohne Bingo fragt jetzt klarer: **Wie wollt ihr spielen?** – „Einfach raten“ oder „Bingo mit Handys“, je mit einem Satz Erklärung

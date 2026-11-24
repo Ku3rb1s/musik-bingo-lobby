@@ -1146,3 +1146,8 @@ dialog.pw-gate::before { content: ""; position: fixed; inset: 0; pointer-events:
 .join-how{margin:14px 4px 0;font-size:.84rem;color:var(--muted);line-height:1.45}
 .help-pill{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border-radius:50%;background:var(--g-bg);color:var(--text);border:1px solid var(--g-brd);box-shadow:var(--g-hi)}
 .help-pill .ic{width:18px;height:18px}
+
+/* „Musik testen“: Ergebnis unter dem Knopf */
+.test-res{font-weight:600}
+.test-res.ok{color:var(--accent)}
+.test-res.bad{color:var(--warn,#ffb020)}

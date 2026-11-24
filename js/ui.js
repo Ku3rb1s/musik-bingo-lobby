@@ -636,10 +636,37 @@ $('#setStart').onchange = e => { state.settings.start = e.target.value; saveSett
 $('#setMode').onchange = async e => {
   const wasPlaying = Player.playing;
   state.settings.mode = e.target.value; saveSettings();
+  $('#testRes').classList.add('hidden');
   await Player.reset(); renderSettings();
   // Läuft gerade ein Song, direkt mit der neuen Wiedergabe-Art weiterspielen
   if (round && round.phase !== 'revealed' && wasPlaying) playSnippet().then(renderSettings);
 };
+// „Musik testen“: spielt einen bekannten Song ein paar Sekunden über die eingestellte Wiedergabe und sagt, wo er läuft.
+// Nicht während einer laufenden Runde (der Song der Runde würde unterbrochen).
+const TEST_TRACK = { id: '4uLU6hMCjMI75M1A2tKUQC', uri: 'spotify:track:4uLU6hMCjMI75M1A2tKUQC', title: 'Never Gonna Give You Up', artists: 'Rick Astley', duration: 0 };
+async function testMusic() {
+  const res = $('#testRes'), btn = $('#btnTestMusic');
+  const say = (txt, ok) => { res.textContent = txt; res.classList.remove('hidden'); res.classList.toggle('ok', ok === true); res.classList.toggle('bad', ok === false); };
+  if (!state.tok) { say(tx('Bitte zuerst mit Spotify verbinden (Einstellungen → Spotify-Konto).'), false); return; }
+  if (round && round.phase !== 'revealed') { say(tx('Gerade läuft eine Runde – erst auflösen, dann testen.'), false); return; }
+  if (btn.disabled) return;
+  btn.disabled = true; say(tx('Einen Moment …'));
+  try {
+    Player.unlock();
+    await Player.play(TEST_TRACK, 0);
+    const my = Player.seq;
+    const where = Player.mode === 'sdk' ? tx('in diesem Browser')
+      : Player.mode === 'connect' ? tx('auf „{d}“', { d: Player.connectDev?.name || tx('deinem Gerät') })
+      : tx('als 30-Sekunden-Vorschau (ganze Songs brauchen Premium und die Spotify-App bzw. Chrome/Edge am PC)');
+    say(tx('✓ Musik läuft {w}. Hörst du etwas? Dann passt alles.', { w: where }), true);
+    renderStatus();
+    setTimeout(() => { if (Player.seq === my && (!round || round.phase === 'revealed')) Player.pause(); }, 6000);   // nur den Testsong anhalten
+  } catch (e) {
+    say(tx('✗ Klappt noch nicht: {e}', { e: e.message }), false);
+    if (e.wake) offerSpotifyWake(e.message);
+  } finally { btn.disabled = false; }
+}
+$('#btnTestMusic').onclick = testMusic;
 $('#setDevice').onchange = e => {
   if (!e.target.value) return;
   state.settings.device = e.target.value; saveSettings();
