@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.27.19 – 24.11.2026
+- Behoben: Mit Passwortschutz fehlte das Passwort im QR-Code und im Einladungs-Link, sobald das Gerät des Spielleiters schon einmal freigeschaltet war – Mitspieler mussten es dann nach dem Scannen eintippen. Jetzt ist es wieder enthalten (nur wenn es noch aktuell ist)
+
 ## 4.27.18 – 24.11.2026
 - Neu bei „Playlist hinzufügen“: **Empfohlen – Party-Mix** (Hits aus allen Jahrzehnten). Ein Tipp lädt die Playlist direkt von Spotify – praktisch, wenn man selbst keine passende Playlist hat. Kommen dort neue Songs dazu, reicht erneutes Antippen
 

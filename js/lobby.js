@@ -42,14 +42,19 @@ let fbLocked = false;   // true → Passwort ist aktiv, Einladungs-Links und QR-
 const pwHash = () => fbLocked && LS.get('pw', '') ? '#pw=' + encodeURIComponent(LS.get('pw', '')) : '';
 async function unlockGate(db, d, uid) {
   const open = () => db.get(db.ref(d, 'gate')).then(() => true, e => { if (/permission/i.test(e.message)) return false; throw e; });
-  if (await open()) return;
-  fbLocked = true;
   // 'ok' | 'wrong' | 'net' – ohne Verbindung hängt set() sonst endlos
   const tryPw = pw => Promise.race([
     db.set(db.ref(d, 'access/' + uid), pw).then(() => 'ok', e => /permission/i.test(e.message) ? 'wrong' : 'net'),
     new Promise(r => setTimeout(() => r('net'), 10000)),
   ]);
   const saved = LS.get('pw', '');
+  if (await open()) {
+    // Gerät ist schon freigeschaltet. Trotzdem prüfen, ob das gespeicherte Passwort noch gilt – nur dann kommt es in
+    // QR-Codes und Einladungs-Links (vorher fehlte es dort bei jedem, der schon einmal freigeschaltet war).
+    if (saved) { const r = await tryPw(saved); if (r === 'ok') fbLocked = true; else if (r === 'wrong') LS.del('pw'); }
+    return;
+  }
+  fbLocked = true;
   if (saved && await tryPw(saved) === 'ok') return;
   LS.del('pw');   // altes Passwort (z. B. inzwischen geändert) – nicht mehr in Einladungen weitergeben
   await pwScreen(tryPw);
