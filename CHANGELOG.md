@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.30.3 – 28.11.2026
+- Vorbereitung für die Jukebox-App fürs iPhone: Dort fällt „Als App installieren“ weg
+
 ## 4.30.2 – 24.11.2026
 - Läuft jetzt unter der eigenen Adresse jukeboxquiz.de (alte Links leiten automatisch weiter)
 
