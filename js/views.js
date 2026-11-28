@@ -174,7 +174,7 @@ const markHot = (m, lm) => m && !m.wait && lm?.n !== m.key ? m.cat : null;
 // Hinweis unter der Karte
 function markHelp(m, lm) {
   if (m?.late && lm?.n !== m.key) return tx('Runde {n} vergessen? „{c}“ kannst du noch nachtragen, bis die nächste Runde aufgelöst ist.', { n: m.n, c: tx(m.name) });
-  if (m && !m.wait && lm?.n === m.key) return tx('Du hast für diese Runde schon ein Feld markiert. Tippe es nochmal an, um es zu ändern.');
+  if (m && !m.wait && !m.late && lm?.n === m.key) return tx('Du hast für diese Runde schon ein Feld markiert. Tippe es nochmal an, um es zu ändern.');
   if (m && !m.wait && !m.late) return tx('Lag dein Tipp richtig? Tippe ein leuchtendes Feld an – 1 Feld pro Runde.');
   if (m?.old) return tx('Neue Partie – markieren geht ab der nächsten Runde.');
   return tx('Nach der Auflösung: Lag dein Tipp richtig? Dann ein leuchtendes Feld antippen – 1 Feld pro Runde.');
