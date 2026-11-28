@@ -431,7 +431,6 @@ body.tv-mode>header,body.tv-mode>main{display:none}
 .bgrid.n3 .bcell{font-size:clamp(.8rem,3.8vw,1.05rem)}
 .bcell:active{transform:scale(.95)}
 .bcell.on{background:var(--c);color:#0b0816;border-color:transparent;box-shadow:0 6px 18px -8px var(--c)}
-.bcell.on::after{content:'✓';position:absolute;top:4px;right:7px;font-size:.95em;font-weight:900}
 .bcell.free{background:linear-gradient(135deg,#ffa03c,#ff3878)}
 /* Felder der aktuellen Kategorie leuchten, die anderen treten zurück – so sieht man sofort, was man abhaken darf */
 .bgrid.has-hot .bcell:not(.hot):not(.on):not(.free){opacity:.38;filter:saturate(.55)}

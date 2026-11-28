@@ -292,7 +292,17 @@ function parseChanges(text) {
   return out;
 }
 function renderCats() {
-  $('#catBingoNote').classList.toggle('hidden', !state.bingo);
+  // Läuft ein Bingo, stehen die Kategorien auf den Karten fest: nur anzeigen, nichts ändern
+  const b = state.bingo;
+  $('#catBingoNote').classList.toggle('hidden', !b);
+  $('#catOnCards').classList.toggle('hidden', !b);
+  $('#catIntro').classList.toggle('hidden', !!b);
+  $('#catEdit').classList.toggle('hidden', !!b);
+  if (b) {
+    $('#catList').innerHTML = b.k.map(k => `
+      <div class="cell"><span class="cell-ic" style="background:${kStyle(k)[1]}">${kStyle(k)[0]}</span><span class="grow">${esc(tx(k.n))}</span></div>`).join('');
+    return;
+  }
   $('#catList').innerHTML = state.cats.map((c, i) => `
     <label class="cell" for="catTg${i}">
       <span class="cell-ic" style="background:${catStyle(c)[1]}">${catStyle(c)[0]}</span>

@@ -2,6 +2,10 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.31.0 – 28.11.2026
+- Während ein Bingo läuft, bleiben die Kategorien gleich: Die Seite „Kategorien“ zeigt dann nur die Kategorien auf den Karten. Ändern geht vor dem nächsten Bingo
+- Markierte Felder auf der Bingo-Karte ohne zusätzlichen Haken – die Farbe zeigt, was markiert ist
+
 ## 4.30.3 – 28.11.2026
 - Vorbereitung für die Jukebox-App fürs iPhone: Dort fällt „Als App installieren“ weg
 
