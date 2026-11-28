@@ -2,6 +2,9 @@
 
 Die Versionsnummer steht in `js/core.js` (`APP_VERSION`) und unten in den Einstellungen. In `index.html` muss bei jedem Update auch `?v=` an CSS/JS-Dateien erhöht werden.
 
+## 4.31.1 – 28.11.2026
+- Bingo-Karte: Hast du in einer Runde schon ein Feld markiert, leuchtet kein weiteres mehr – der Hinweis darunter sagt, wie du es änderst
+
 ## 4.31.0 – 28.11.2026
 - Während ein Bingo läuft, bleiben die Kategorien gleich: Die Seite „Kategorien“ zeigt dann nur die Kategorien auf den Karten. Ändern geht vor dem nächsten Bingo
 - Markierte Felder auf der Bingo-Karte ohne zusätzlichen Haken – die Farbe zeigt, was markiert ist
