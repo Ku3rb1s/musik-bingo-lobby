@@ -592,7 +592,6 @@
     "Echtes Schwarz – spart Akku": "True black – saves battery",
     "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Glowing buttons, pulsing fields and glowing countdown ring – cost a little battery",
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Glowing buttons and pulsing fields – cost a little battery",
-    "Bei Bingo, Countdown und Markieren": "For bingo, countdown and marking",
     "Automatisch weiter": "Auto next",
     "Nach der Auflösung startet der nächste Song von selbst": "After the reveal, the next song starts by itself",
     "Warten": "Wait",
@@ -600,7 +599,6 @@
     "Ablauf": "Flow",
     "Schwierigkeit": "Difficulty",
     "Leuchteffekte": "Glow effects",
-    "Vibrieren": "Vibration",
     "Buzzer-Ton": "Buzzer sound",
     "Buzzer für Mitspieler": "Buzzer for players",
     "Joker in der Mitte": "Joker in the middle",
@@ -694,5 +692,6 @@
     "✗ Klappt noch nicht: {e}": "✗ Not working yet: {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Tap “Test music” under “Playback” – then you know in advance that everything works.",
     "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "Round {n} continues – tap the record to play the song again.",
+    "Vibration stellst du in der Jukebox ein.": "You set vibration in the Jukebox.",
   },
 };

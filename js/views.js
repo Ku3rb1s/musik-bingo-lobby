@@ -284,10 +284,6 @@ async function lobbyMode(code, autoName = null) {
     // „Groß zeigen“ nur noch als kleines Auge oben rechts – auf seinem Platz sitzt der Tipp-Knopf
     placeEye($('#btnGuessShow'), true);
     mountWake();
-    // Vibrieren: an jedem Handy einzeln abschaltbar (Android vibriert, iPhone klickt kurz haptisch)
-    $('#vibeRow').classList.toggle('hidden', !canVibe());
-    $('#setVibe').checked = vibeOn();
-    $('#setVibe').onchange = e => { LS.set('vibe', e.target.checked); vib(40); };
     // Lobby von sich aus verlassen (Knopf auf dem Spielende-Bildschirm)
     leaveLobby = () => {
       leaving = true;

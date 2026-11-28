@@ -592,7 +592,6 @@
     "Echtes Schwarz – spart Akku": "Negro puro – ahorra batería",
     "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Botones brillantes, casillas que laten y anillo brillante de la cuenta atrás – gastan algo de batería",
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Botones brillantes y casillas que laten – gastan algo de batería",
-    "Bei Bingo, Countdown und Markieren": "En bingo, cuenta atrás y al marcar",
     "Automatisch weiter": "Siguiente automático",
     "Nach der Auflösung startet der nächste Song von selbst": "Tras revelar, la siguiente canción empieza sola",
     "Warten": "Esperar",
@@ -600,7 +599,6 @@
     "Ablauf": "Desarrollo",
     "Schwierigkeit": "Dificultad",
     "Leuchteffekte": "Efectos de brillo",
-    "Vibrieren": "Vibración",
     "Buzzer-Ton": "Sonido del pulsador",
     "Buzzer für Mitspieler": "Pulsador para jugadores",
     "Joker in der Mitte": "Comodín en el centro",
@@ -694,5 +692,6 @@
     "✗ Klappt noch nicht: {e}": "✗ Aún no funciona: {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Toca «Probar música» en «Reproducción»; así sabrás de antemano si todo funciona.",
     "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "La ronda {n} continúa: toca el disco para volver a reproducir la canción.",
+    "Vibration stellst du in der Jukebox ein.": "La vibración se ajusta en la Jukebox.",
   },
 };

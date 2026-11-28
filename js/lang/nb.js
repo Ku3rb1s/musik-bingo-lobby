@@ -591,7 +591,6 @@
     "Echtes Schwarz – spart Akku": "Ekte svart – sparer batteri",
     "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Lysende knapper, pulserende felt og lysende nedtellingsring – bruker litt batteri",
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Lysende knapper og pulserende felt – bruker litt batteri",
-    "Bei Bingo, Countdown und Markieren": "Ved bingo, nedtelling og markering",
     "Automatisch weiter": "Automatisk videre",
     "Nach der Auflösung startet der nächste Song von selbst": "Etter avsløringen starter neste sang av seg selv",
     "Warten": "Vent",
@@ -599,7 +598,6 @@
     "Ablauf": "Forløp",
     "Schwierigkeit": "Vanskelighetsgrad",
     "Leuchteffekte": "Lyseffekter",
-    "Vibrieren": "Vibrasjon",
     "Buzzer-Ton": "Buzzer-lyd",
     "Buzzer für Mitspieler": "Buzzer for spillere",
     "Joker in der Mitte": "Joker i midten",
@@ -693,5 +691,6 @@
     "✗ Klappt noch nicht: {e}": "✗ Fungerer ikke ennå: {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Trykk på «Test musikken» under «Avspilling» – da vet du på forhånd om alt fungerer.",
     "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "Runde {n} fortsetter – trykk på platen for å spille sangen igjen.",
+    "Vibration stellst du in der Jukebox ein.": "Vibrasjon stiller du inn i Jukeboxen.",
   },
 };

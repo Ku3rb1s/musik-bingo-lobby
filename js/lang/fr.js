@@ -592,7 +592,6 @@
     "Echtes Schwarz – spart Akku": "Noir profond – économise la batterie",
     "Leuchtende Knöpfe, pulsierende Felder und Leuchtring am Countdown – kosten etwas Akku": "Boutons lumineux, cases qui pulsent et anneau lumineux du compte à rebours – consomment un peu de batterie",
     "Leuchtende Knöpfe und pulsierende Felder – kosten etwas Akku": "Boutons lumineux et cases qui pulsent – consomment un peu de batterie",
-    "Bei Bingo, Countdown und Markieren": "Pour le bingo, le compte à rebours et les marques",
     "Automatisch weiter": "Suivant automatique",
     "Nach der Auflösung startet der nächste Song von selbst": "Après la révélation, le morceau suivant démarre tout seul",
     "Warten": "Attendre",
@@ -600,7 +599,6 @@
     "Ablauf": "Déroulement",
     "Schwierigkeit": "Difficulté",
     "Leuchteffekte": "Effets lumineux",
-    "Vibrieren": "Vibration",
     "Buzzer-Ton": "Son du buzzer",
     "Buzzer für Mitspieler": "Buzzer pour les joueurs",
     "Joker in der Mitte": "Joker au centre",
@@ -694,5 +692,6 @@
     "✗ Klappt noch nicht: {e}": "✗ Ça ne marche pas encore : {e}",
     "Unter „Wiedergabe“ auf „Musik testen“ tippen – dann weißt du vorher, ob alles klappt.": "Touche « Tester la musique » sous « Lecture » – tu sauras à l’avance si tout fonctionne.",
     "Runde {n} geht weiter – tippe auf die Platte, um den Song wieder abzuspielen.": "La manche {n} continue – touche le disque pour relancer la chanson.",
+    "Vibration stellst du in der Jukebox ein.": "La vibration se règle dans la Jukebox.",
   },
 };

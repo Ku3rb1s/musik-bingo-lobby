@@ -9,7 +9,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
 
 // Bei jedem Update hochzählen (wird unten in den Einstellungen angezeigt)
-const APP_VERSION = '4.31.1', APP_DATE = '28.11.2026';
+const APP_VERSION = '4.31.2', APP_DATE = '28.11.2026';
 
 /* Gemeinsames Spielerprofil der Jukebox-Spiele (Needle Drop, Jukebox): Name von dort vorschlagen,
    hier eingegebenen Namen dorthin übernehmen. Liegt nur lokal auf dem Gerät. */
@@ -321,8 +321,8 @@ function buzzSound(level = state.settings.buzzVol) {
 }
 // Vibrieren: Android über die Vibrations-Funktion. iPhones erlauben Websites kein Vibrieren – seit iOS 18 gibt es aber ein
 // kurzes haptisches Klicken, wenn ein Schalter umgelegt wird. Dafür liegt ein unsichtbarer Schalter bereit.
-// Am Handy der Mitspieler und in den Einstellungen abschaltbar.
-const vibeOn = () => LS.get('vibe', true) !== false;
+// An/aus gilt für alle Spiele und wird in der Jukebox eingestellt (Schlüssel „jb.vib“, fehlt = an).
+const vibeOn = () => { try { return JSON.parse(localStorage.getItem('jb.vib')) !== false; } catch { return true; } };
 const isIOS = document.documentElement.classList.contains('ios');
 const canVibe = () => 'vibrate' in navigator || isIOS;
 let hapEl = null;
